@@ -3,7 +3,7 @@ import type { ExecFileSyncOptions } from "node:child_process";
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 import pkg from "../../package.json";
 
 // Fake install script returned by the mocked curl call — must pass validateInstallScript()
@@ -325,7 +325,7 @@ describe("update-check", () => {
       // 2. bash to execute fetched script via temp file (not -c)
       expect(execFileSyncCalls[1].file).toBe("bash");
       expect(execFileSyncCalls[1].args[0]).toMatch(/spawn-install-.*\.sh$/);
-      // 3. which spawn for binary lookup
+      // 3. which jelma for binary lookup
       expect(execFileSyncCalls[2].file).toBe("which");
       expect(execFileSyncCalls[2].args).toEqual([
         "spawn",

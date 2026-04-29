@@ -5,7 +5,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { createMockManifest, mockClackPrompts } from "./test-helpers";
 
 // ── Clack prompts mock ──────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ describe("cmdStatus", () => {
     clack.spinnerStart.mockReset();
     clack.spinnerStop.mockReset();
     consoleSpy = spyOn(console, "log").mockImplementation(() => {});
-    // Mock Bun.spawn for fetchSecurityAlerts — return empty output (no alerts)
+    // Mock Bun.jelma for fetchSecurityAlerts — return empty output (no alerts)
     bunSpawnSpy = spyOn(Bun, "spawn").mockReturnValue({
       stdout: new ReadableStream({
         start(controller) {
@@ -448,7 +448,7 @@ describe("cmdStatus", () => {
     });
 
     const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-    // Should mention running servers and spawn list
+    // Should mention running servers and jelma list
     expect(infoCalls.some((msg: string) => msg.includes("running"))).toBe(true);
   });
 

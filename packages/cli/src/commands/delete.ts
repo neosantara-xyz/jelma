@@ -2,7 +2,7 @@ import type { SpawnRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import * as v from "valibot";
 import { authenticate as awsAuthenticate, destroyServer as awsDestroyServer, ensureAwsCli } from "../aws/aws.js";
@@ -101,9 +101,9 @@ async function execDeleteServer(record: SpawnRecord): Promise<boolean> {
   if (!idValidation.ok) {
     throw new Error(
       `Invalid server identifier in history: ${getErrorMessage(idValidation.error)}\n\n` +
-        "Your spawn history file may be corrupted or tampered with.\n" +
+        "Your jelma history file may be corrupted or tampered with.\n" +
         `Location: ${getHistoryPath()}\n` +
-        "To fix: edit the file and remove the invalid entry, or run 'spawn list --clear'",
+        "To fix: edit the file and remove the invalid entry, or run 'jelma list --clear'",
     );
   }
 
@@ -296,7 +296,7 @@ export async function pullChildHistory(record: SpawnRecord): Promise<void> {
         ...SSH_BASE_OPTS,
         ...keyOpts,
         `${conn.user}@${conn.ip}`,
-        "spawn history export 2>/dev/null",
+        "jelma history export 2>/dev/null",
       ],
       {
         stdout: "pipe",
@@ -336,7 +336,7 @@ export async function pullChildHistory(record: SpawnRecord): Promise<void> {
   });
 }
 
-/** Find all children of a given spawn record (direct and transitive). */
+/** Find all children of a given jelma record (direct and transitive). */
 export function findDescendants(parentId: string): SpawnRecord[] {
   const history = loadHistory();
   const descendants: SpawnRecord[] = [];
@@ -357,7 +357,7 @@ export function findDescendants(parentId: string): SpawnRecord[] {
   return descendants;
 }
 
-/** Delete a spawn and all its descendants (depth-first). */
+/** Delete a jelma and all its descendants (depth-first). */
 export async function cascadeDelete(record: SpawnRecord, manifest: Manifest | null): Promise<boolean> {
   const descendants = findDescendants(record.id);
 
@@ -428,9 +428,9 @@ export async function cmdDelete(
           `${servers.length} active server${servers.length !== 1 ? "s" : ""} found, but none matched your filters.`,
         ),
       );
-      p.log.info(`Run ${pc.cyan("spawn delete")} without filters to see all servers.`);
+      p.log.info(`Run ${pc.cyan("jelma delete")} without filters to see all servers.`);
     } else {
-      p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to create a spawn first.`);
+      p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create a jelma first.`);
     }
     return;
   }
@@ -441,8 +441,8 @@ export async function cmdDelete(
   // Non-interactive headless delete: --name + --yes skips the picker
   if (!isInteractiveTTY()) {
     if (!forceYes) {
-      p.log.error("spawn delete requires --yes in non-interactive mode.");
-      p.log.info(`Usage: ${pc.cyan("spawn delete --name <name> --yes")}`);
+      p.log.error("jelma delete requires --yes in non-interactive mode.");
+      p.log.info(`Usage: ${pc.cyan("jelma delete --name <name> --yes")}`);
       process.exit(1);
     }
     for (const record of filtered) {

@@ -40,7 +40,7 @@ describe("credentialHints", () => {
       const hints = credentialHints("sprite");
       expect(hints).toHaveLength(1);
       expect(hints[0]).toContain("credentials");
-      expect(hints[0]).toContain("spawn sprite");
+      expect(hints[0]).toContain("jelma sprite");
     });
 
     it("uses custom verb", () => {
@@ -52,7 +52,7 @@ describe("credentialHints", () => {
   describe("when all required env vars are missing", () => {
     beforeEach(() => {
       unsetEnv("HCLOUD_TOKEN");
-      unsetEnv("OPENROUTER_API_KEY");
+      unsetEnv("NEOSANTARA_API_KEY");
     });
 
     it("shows each missing var individually", () => {
@@ -61,8 +61,8 @@ describe("credentialHints", () => {
       expect(joined).toContain("Missing credentials");
       expect(joined).toContain("HCLOUD_TOKEN");
       expect(joined).toContain("not set");
-      expect(joined).toContain("OPENROUTER_API_KEY");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).toContain("setup instructions");
     });
 
@@ -73,44 +73,44 @@ describe("credentialHints", () => {
       const joined = hints.join("\n");
       expect(joined).toContain("UPCLOUD_USERNAME");
       expect(joined).toContain("UPCLOUD_PASSWORD");
-      expect(joined).toContain("OPENROUTER_API_KEY");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
     });
   });
 
   describe("when all required env vars are set", () => {
     it("reports credentials appear set, suggests they may be invalid, and lists env var names", () => {
       setEnv("HCLOUD_TOKEN", "test-token");
-      setEnv("OPENROUTER_API_KEY", "sk-or-v1-test");
+      setEnv("NEOSANTARA_API_KEY", "sk-or-v1-test");
       const hints = credentialHints("hetzner", "HCLOUD_TOKEN");
       const joined = hints.join("\n");
       expect(joined).toContain("Credentials appear to be set");
       expect(joined).toContain("invalid or expired");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).toContain("HCLOUD_TOKEN");
-      expect(joined).toContain("OPENROUTER_API_KEY");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
     });
   });
 
   describe("when some env vars are set and some missing", () => {
     it("shows only the missing vars", () => {
-      setEnv("OPENROUTER_API_KEY", "sk-or-v1-test");
+      setEnv("NEOSANTARA_API_KEY", "sk-or-v1-test");
       unsetEnv("HCLOUD_TOKEN");
       const hints = credentialHints("hetzner", "HCLOUD_TOKEN");
       const joined = hints.join("\n");
       expect(joined).toContain("Missing credentials");
       expect(joined).toContain("HCLOUD_TOKEN");
       expect(joined).toContain("not set");
-      // OPENROUTER_API_KEY is set, so it should NOT appear as missing
-      expect(joined).not.toContain("OPENROUTER_API_KEY -- not set");
+      // NEOSANTARA_API_KEY is set, so it should NOT appear as missing
+      expect(joined).not.toContain("NEOSANTARA_API_KEY -- not set");
     });
 
-    it("shows only OPENROUTER_API_KEY when cloud auth is set", () => {
+    it("shows only NEOSANTARA_API_KEY when cloud auth is set", () => {
       setEnv("HCLOUD_TOKEN", "test-token");
-      unsetEnv("OPENROUTER_API_KEY");
+      unsetEnv("NEOSANTARA_API_KEY");
       const hints = credentialHints("hetzner", "HCLOUD_TOKEN");
       const joined = hints.join("\n");
       expect(joined).toContain("Missing credentials");
-      expect(joined).toContain("OPENROUTER_API_KEY");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
       expect(joined).toContain("not set");
       expect(joined).not.toContain("HCLOUD_TOKEN -- not set");
     });
@@ -118,14 +118,14 @@ describe("credentialHints", () => {
     it("handles partial multi-credential setup", () => {
       setEnv("UPCLOUD_USERNAME", "user");
       unsetEnv("UPCLOUD_PASSWORD");
-      setEnv("OPENROUTER_API_KEY", "sk-or-v1-test");
+      setEnv("NEOSANTARA_API_KEY", "sk-or-v1-test");
       const hints = credentialHints("upcloud", "UPCLOUD_USERNAME + UPCLOUD_PASSWORD");
       const joined = hints.join("\n");
       expect(joined).toContain("UPCLOUD_PASSWORD");
       expect(joined).toContain("not set");
       // Set vars should not appear as missing
       expect(joined).not.toContain("UPCLOUD_USERNAME -- not set");
-      expect(joined).not.toContain("OPENROUTER_API_KEY -- not set");
+      expect(joined).not.toContain("NEOSANTARA_API_KEY -- not set");
     });
   });
 });

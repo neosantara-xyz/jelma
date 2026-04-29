@@ -64,14 +64,14 @@ describe("preflightCredentialCheck", () => {
   });
 
   it("emits no warnings when all credentials are present", async () => {
-    setEnv("OPENROUTER_API_KEY", "sk-or-test");
+    setEnv("NEOSANTARA_API_KEY", "sk-or-test");
     setEnv("HCLOUD_TOKEN", "test-token");
     await preflightCredentialCheck(makeManifest("HCLOUD_TOKEN"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBe(0);
   });
 
   it("warns with cloud credential name when cloud token is missing", async () => {
-    setEnv("OPENROUTER_API_KEY", "sk-or-test");
+    setEnv("NEOSANTARA_API_KEY", "sk-or-test");
     clearEnv("HCLOUD_TOKEN");
     await preflightCredentialCheck(makeManifest("HCLOUD_TOKEN"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBeGreaterThan(0);
@@ -79,41 +79,41 @@ describe("preflightCredentialCheck", () => {
     expect(warnText).toContain("HCLOUD_TOKEN");
   });
 
-  it("warns with OPENROUTER_API_KEY name when API key is missing", async () => {
-    clearEnv("OPENROUTER_API_KEY");
+  it("warns with NEOSANTARA_API_KEY name when API key is missing", async () => {
+    clearEnv("NEOSANTARA_API_KEY");
     setEnv("HCLOUD_TOKEN", "test-token");
     await preflightCredentialCheck(makeManifest("HCLOUD_TOKEN"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBeGreaterThan(0);
     const warnText = String(clack.logWarn.mock.calls[0]?.[0] ?? "");
-    expect(warnText).toContain("OPENROUTER_API_KEY");
+    expect(warnText).toContain("NEOSANTARA_API_KEY");
   });
 
   it("warns about all missing credentials when both are absent", async () => {
-    clearEnv("OPENROUTER_API_KEY");
+    clearEnv("NEOSANTARA_API_KEY");
     clearEnv("HCLOUD_TOKEN");
     await preflightCredentialCheck(makeManifest("HCLOUD_TOKEN"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBeGreaterThan(0);
     const warnText = String(clack.logWarn.mock.calls[0]?.[0] ?? "");
-    expect(warnText).toContain("OPENROUTER_API_KEY");
+    expect(warnText).toContain("NEOSANTARA_API_KEY");
     expect(warnText).toContain("HCLOUD_TOKEN");
   });
 
-  it("emits no warnings for cli auth when OPENROUTER_API_KEY is present", async () => {
-    setEnv("OPENROUTER_API_KEY", "sk-or-test");
+  it("emits no warnings for cli auth when NEOSANTARA_API_KEY is present", async () => {
+    setEnv("NEOSANTARA_API_KEY", "sk-or-test");
     await preflightCredentialCheck(makeManifest("cli"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBe(0);
   });
 
-  it("warns about OPENROUTER_API_KEY for cli auth when key is missing", async () => {
-    clearEnv("OPENROUTER_API_KEY");
+  it("warns about NEOSANTARA_API_KEY for cli auth when key is missing", async () => {
+    clearEnv("NEOSANTARA_API_KEY");
     await preflightCredentialCheck(makeManifest("cli"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBeGreaterThan(0);
     const warnText = String(clack.logWarn.mock.calls[0]?.[0] ?? "");
-    expect(warnText).toContain("OPENROUTER_API_KEY");
+    expect(warnText).toContain("NEOSANTARA_API_KEY");
   });
 
   it("emits no warnings for auth=none even when all credentials are missing", async () => {
-    clearEnv("OPENROUTER_API_KEY");
+    clearEnv("NEOSANTARA_API_KEY");
     await preflightCredentialCheck(makeManifest("none"), "testcloud");
     expect(clack.logWarn.mock.calls.length).toBe(0);
   });
@@ -179,7 +179,7 @@ describe("preflightCredentialCheck", () => {
 
     it("skips warnings when interactive (guided checklist supplies credentials)", async () => {
       setTTY(true);
-      clearEnv("OPENROUTER_API_KEY");
+      clearEnv("NEOSANTARA_API_KEY");
       clearEnv("DIGITALOCEAN_ACCESS_TOKEN");
       await preflightCredentialCheck(makeManifest("DIGITALOCEAN_ACCESS_TOKEN", "digitalocean"), "digitalocean");
       expect(clack.logWarn.mock.calls.length).toBe(0);
@@ -187,13 +187,13 @@ describe("preflightCredentialCheck", () => {
 
     it("still warns when not interactive", async () => {
       setTTY(false);
-      clearEnv("OPENROUTER_API_KEY");
+      clearEnv("NEOSANTARA_API_KEY");
       clearEnv("DIGITALOCEAN_ACCESS_TOKEN");
       await preflightCredentialCheck(makeManifest("DIGITALOCEAN_ACCESS_TOKEN", "digitalocean"), "digitalocean");
       expect(clack.logWarn.mock.calls.length).toBeGreaterThan(0);
       const warnText = String(clack.logWarn.mock.calls[0]?.[0] ?? "");
       expect(warnText).toContain("Missing credentials");
-      expect(warnText).toMatch(/DIGITALOCEAN_ACCESS_TOKEN|OPENROUTER_API_KEY/);
+      expect(warnText).toMatch(/DIGITALOCEAN_ACCESS_TOKEN|NEOSANTARA_API_KEY/);
     });
   });
 });

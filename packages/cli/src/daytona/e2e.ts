@@ -2,7 +2,7 @@
 
 // daytona/e2e.ts — QA helper for Daytona E2E shell drivers
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import { destroyServer, getDaytonaClient, runDaytonaCommand } from "./daytona.js";
 
 async function getRequiredClient() {

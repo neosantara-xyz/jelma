@@ -5,7 +5,7 @@ import type { CloudInstance, VMConnection } from "../history.js";
 import { randomUUID } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { Daytona, DaytonaNotFoundError } from "@daytonaio/sdk";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import {
   validateConnectionIP,
@@ -396,14 +396,14 @@ export async function promptSandboxSize(): Promise<SandboxSize> {
 }
 
 /**
- * Prompt for the spawn name or derive it non-interactively.
+ * Prompt for the jelma name or derive it non-interactively.
  */
 export async function promptSpawnName(): Promise<void> {
   await promptSpawnNameShared("Daytona sandbox");
 }
 
 /**
- * Resolve the Daytona sandbox name from environment or default spawn naming.
+ * Resolve the Daytona sandbox name from environment or default jelma naming.
  */
 export async function getServerName(): Promise<string> {
   return getServerNameFromEnv("DAYTONA_SANDBOX_NAME");
@@ -932,7 +932,7 @@ export async function interactiveSession(cmd: string): Promise<number> {
   process.stderr.write("\n");
   logWarn(`Session ended. Your sandbox '${_state.sandboxId}' may still be running.`);
   logWarn(`Manage or delete it in the Daytona dashboard: ${DAYTONA_DASHBOARD_URL}`);
-  logInfo("Delete it from Spawn with: spawn delete");
+  logInfo("Delete it from Spawn with: jelma delete");
   return exitCode;
 }
 

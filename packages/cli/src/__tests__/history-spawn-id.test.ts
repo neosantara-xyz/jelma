@@ -1,5 +1,5 @@
 /**
- * history-spawn-id.test.ts — Tests for unique spawn ID behavior.
+ * history-spawn-id.test.ts — Tests for unique jelma ID behavior.
  *
  * Verifies that:
  * - Every saved record gets a unique id
@@ -24,7 +24,7 @@ import {
 } from "../history.js";
 import { getHistoryPath } from "../shared/paths.js";
 
-describe("history spawn IDs", () => {
+describe("history jelma IDs", () => {
   let testDir: string;
   let originalEnv: NodeJS.ProcessEnv;
 

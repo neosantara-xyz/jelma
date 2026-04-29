@@ -34,7 +34,7 @@ X_DATA_PLACEHOLDER
    - Lowercase is good. Casual punctuation is good. No exclamation points.
    - NO corporate phrases: no "One command to provision", no "provides", no "enabling", no "seamlessly"
    - NO bulleted lists, NO multi-sentence explanations, NO feature dumps
-   - Include the link `https://openrouter.ai/spawn` ONLY if it naturally closes the reply
+   - Include the link `https://jelma.ai` ONLY if it naturally closes the reply
    - **NEVER use em dashes (—) or en dashes (–).** Use periods, commas, or rephrase.
    - **NO disclosure line.** Do not add "(disclosure: i help build this)" or any similar attribution. Post the reply as-is.
 

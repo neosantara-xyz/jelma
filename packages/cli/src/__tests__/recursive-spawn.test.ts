@@ -114,7 +114,7 @@ describe("recursive spawn", () => {
       expect(child2!.parent_id).toBe("parent-1");
     });
 
-    it("deduplicates by spawn ID", () => {
+    it("deduplicates by jelma ID", () => {
       saveSpawnRecord({
         id: "parent-1",
         agent: "claude",
@@ -284,7 +284,7 @@ describe("recursive spawn", () => {
         recursive: true,
       });
       writeFileSync(join(configDir, "hetzner.json"), '{"token":"test-token"}');
-      writeFileSync(join(configDir, "openrouter.json"), '{"key":"test-key"}');
+      writeFileSync(join(configDir, "neosantara.json"), '{"key":"test-key"}');
 
       const commands: string[] = [];
       const mockRunner = {
@@ -301,7 +301,7 @@ describe("recursive spawn", () => {
       expect(commands.length).toBe(3);
       expect(commands[0]).toContain("mkdir -p ~/.config/spawn");
       expect(commands[1]).toContain("hetzner.json");
-      expect(commands[2]).toContain("openrouter.json");
+      expect(commands[2]).toContain("neosantara.json");
     });
 
     it("handles file write failure gracefully", async () => {
@@ -402,7 +402,7 @@ describe("recursive spawn", () => {
       await cmdTree();
 
       const calls = logInfoSpy.mock.calls.map((args) => String(args[0]));
-      expect(calls.some((msg) => msg.includes("No spawn history found"))).toBe(true);
+      expect(calls.some((msg) => msg.includes("No jelma history found"))).toBe(true);
       logInfoSpy.mockRestore();
     });
 

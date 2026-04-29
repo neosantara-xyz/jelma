@@ -74,8 +74,8 @@ provision_agent() {
     export SPAWN_NO_UPDATE_CHECK=1
     export BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
     export SPAWN_CLI_DIR="${SPAWN_CLI_DIR:-}"
-    export MODEL_ID="${MODEL_ID:-openrouter/auto}"
-    export OPENROUTER_API_KEY="${OPENROUTER_API_KEY}"
+    export MODEL_ID="${MODEL_ID:-neosantara/auto}"
+    export NEOSANTARA_API_KEY="${NEOSANTARA_API_KEY}"
 
     # Apply cloud-specific env vars (safe: only processes export VAR="VALUE" lines)
     # Uses sed instead of BASH_REMATCH for macOS bash 3.2 compatibility.
@@ -233,9 +233,9 @@ CLOUD_ENV
   # Fallback: CLI was killed before writing .spawnrc (provision timeout race).
   # Construct .spawnrc manually via SSH using available env vars.
   log_warn ".spawnrc not found after ${effective_install_wait}s — attempting manual creation"
-  local api_key="${OPENROUTER_API_KEY:-}"
+  local api_key="${NEOSANTARA_API_KEY:-}"
   if [ -z "${api_key}" ]; then
-    log_err "Cannot create .spawnrc fallback — OPENROUTER_API_KEY not set"
+    log_err "Cannot create .spawnrc fallback — NEOSANTARA_API_KEY not set"
     return 0
   fi
 
@@ -252,44 +252,44 @@ CLOUD_ENV
   {
     printf '%s\n' "# [spawn:env]"
     printf 'export IS_SANDBOX=%q\n' "1"
-    printf 'export OPENROUTER_API_KEY=%q\n' "${api_key}"
+    printf 'export NEOSANTARA_API_KEY=%q\n' "${api_key}"
   } > "${env_tmp}"
 
   # Add agent-specific env vars
   case "${agent}" in
     claude)
       {
-        printf 'export ANTHROPIC_BASE_URL=%q\n' "https://openrouter.ai/api"
+        printf 'export ANTHROPIC_BASE_URL=%q\n' "https://api.neosantara.xyz/anthropic"
         printf 'export ANTHROPIC_AUTH_TOKEN=%q\n' "${api_key}"
       } >> "${env_tmp}"
       ;;
     openclaw)
       {
         printf 'export ANTHROPIC_API_KEY=%q\n' "${api_key}"
-        printf 'export ANTHROPIC_BASE_URL=%q\n' "https://openrouter.ai/api"
+        printf 'export ANTHROPIC_BASE_URL=%q\n' "https://api.neosantara.xyz/anthropic"
       } >> "${env_tmp}"
       ;;
     codex)
       {
         printf 'export OPENAI_API_KEY=%q\n' "${api_key}"
-        printf 'export OPENAI_BASE_URL=%q\n' "https://openrouter.ai/api/v1"
+        printf 'export OPENAI_BASE_URL=%q\n' "https://api.neosantara.xyz/v1"
       } >> "${env_tmp}"
       ;;
     hermes)
       {
-        printf 'export OPENAI_BASE_URL=%q\n' "https://openrouter.ai/api/v1"
+        printf 'export OPENAI_BASE_URL=%q\n' "https://api.neosantara.xyz/v1"
         printf 'export OPENAI_API_KEY=%q\n' "${api_key}"
       } >> "${env_tmp}"
       ;;
     kilocode)
       {
-        printf 'export KILO_PROVIDER_TYPE=%q\n' "openrouter"
-        printf 'export KILO_OPEN_ROUTER_API_KEY=%q\n' "${api_key}"
+        printf 'export KILO_PROVIDER_TYPE=%q\n' "neosantara"
+        printf 'export NEOSANTARA_API_KEY=%q\n' "${api_key}"
       } >> "${env_tmp}"
       ;;
     junie)
       {
-        printf 'export JUNIE_OPENROUTER_API_KEY=%q\n' "${api_key}"
+        printf 'export NEOSANTARA_API_KEY=%q\n' "${api_key}"
       } >> "${env_tmp}"
       ;;
     cursor)

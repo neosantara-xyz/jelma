@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -7,7 +7,7 @@ import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks 
  * Tests for detectAndFixSwappedArgs and resolveAndLog logic in commands/run.ts.
  *
  * These functions handle two important CLI UX features:
- * - Swapped argument detection: "spawn sprite claude" -> "spawn claude sprite"
+ * - Swapped argument detection: "jelma sprite claude" -> "jelma claude sprite"
  * - Display name resolution with logging: "Claude Code" -> "claude" with info message
  *
  * Previously, these were only tested through full cmdRun integration tests.
@@ -84,7 +84,7 @@ describe("detectAndFixSwappedArgs via cmdRun", () => {
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes("swapped"))).toBe(true);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn claude sprite"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma claude sprite"))).toBe(true);
     });
 
     it("should proceed correctly after swapping args", async () => {

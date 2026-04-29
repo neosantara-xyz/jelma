@@ -11,7 +11,7 @@
 import type { SpawnRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 import { createMockManifest, mockClackPrompts } from "./test-helpers";
 
 // ── Clack prompts mock ──────────────────────────────────────────────────────
@@ -54,8 +54,8 @@ describe("fixSpawn (additional coverage)", () => {
   let savedApiKey: string | undefined;
 
   beforeEach(() => {
-    savedApiKey = process.env.OPENROUTER_API_KEY;
-    process.env.OPENROUTER_API_KEY = "sk-or-test-fix-key";
+    savedApiKey = process.env.NEOSANTARA_API_KEY;
+    process.env.NEOSANTARA_API_KEY = "sk-or-test-fix-key";
     clack.logError.mockReset();
     clack.logInfo.mockReset();
     clack.logSuccess.mockReset();
@@ -64,9 +64,9 @@ describe("fixSpawn (additional coverage)", () => {
 
   afterEach(() => {
     if (savedApiKey === undefined) {
-      delete process.env.OPENROUTER_API_KEY;
+      delete process.env.NEOSANTARA_API_KEY;
     } else {
-      process.env.OPENROUTER_API_KEY = savedApiKey;
+      process.env.NEOSANTARA_API_KEY = savedApiKey;
     }
   });
 

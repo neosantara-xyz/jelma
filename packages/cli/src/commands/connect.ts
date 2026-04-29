@@ -132,9 +132,9 @@ export async function cmdConnect(connection: VMConnection, agentKey?: string): P
   });
   if (!connectValidation.ok) {
     p.log.error(`Security validation failed: ${getErrorMessage(connectValidation.error)}`);
-    p.log.info("Your spawn history file may be corrupted or tampered with.");
+    p.log.info("Your jelma history file may be corrupted or tampered with.");
     p.log.info(`Location: ${getHistoryPath()}`);
-    p.log.info("To fix: edit the file and remove the invalid entry, or run 'spawn list --clear'");
+    p.log.info("To fix: edit the file and remove the invalid entry, or run 'jelma list --clear'");
     process.exit(1);
   }
 
@@ -164,7 +164,7 @@ export async function cmdConnect(connection: VMConnection, agentKey?: string): P
     p.log.step(`Connecting to Daytona sandbox ${pc.bold(connection.server_name || connection.server_id)}...`);
     const { buildInteractiveSshArgs } = await import("../daytona/daytona.js");
     const args = await buildInteractiveSshArgs(connection.server_id);
-    return runInteractiveCommand(args[0], args.slice(1), "Daytona SSH connection failed", "spawn last");
+    return runInteractiveCommand(args[0], args.slice(1), "Daytona SSH connection failed", "jelma last");
   }
 
   // Handle SSH connections
@@ -212,15 +212,15 @@ export async function cmdEnterAgent(
   });
   if (!enterValidation.ok) {
     p.log.error(`Security validation failed: ${getErrorMessage(enterValidation.error)}`);
-    p.log.info("Your spawn history file may be corrupted or tampered with.");
+    p.log.info("Your jelma history file may be corrupted or tampered with.");
     p.log.info(`Location: ${getHistoryPath()}`);
-    p.log.info("To fix: edit the file and remove the invalid entry, or run 'spawn list --clear'");
+    p.log.info("To fix: edit the file and remove the invalid entry, or run 'jelma list --clear'");
     process.exit(1);
   }
 
   const agentDef = manifest?.agents?.[agentKey];
 
-  // Prefer the launch command stored at spawn time (captures dynamic state),
+  // Prefer the launch command stored at jelma time (captures dynamic state),
   // fall back to manifest definition, then to agent key as last resort
   const storedCmd = connection.launch_cmd;
   let remoteCmd: string;
@@ -297,7 +297,7 @@ export async function cmdEnterAgent(
     return;
   }
 
-  // Re-establish SSH tunnel for web dashboard if tunnel metadata was persisted at spawn time
+  // Re-establish SSH tunnel for web dashboard if tunnel metadata was persisted at jelma time
   let tunnelHandle: SshTunnelHandle | undefined;
   const tunnelPort = connection.metadata?.tunnel_remote_port;
   if (tunnelPort && connection.ip !== "sprite-console") {
@@ -311,9 +311,9 @@ export async function cmdEnterAgent(
     });
     if (!tunnelValidation.ok) {
       p.log.error(`Security validation failed: ${getErrorMessage(tunnelValidation.error)}`);
-      p.log.info("Your spawn history file may be corrupted or tampered with.");
+      p.log.info("Your jelma history file may be corrupted or tampered with.");
       p.log.info(`Location: ${getHistoryPath()}`);
-      p.log.info("To fix: edit the file and remove the invalid entry, or run 'spawn list --clear'");
+      p.log.info("To fix: edit the file and remove the invalid entry, or run 'jelma list --clear'");
       process.exit(1);
     }
 
@@ -404,9 +404,9 @@ export async function cmdOpenDashboard(connection: VMConnection): Promise<void> 
   });
   if (!tunnelValidation.ok) {
     p.log.error(`Security validation failed: ${getErrorMessage(tunnelValidation.error)}`);
-    p.log.info("Your spawn history file may be corrupted or tampered with.");
+    p.log.info("Your jelma history file may be corrupted or tampered with.");
     p.log.info(`Location: ${getHistoryPath()}`);
-    p.log.info("To fix: edit the file and remove the invalid entry, or run 'spawn list --clear'");
+    p.log.info("To fix: edit the file and remove the invalid entry, or run 'jelma list --clear'");
     return;
   }
 

@@ -119,7 +119,7 @@ export function validateRemotePath(remotePath: string, allowedCharsPattern: RegE
  *
  * Why spawnSync instead of Bun.spawn?
  * Bun's async event loop keeps polling fd 0 (stdin) even after
- * process.stdin.pause()/destroy(). With Bun.spawn + stdio:"inherit",
+ * process.stdin.pause()/destroy(). With Bun.jelma + stdio:"inherit",
  * both the parent's event loop and the child (SSH) race for bytes on
  * the same fd, causing random keystroke drops.
  *

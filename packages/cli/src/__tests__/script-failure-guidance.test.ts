@@ -19,7 +19,7 @@ function stripped_getSignalGuidance(...args: Parameters<typeof getSignalGuidance
 /**
  * Tests for stripped_getScriptFailureGuidance() in commands/run.ts.
  *
- * This function maps exit codes from failed spawn scripts to user-facing
+ * This function maps exit codes from failed jelma scripts to user-facing
  * guidance strings. It was recently modified (PRs #450, #449) but has
  * zero direct test coverage.
  */
@@ -36,14 +36,14 @@ describe("getScriptFailureGuidance", () => {
       expect(joined).toContain("curl");
       expect(joined).toContain("ssh");
       expect(joined).toContain("jq");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("jelma hetzner");
     });
 
     it("should embed a different cloud name when provided", () => {
       const lines = stripped_getScriptFailureGuidance(127, "vultr");
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn vultr");
-      expect(joined).not.toContain("spawn hetzner");
+      expect(joined).toContain("jelma vultr");
+      expect(joined).not.toContain("jelma hetzner");
     });
 
     it("should return exactly 3 guidance lines", () => {
@@ -76,7 +76,7 @@ describe("getScriptFailureGuidance", () => {
       const joined = lines.join("\n");
       expect(lines[0]).toBe("Common causes:");
       expect(joined).toContain("credentials");
-      expect(joined).toContain("spawn digital-ocean");
+      expect(joined).toContain("jelma digital-ocean");
     });
 
     it("should mention API error causes, provisioning failure, and return at least 4 lines", () => {
@@ -102,7 +102,7 @@ describe("getScriptFailureGuidance", () => {
       expect(joined).toContain("SSH");
       expect(joined).toContain("curl");
       expect(joined).toContain("jq");
-      expect(joined).toContain("spawn linode");
+      expect(joined).toContain("jelma linode");
       expect(lines.length).toBeGreaterThanOrEqual(4);
     });
   });
@@ -115,7 +115,7 @@ describe("getScriptFailureGuidance", () => {
       const joined = lines.join("\n");
       expect(lines[0]).toBe("Common causes:");
       expect(joined).toContain("credentials");
-      expect(joined).toContain("spawn sprite");
+      expect(joined).toContain("jelma sprite");
       expect(lines.length).toBeGreaterThanOrEqual(4);
     });
   });
@@ -182,18 +182,18 @@ describe("getScriptFailureGuidance", () => {
 
   describe("auth hint parameter", () => {
     it("should show specific env var name and setup hint for exit code 1 when authHint is provided", () => {
-      const savedOR = process.env.OPENROUTER_API_KEY;
+      const savedOR = process.env.NEOSANTARA_API_KEY;
       const savedHC = process.env.HCLOUD_TOKEN;
-      delete process.env.OPENROUTER_API_KEY;
+      delete process.env.NEOSANTARA_API_KEY;
       delete process.env.HCLOUD_TOKEN;
       const lines = stripped_getScriptFailureGuidance(1, "hetzner", "HCLOUD_TOKEN");
       const joined = lines.join("\n");
       expect(joined).toContain("HCLOUD_TOKEN");
-      expect(joined).toContain("OPENROUTER_API_KEY");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).toContain("setup");
       if (savedOR !== undefined) {
-        process.env.OPENROUTER_API_KEY = savedOR;
+        process.env.NEOSANTARA_API_KEY = savedOR;
       }
       if (savedHC !== undefined) {
         process.env.HCLOUD_TOKEN = savedHC;
@@ -203,23 +203,23 @@ describe("getScriptFailureGuidance", () => {
     it("should show generic setup hint for exit code 1 when no authHint", () => {
       const lines = stripped_getScriptFailureGuidance(1, "hetzner");
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).not.toContain("HCLOUD_TOKEN");
     });
 
     it("should show specific env var name and setup hint for default case when authHint is provided", () => {
-      const savedOR = process.env.OPENROUTER_API_KEY;
+      const savedOR = process.env.NEOSANTARA_API_KEY;
       const savedDO = process.env.DIGITALOCEAN_ACCESS_TOKEN;
-      delete process.env.OPENROUTER_API_KEY;
+      delete process.env.NEOSANTARA_API_KEY;
       delete process.env.DIGITALOCEAN_ACCESS_TOKEN;
       const lines = stripped_getScriptFailureGuidance(42, "digitalocean", "DIGITALOCEAN_ACCESS_TOKEN");
       const joined = lines.join("\n");
       expect(joined).toContain("DIGITALOCEAN_ACCESS_TOKEN");
-      expect(joined).toContain("OPENROUTER_API_KEY");
-      expect(joined).toContain("spawn digitalocean");
+      expect(joined).toContain("NEOSANTARA_API_KEY");
+      expect(joined).toContain("jelma digitalocean");
       expect(joined).toContain("setup");
       if (savedOR !== undefined) {
-        process.env.OPENROUTER_API_KEY = savedOR;
+        process.env.NEOSANTARA_API_KEY = savedOR;
       }
       if (savedDO !== undefined) {
         process.env.DIGITALOCEAN_ACCESS_TOKEN = savedDO;
@@ -229,7 +229,7 @@ describe("getScriptFailureGuidance", () => {
     it("should show generic setup hint for default case when no authHint", () => {
       const lines = stripped_getScriptFailureGuidance(42, "digitalocean");
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn digitalocean");
+      expect(joined).toContain("jelma digitalocean");
       expect(joined).not.toContain("DIGITALOCEAN_ACCESS_TOKEN");
     });
 
@@ -257,7 +257,7 @@ describe("getScriptFailureGuidance", () => {
       const lines = stripped_getScriptFailureGuidance(1, "hetzner", "HCLOUD_TOKEN");
       expect(lines.length).toBeGreaterThanOrEqual(5);
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).toContain("setup");
     });
 
@@ -265,7 +265,7 @@ describe("getScriptFailureGuidance", () => {
       const lines = stripped_getScriptFailureGuidance(42, "hetzner", "HCLOUD_TOKEN");
       expect(lines.length).toBeGreaterThanOrEqual(5);
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn hetzner");
+      expect(joined).toContain("jelma hetzner");
       expect(joined).toContain("setup");
     });
   });
@@ -286,13 +286,13 @@ describe("getScriptFailureGuidance", () => {
     it("should handle empty cloud name", () => {
       const lines = stripped_getScriptFailureGuidance(127, "");
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn ");
+      expect(joined).toContain("jelma ");
     });
 
     it("should handle cloud name with special characters", () => {
       const lines = stripped_getScriptFailureGuidance(1, "digital-ocean");
       const joined = lines.join("\n");
-      expect(joined).toContain("spawn digital-ocean");
+      expect(joined).toContain("jelma digital-ocean");
     });
   });
 
@@ -393,70 +393,70 @@ describe("getSignalGuidance", () => {
 
 describe("buildRetryCommand", () => {
   it("should return simple command when prompt is absent, undefined, or empty", () => {
-    expect(buildRetryCommand("claude", "sprite")).toBe("spawn claude sprite");
-    expect(buildRetryCommand("codex", "vultr", undefined)).toBe("spawn codex vultr");
-    expect(buildRetryCommand("codex", "vultr", "")).toBe("spawn codex vultr");
+    expect(buildRetryCommand("claude", "sprite")).toBe("jelma claude sprite");
+    expect(buildRetryCommand("codex", "vultr", undefined)).toBe("jelma codex vultr");
+    expect(buildRetryCommand("codex", "vultr", "")).toBe("jelma codex vultr");
   });
 
   it("should include --prompt when prompt is provided", () => {
-    expect(buildRetryCommand("claude", "sprite", "Fix all bugs")).toBe('spawn claude sprite --prompt "Fix all bugs"');
+    expect(buildRetryCommand("claude", "sprite", "Fix all bugs")).toBe('jelma claude sprite --prompt "Fix all bugs"');
   });
 
   it("should suggest --prompt-file for long prompts instead of truncating", () => {
     const longPrompt = "A".repeat(100);
     const result = buildRetryCommand("claude", "sprite", longPrompt);
-    expect(result).toBe("spawn claude sprite --prompt-file <your-prompt-file>");
+    expect(result).toBe("jelma claude sprite --prompt-file <your-prompt-file>");
     expect(result).not.toContain("A"); // no truncated prompt content
   });
 
   it("should include full prompt at exactly 80 characters", () => {
     const exactPrompt = "B".repeat(80);
     const result = buildRetryCommand("codex", "hetzner", exactPrompt);
-    expect(result).toBe(`spawn codex hetzner --prompt "${exactPrompt}"`);
+    expect(result).toBe(`jelma codex hetzner --prompt "${exactPrompt}"`);
     expect(result).not.toContain("prompt-file");
   });
 
   it("should suggest --prompt-file for prompts over 80 characters", () => {
     const longPrompt = "C".repeat(81);
     const result = buildRetryCommand("codex", "hetzner", longPrompt);
-    expect(result).toBe("spawn codex hetzner --prompt-file <your-prompt-file>");
+    expect(result).toBe("jelma codex hetzner --prompt-file <your-prompt-file>");
   });
 
   it("should escape double quotes in prompt", () => {
     const result = buildRetryCommand("claude", "sprite", 'Fix "all" bugs');
-    expect(result).toBe('spawn claude sprite --prompt "Fix \\"all\\" bugs"');
+    expect(result).toBe('jelma claude sprite --prompt "Fix \\"all\\" bugs"');
   });
 
   // ── spawnName parameter (issue #1709) ────────────────────────────────────
 
   it("should include --name flag when spawnName is provided without prompt", () => {
-    expect(buildRetryCommand("claude", "hetzner", undefined, "my-box")).toBe('spawn claude hetzner --name "my-box"');
+    expect(buildRetryCommand("claude", "hetzner", undefined, "my-box")).toBe('jelma claude hetzner --name "my-box"');
   });
 
   it("should include --name flag when spawnName is provided with short prompt", () => {
     expect(buildRetryCommand("claude", "hetzner", "Fix all bugs", "my-box")).toBe(
-      'spawn claude hetzner --name "my-box" --prompt "Fix all bugs"',
+      'jelma claude hetzner --name "my-box" --prompt "Fix all bugs"',
     );
   });
 
   it("should include --name flag when spawnName is provided with long prompt", () => {
     const longPrompt = "A".repeat(100);
     const result = buildRetryCommand("claude", "hetzner", longPrompt, "my-box");
-    expect(result).toBe('spawn claude hetzner --name "my-box" --prompt-file <your-prompt-file>');
+    expect(result).toBe('jelma claude hetzner --name "my-box" --prompt-file <your-prompt-file>');
   });
 
   it("should not include --name flag when spawnName is undefined", () => {
-    expect(buildRetryCommand("claude", "hetzner", undefined, undefined)).toBe("spawn claude hetzner");
-    expect(buildRetryCommand("claude", "hetzner")).toBe("spawn claude hetzner");
+    expect(buildRetryCommand("claude", "hetzner", undefined, undefined)).toBe("jelma claude hetzner");
+    expect(buildRetryCommand("claude", "hetzner")).toBe("jelma claude hetzner");
   });
 
   it("should not include --name flag when spawnName is empty string", () => {
-    expect(buildRetryCommand("claude", "hetzner", undefined, "")).toBe("spawn claude hetzner");
+    expect(buildRetryCommand("claude", "hetzner", undefined, "")).toBe("jelma claude hetzner");
   });
 
   it("should place --name before --prompt in the command", () => {
     const result = buildRetryCommand("codex", "sprite", "short prompt", "dev-server");
-    expect(result).toBe('spawn codex sprite --name "dev-server" --prompt "short prompt"');
+    expect(result).toBe('jelma codex sprite --name "dev-server" --prompt "short prompt"');
     // Verify ordering: --name comes before --prompt
     const nameIdx = result.indexOf("--name");
     const promptIdx = result.indexOf("--prompt");
@@ -465,20 +465,20 @@ describe("buildRetryCommand", () => {
 
   it("should quote --name value when it contains spaces", () => {
     expect(buildRetryCommand("claude", "hetzner", undefined, "my dev box")).toBe(
-      'spawn claude hetzner --name "my dev box"',
+      'jelma claude hetzner --name "my dev box"',
     );
   });
 
   it("should escape double quotes in --name value", () => {
     expect(buildRetryCommand("claude", "hetzner", undefined, 'my "box"')).toBe(
-      'spawn claude hetzner --name "my \\"box\\""',
+      'jelma claude hetzner --name "my \\"box\\""',
     );
   });
 
   it("should always quote --name value to prevent shell injection", () => {
     // Names with shell metacharacters should be safely quoted
     const result = buildRetryCommand("claude", "hetzner", undefined, "foo; rm -rf");
-    expect(result).toBe('spawn claude hetzner --name "foo; rm -rf"');
+    expect(result).toBe('jelma claude hetzner --name "foo; rm -rf"');
   });
 });
 

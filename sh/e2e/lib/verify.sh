@@ -347,7 +347,7 @@ run_input_test() {
 # Checks that apply to ALL agents:
 #   1. Remote connectivity (SSH or CLI exec)
 #   2. .spawnrc exists
-#   3. .spawnrc contains OPENROUTER_API_KEY
+#   3. .spawnrc contains NEOSANTARA_API_KEY
 # ---------------------------------------------------------------------------
 verify_common() {
   local app="$1"
@@ -372,12 +372,12 @@ verify_common() {
     failures=$((failures + 1))
   fi
 
-  # 3. .spawnrc has OPENROUTER_API_KEY
-  log_step "Checking OPENROUTER_API_KEY in .spawnrc..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  # 3. .spawnrc has NEOSANTARA_API_KEY
+  log_step "Checking NEOSANTARA_API_KEY in .spawnrc..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -412,11 +412,11 @@ verify_claude() {
   fi
 
   # Env check
-  log_step "Checking claude env (openrouter base url)..."
-  if cloud_exec "${app}" "grep -q openrouter.ai ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "openrouter.ai configured in .spawnrc"
+  log_step "Checking claude env (neosantara base url)..."
+  if cloud_exec "${app}" "grep -q app.neosantara.xyz ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "app.neosantara.xyz configured in .spawnrc"
   else
-    log_err "openrouter.ai not found in .spawnrc"
+    log_err "app.neosantara.xyz not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -553,11 +553,11 @@ verify_codex() {
   fi
 
   # Env check
-  log_step "Checking codex env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  log_step "Checking codex env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -578,11 +578,11 @@ verify_opencode() {
   fi
 
   # Env check
-  log_step "Checking opencode env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  log_step "Checking opencode env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -611,12 +611,12 @@ verify_kilocode() {
     failures=$((failures + 1))
   fi
 
-  # Env check: provider is openrouter
-  log_step "Checking kilocode uses openrouter..."
-  if cloud_exec "${app}" "grep KILO_PROVIDER_TYPE ~/.spawnrc | grep -q openrouter" >/dev/null 2>&1; then
-    log_ok "KILO_PROVIDER_TYPE set to openrouter"
+  # Env check: provider is neosantara
+  log_step "Checking kilocode uses neosantara..."
+  if cloud_exec "${app}" "grep KILO_PROVIDER_TYPE ~/.spawnrc | grep -q neosantara" >/dev/null 2>&1; then
+    log_ok "KILO_PROVIDER_TYPE set to neosantara"
   else
-    log_err "KILO_PROVIDER_TYPE not set to openrouter"
+    log_err "KILO_PROVIDER_TYPE not set to neosantara"
     failures=$((failures + 1))
   fi
 
@@ -636,21 +636,21 @@ verify_hermes() {
     failures=$((failures + 1))
   fi
 
-  # Env check: OPENROUTER_API_KEY
-  log_step "Checking hermes env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  # Env check: NEOSANTARA_API_KEY
+  log_step "Checking hermes env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
-  # Env check: OPENAI_BASE_URL points to openrouter
+  # Env check: OPENAI_BASE_URL points to neosantara
   log_step "Checking hermes env (OPENAI_BASE_URL)..."
-  if cloud_exec "${app}" "grep OPENAI_BASE_URL ~/.spawnrc | grep -q openrouter" >/dev/null 2>&1; then
-    log_ok "OPENAI_BASE_URL set to openrouter"
+  if cloud_exec "${app}" "grep OPENAI_BASE_URL ~/.spawnrc | grep -q neosantara" >/dev/null 2>&1; then
+    log_ok "OPENAI_BASE_URL set to neosantara"
   else
-    log_err "OPENAI_BASE_URL not set to openrouter in .spawnrc"
+    log_err "OPENAI_BASE_URL not set to neosantara in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -671,21 +671,21 @@ verify_junie() {
     failures=$((failures + 1))
   fi
 
-  # Env check: JUNIE_OPENROUTER_API_KEY
-  log_step "Checking junie env (JUNIE_OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q JUNIE_OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "JUNIE_OPENROUTER_API_KEY present in .spawnrc"
+  # Env check: NEOSANTARA_API_KEY
+  log_step "Checking junie env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "JUNIE_OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
-  # Env check: OPENROUTER_API_KEY
-  log_step "Checking junie env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  # Env check: NEOSANTARA_API_KEY
+  log_step "Checking junie env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -714,12 +714,12 @@ verify_cursor() {
     failures=$((failures + 1))
   fi
 
-  # Env check: OPENROUTER_API_KEY
-  log_step "Checking cursor env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  # Env check: NEOSANTARA_API_KEY
+  log_step "Checking cursor env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 
@@ -739,12 +739,12 @@ verify_pi() {
     failures=$((failures + 1))
   fi
 
-  # Env check: OPENROUTER_API_KEY
-  log_step "Checking pi env (OPENROUTER_API_KEY)..."
-  if cloud_exec "${app}" "grep -q OPENROUTER_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
-    log_ok "OPENROUTER_API_KEY present in .spawnrc"
+  # Env check: NEOSANTARA_API_KEY
+  log_step "Checking pi env (NEOSANTARA_API_KEY)..."
+  if cloud_exec "${app}" "grep -q NEOSANTARA_API_KEY ~/.spawnrc" >/dev/null 2>&1; then
+    log_ok "NEOSANTARA_API_KEY present in .spawnrc"
   else
-    log_err "OPENROUTER_API_KEY not found in .spawnrc"
+    log_err "NEOSANTARA_API_KEY not found in .spawnrc"
     failures=$((failures + 1))
   fi
 

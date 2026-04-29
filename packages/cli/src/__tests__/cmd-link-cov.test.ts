@@ -11,7 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch } from "@neosantara/jelma-shared";
 import { mockClackPrompts } from "./test-helpers";
 
 // ── Clack prompts mock ──────────────────────────────────────────────────────

@@ -187,7 +187,7 @@ describe("createCloudAgents", () => {
       [
         "openclaw",
         [
-          "OPENROUTER_API_KEY",
+          "NEOSANTARA_API_KEY",
           "ANTHROPIC_BASE_URL",
         ],
       ],
@@ -201,13 +201,13 @@ describe("createCloudAgents", () => {
       [
         "kilocode",
         [
-          "KILO_PROVIDER_TYPE=openrouter",
+          "KILO_PROVIDER_TYPE=neosantara",
         ],
       ],
       [
         "opencode",
         [
-          "OPENROUTER_API_KEY",
+          "NEOSANTARA_API_KEY",
         ],
       ],
     ];
@@ -250,7 +250,7 @@ describe("createCloudAgents", () => {
   });
 
   it("openclaw agent configure sets up config", async () => {
-    await result.agents.openclaw.configure?.("sk-or-v1-test", "openrouter/auto", new Set());
+    await result.agents.openclaw.configure?.("sk-or-v1-test", "neosantara/auto", new Set());
     // Should have called uploadFile for the config
     expect(runner.uploadFile).toHaveBeenCalled();
   });
@@ -260,7 +260,7 @@ describe("createCloudAgents", () => {
     process.env.TELEGRAM_BOT_TOKEN = token;
     await result.agents.openclaw.configure?.(
       "sk-or-v1-test",
-      "openrouter/auto",
+      "neosantara/auto",
       new Set([
         "telegram",
       ]),

@@ -1,10 +1,10 @@
 // shared/telemetry.ts — PostHog telemetry for errors, warnings, crashes, and
-// low-volume product events (funnel steps, spawn lifecycle).
+// low-volume product events (funnel steps, jelma lifecycle).
 // Default on. Disable with SPAWN_TELEMETRY=0.
 // Never sends command args, file paths, or user prompt content.
 // Events are sent immediately — no batching, no lost events on process.exit().
 
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { getInstallId } from "./install-id.js";
 import { asyncTryCatch } from "./result.js";
 
@@ -136,7 +136,7 @@ export function initTelemetry(version: string): void {
   // Persistent user ID — same across all runs (shared with feature flags)
   _userId = getInstallId();
 
-  // Session ID — shared between parent and child processes within one spawn run
+  // Session ID — shared between parent and child processes within one jelma run
   _sessionId = process.env.SPAWN_TELEMETRY_SESSION || crypto.randomUUID();
   process.env.SPAWN_TELEMETRY_SESSION = _sessionId;
 

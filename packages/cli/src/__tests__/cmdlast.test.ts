@@ -3,7 +3,7 @@ import type { SpawnRecord } from "../history";
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch } from "@neosantara/jelma-shared";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
 /**
@@ -98,14 +98,14 @@ describe("cmdLast", () => {
   // ── Empty history ───────────────────────────────────────────────────────────
 
   describe("empty history (no records)", () => {
-    it("should show 'No spawn history found' when no history file exists", async () => {
+    it("should show 'No jelma history found' when no history file exists", async () => {
       await cmdLast();
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawn history found");
+      expect(info).toContain("No jelma history found");
     });
 
-    it("should suggest 'spawn <agent> <cloud>' for first spawn", async () => {
+    it("should suggest 'jelma <agent> <cloud>' for first spawn", async () => {
       await cmdLast();
 
       const info = logInfoOutput();
@@ -120,7 +120,7 @@ describe("cmdLast", () => {
       await cmdLast();
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawn history found");
+      expect(info).toContain("No jelma history found");
     });
 
     it("should handle history file with non-array JSON", async () => {
@@ -134,7 +134,7 @@ describe("cmdLast", () => {
       await cmdLast();
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawn history found");
+      expect(info).toContain("No jelma history found");
     });
   });
 
@@ -275,7 +275,7 @@ describe("cmdLast", () => {
   // ── Helper function tests (buildRecordLabel and buildRecordSubtitle) ────────
 
   describe("buildRecordLabel helper", () => {
-    it("should return spawn name when present", () => {
+    it("should return jelma name when present", () => {
       const record: SpawnRecord = {
         agent: "claude",
         cloud: "sprite",

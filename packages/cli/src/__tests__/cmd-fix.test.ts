@@ -1,5 +1,5 @@
 /**
- * cmd-fix.test.ts — Tests for the `spawn fix` command.
+ * cmd-fix.test.ts — Tests for the `jelma fix` command.
  *
  * Uses DI (options.makeRunner) instead of mock.module for SSH execution
  * to avoid process-global mock pollution (pattern from delete-spinner.test.ts).
@@ -81,8 +81,8 @@ describe("fixSpawn", () => {
   let savedApiKey: string | undefined;
 
   beforeEach(() => {
-    savedApiKey = process.env.OPENROUTER_API_KEY;
-    process.env.OPENROUTER_API_KEY = "sk-or-test-fix-key";
+    savedApiKey = process.env.NEOSANTARA_API_KEY;
+    process.env.NEOSANTARA_API_KEY = "sk-or-test-fix-key";
     clack.logError.mockReset();
     clack.logSuccess.mockReset();
     clack.logInfo.mockReset();
@@ -91,9 +91,9 @@ describe("fixSpawn", () => {
 
   afterEach(() => {
     if (savedApiKey === undefined) {
-      delete process.env.OPENROUTER_API_KEY;
+      delete process.env.NEOSANTARA_API_KEY;
     } else {
-      process.env.OPENROUTER_API_KEY = savedApiKey;
+      process.env.NEOSANTARA_API_KEY = savedApiKey;
     }
   });
 
@@ -249,8 +249,8 @@ describe("cmdFix", () => {
     });
     savedSpawnHome = process.env.SPAWN_HOME;
     process.env.SPAWN_HOME = testDir;
-    savedApiKey = process.env.OPENROUTER_API_KEY;
-    process.env.OPENROUTER_API_KEY = "sk-or-test-fix-key";
+    savedApiKey = process.env.NEOSANTARA_API_KEY;
+    process.env.NEOSANTARA_API_KEY = "sk-or-test-fix-key";
     clack.logError.mockReset();
     clack.logSuccess.mockReset();
     clack.logInfo.mockReset();
@@ -262,9 +262,9 @@ describe("cmdFix", () => {
   afterEach(() => {
     process.env.SPAWN_HOME = savedSpawnHome;
     if (savedApiKey === undefined) {
-      delete process.env.OPENROUTER_API_KEY;
+      delete process.env.NEOSANTARA_API_KEY;
     } else {
-      process.env.OPENROUTER_API_KEY = savedApiKey;
+      process.env.NEOSANTARA_API_KEY = savedApiKey;
     }
     processExitSpy.mockRestore();
     if (existsSync(testDir)) {
@@ -281,7 +281,7 @@ describe("cmdFix", () => {
     expect(clack.logInfo).toHaveBeenCalledWith(expect.stringContaining("No active spawns"));
   });
 
-  it("fixes by spawn ID when passed as argument", async () => {
+  it("fixes by jelma ID when passed as argument", async () => {
     const mockState = makeMockRunner();
     const record = makeRecord({
       id: "my-spawn-id",
@@ -304,7 +304,7 @@ describe("cmdFix", () => {
     expect(mockState.runner.runServer).toHaveBeenCalled();
   });
 
-  it("fixes by spawn name", async () => {
+  it("fixes by jelma name", async () => {
     const mockState = makeMockRunner();
     const record = makeRecord({
       name: "my-named-spawn",
@@ -353,7 +353,7 @@ describe("cmdFix", () => {
     expect(mockState.runner.runServer).toHaveBeenCalled();
   });
 
-  it("shows error when spawn ID not found", async () => {
+  it("shows error when jelma ID not found", async () => {
     const record = makeRecord({
       id: "other-id",
     });

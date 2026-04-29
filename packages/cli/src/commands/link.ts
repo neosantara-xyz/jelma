@@ -1,7 +1,6 @@
-// commands/link.ts — spawn link: reconnect an existing cloud deployment to spawn
-//
+// commands/link.ts — jelma link: reconnect an existing cloud deployment to jelma //
 // Lets users re-register a running remote VM by IP address, so that
-// spawn list/delete/fix all work seamlessly on the re-connected server.
+// jelma list/delete/fix all work seamlessly on the re-connected server.
 
 import { spawnSync } from "node:child_process";
 import { connect } from "node:net";
@@ -181,10 +180,10 @@ export interface LinkOptions {
 // ─── Main command ─────────────────────────────────────────────────────────────
 
 /**
- * spawn link <ip> [--agent <agent>] [--cloud <cloud>] [--user <user>] [--name <name>]
+ * jelma link <ip> [--agent <agent>] [--cloud <cloud>] [--user <user>] [--name <name>]
  *
  * Re-registers an existing cloud deployment in spawn's local state so that
- * spawn list, spawn delete, spawn fix, etc. all work on it.
+ * jelma list, jelma delete, jelma fix, etc. all work on it.
  */
 export async function cmdLink(args: string[], options?: LinkOptions): Promise<void> {
   const tcpCheckFn = options?.tcpCheck ?? defaultTcpCheck;
@@ -218,9 +217,9 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
   const ip = parseIpArg(remaining);
 
   if (!ip) {
-    console.error(pc.red("Error: spawn link requires an IP address"));
-    console.error(`\nUsage: ${pc.cyan("spawn link <ip>")}`);
-    console.error(`       ${pc.cyan("spawn link 152.32.1.1 --agent claude --cloud hetzner")}`);
+    console.error(pc.red("Error: jelma link requires an IP address"));
+    console.error(`\nUsage: ${pc.cyan("jelma link <ip>")}`);
+    console.error(`       ${pc.cyan("jelma link 152.32.1.1 --agent claude --cloud hetzner")}`);
     process.exit(1);
   }
 
@@ -232,7 +231,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
     process.exit(1);
   }
 
-  p.intro(`${pc.bold("spawn link")} — reconnect an existing deployment`);
+  p.intro(`${pc.bold("jelma link")} — reconnect an existing deployment`);
 
   // ── Determine SSH user ─────────────────────────────────────────────────────
   let sshUser = userFlag ?? "root";
@@ -310,7 +309,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
   if (!detectedAgent) {
     if (!isInteractiveTTY()) {
       p.log.error("Could not auto-detect agent. Use --agent <agent> to specify it.");
-      p.log.info(`Example: ${pc.cyan(`spawn link ${ip} --agent claude`)}`);
+      p.log.info(`Example: ${pc.cyan(`jelma link ${ip} --agent claude`)}`);
       if (manifest) {
         const agents = agentKeys(manifest);
         p.log.info(`Available agents: ${agents.join(", ")}`);
@@ -349,7 +348,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
   if (!detectedCloud) {
     if (!isInteractiveTTY()) {
       p.log.error("Could not auto-detect cloud provider. Use --cloud <cloud> to specify it.");
-      p.log.info(`Example: ${pc.cyan(`spawn link ${ip} --cloud hetzner`)}`);
+      p.log.info(`Example: ${pc.cyan(`jelma link ${ip} --cloud hetzner`)}`);
       if (manifest) {
         const clouds = cloudKeys(manifest).filter((c) => c !== "local");
         p.log.info(`Available clouds: ${clouds.join(", ")}`);
@@ -430,7 +429,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
     process.exit(1);
   }
 
-  p.log.success(`Deployment linked! Run ${pc.cyan("spawn list")} to see it.`);
+  p.log.success(`Deployment linked! Run ${pc.cyan("jelma list")} to see it.`);
 
   // ── Offer to connect immediately ───────────────────────────────────────────
   if (isInteractiveTTY()) {
@@ -455,5 +454,5 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
     }
   }
 
-  p.outro(`Linked as ${spawnName}. Run ${pc.cyan("spawn list")} to manage it.`);
+  p.outro(`Linked as ${spawnName}. Run ${pc.cyan("jelma list")} to manage it.`);
 }

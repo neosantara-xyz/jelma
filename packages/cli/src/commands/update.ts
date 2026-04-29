@@ -129,7 +129,7 @@ async function performUpdate(runUpdate: () => void = defaultRunUpdate): Promise<
   if (r.ok) {
     console.log();
     p.log.success("Updated successfully!");
-    p.log.info("Run spawn again to use the new version.");
+    p.log.info("Run jelma again to use the new version.");
   } else {
     p.log.error("Auto-update failed. Update manually:");
     console.log();

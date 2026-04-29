@@ -2,7 +2,7 @@
 
 import * as p from "@clack/prompts";
 import { handleBillingError } from "../shared/billing-guidance.js";
-import { getOrPromptApiKey, loadSavedOpenRouterKey, verifyOpenRouterApiKey } from "../shared/oauth.js";
+import { getOrPromptApiKey, loadSavedNeosantaraKey, verifyNeosantaraApiKey } from "../shared/oauth.js";
 import { logError, logInfo, logStep, openBrowser, prompt } from "../shared/ui.js";
 import { DIGITALOCEAN_BILLING_ADD_PAYMENT_URL, digitaloceanBilling } from "./billing.js";
 import {
@@ -23,7 +23,7 @@ export type ReadinessBlockerCode =
   | "email_unverified"
   | "payment_required"
   | "ssh_missing"
-  | "openrouter_missing"
+  | "neosantara_missing"
   | "droplet_limit";
 
 export interface ReadinessState {
@@ -37,7 +37,7 @@ const BLOCKER_ORDER: ReadinessBlockerCode[] = [
   "email_unverified",
   "payment_required",
   "ssh_missing",
-  "openrouter_missing",
+  "neosantara_missing",
   "droplet_limit",
 ];
 
@@ -48,20 +48,20 @@ export function sortBlockers(codes: ReadinessBlockerCode[]): ReadinessBlockerCod
   return uniq.sort((a, b) => BLOCKER_ORDER.indexOf(a) - BLOCKER_ORDER.indexOf(b));
 }
 
-async function hasValidOpenRouterKey(): Promise<boolean> {
-  const envKey = process.env.OPENROUTER_API_KEY;
-  if (envKey && (await verifyOpenRouterApiKey(envKey))) {
+async function hasValidNeosantaraKey(): Promise<boolean> {
+  const envKey = process.env.NEOSANTARA_API_KEY;
+  if (envKey && (await verifyNeosantaraApiKey(envKey))) {
     return true;
   }
-  const saved = loadSavedOpenRouterKey();
-  if (saved && (await verifyOpenRouterApiKey(saved))) {
+  const saved = loadSavedNeosantaraKey();
+  if (saved && (await verifyNeosantaraApiKey(saved))) {
     return true;
   }
   return false;
 }
 
 /**
- * Evaluate DigitalOcean + OpenRouter readiness using `GET /v2/account` only (no billing APIs).
+ * Evaluate DigitalOcean + Neosantara readiness using `GET /v2/account` only (no billing APIs).
  */
 export async function evaluateDigitalOceanReadiness(_agentName: string): Promise<ReadinessState> {
   void _agentName;
@@ -98,8 +98,8 @@ export async function evaluateDigitalOceanReadiness(_agentName: string): Promise
     blockers.push("ssh_missing");
   }
 
-  if (!(await hasValidOpenRouterKey())) {
-    blockers.push("openrouter_missing");
+  if (!(await hasValidNeosantaraKey())) {
+    blockers.push("neosantara_missing");
   }
 
   if (blockers.length === 0) {
@@ -145,8 +145,8 @@ async function resolveFirstBlocker(first: ReadinessBlockerCode, agentName: strin
       logInfo("SSH keys updated.");
       break;
     }
-    case "openrouter_missing": {
-      logStep("Connect OpenRouter to continue.");
+    case "neosantara_missing": {
+      logStep("Connect Neosantara to continue.");
       await getOrPromptApiKey(agentName, "digitalocean");
       break;
     }
@@ -155,7 +155,7 @@ async function resolveFirstBlocker(first: ReadinessBlockerCode, agentName: strin
 
 /**
  * Interactive loop until READY or process exit (non-interactive).
- * Ensures SSH keys are registered and OpenRouter key is available before returning.
+ * Ensures SSH keys are registered and Neosantara key is available before returning.
  */
 export async function runDigitalOceanReadinessGate(opts: { agentName: string }): Promise<void> {
   const { agentName } = opts;
@@ -215,10 +215,10 @@ export async function runDigitalOceanReadinessGate(opts: { agentName: string }):
   }
 
   await ensureSshKey();
-  if (!process.env.OPENROUTER_API_KEY) {
-    const saved = loadSavedOpenRouterKey();
-    if (saved && (await verifyOpenRouterApiKey(saved))) {
-      process.env.OPENROUTER_API_KEY = saved;
+  if (!process.env.NEOSANTARA_API_KEY) {
+    const saved = loadSavedNeosantaraKey();
+    if (saved && (await verifyNeosantaraApiKey(saved))) {
+      process.env.NEOSANTARA_API_KEY = saved;
     }
   }
   await getOrPromptApiKey(agentName, "digitalocean");

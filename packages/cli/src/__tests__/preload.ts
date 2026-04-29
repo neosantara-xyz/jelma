@@ -26,7 +26,7 @@
 import { mkdirSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
 import os, { tmpdir } from "node:os";
 import { join } from "node:path";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 
 // ── Stray test file cleanup ──────────────────────────────────────────────────
 //

@@ -7,7 +7,7 @@
 import type { SpawnRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
-import { isNumber, isString } from "@openrouter/spawn-shared";
+import { isNumber, isString } from "@neosantara/jelma-shared";
 // Import the real modules so we can spy on their exports without
 // polluting the global module registry (mock.module contaminates
 // other test files when running under --coverage).
@@ -132,7 +132,7 @@ describe("lifecycle-telemetry", () => {
       expect(ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
     });
 
-    it("emits spawn_connected event with spawn metadata", () => {
+    it("emits spawn_connected event with jelma metadata", () => {
       const record = makeRecord();
       trackSpawnConnected(record);
 

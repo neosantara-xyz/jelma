@@ -1,5 +1,5 @@
 /**
- * cmd-feedback.test.ts — Tests for the `spawn feedback` command.
+ * cmd-feedback.test.ts — Tests for the `jelma feedback` command.
  *
  * Verifies:
  * - Empty message exits with error
@@ -10,7 +10,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { createConsoleMocks, restoreMocks } from "./test-helpers";
 
 // ── Import module under test ──────────────────────────────────────────────────

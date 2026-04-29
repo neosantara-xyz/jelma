@@ -10,7 +10,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 
 function clearUpdateBackoff() {
   tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-failed")));

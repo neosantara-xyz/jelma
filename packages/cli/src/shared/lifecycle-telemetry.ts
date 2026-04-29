@@ -33,7 +33,7 @@ function readConnectCount(record: SpawnRecord): number {
   return Number.isFinite(n) && n >= 0 ? n : 0;
 }
 
-/** Compute lifetime hours between spawn creation and now (or delete time). */
+/** Compute lifetime hours between jelma creation and now (or delete time). */
 function computeLifetimeHours(record: SpawnRecord, endIso?: string): number {
   const start = Date.parse(record.timestamp);
   const end = endIso ? Date.parse(endIso) : Date.now();
@@ -80,7 +80,7 @@ export function trackSpawnConnected(record: SpawnRecord): number {
  * Record a user deleting a spawn.
  *
  * Emits a spawn_deleted event with the total lifetime (hours) and final
- * login count, so we can build a "typical spawn lives N hours, N logins"
+ * login count, so we can build a "typical jelma lives N hours, N logins"
  * picture in aggregate. Call AFTER the cloud destroy succeeds — failed
  * deletes should not fire this event.
  */

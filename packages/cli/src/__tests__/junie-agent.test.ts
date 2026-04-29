@@ -3,7 +3,7 @@
  *
  * Verifies that:
  * - The junie agent is registered in createCloudAgents
- * - envVars returns JUNIE_OPENROUTER_API_KEY and OPENROUTER_API_KEY
+ * - envVars returns NEOSANTARA_API_KEY and NEOSANTARA_API_KEY
  * - launchCmd includes 'junie'
  * - cloudInitTier is 'node' (npm-installed agent)
  */
@@ -57,18 +57,18 @@ describe("Junie agent config", () => {
     expect(agent.name).toBe("Junie");
   });
 
-  it("envVars sets JUNIE_OPENROUTER_API_KEY", () => {
+  it("envVars sets NEOSANTARA_API_KEY", () => {
     const { agents } = createCloudAgents(createMockRunner());
     const vars = agents["junie"].envVars("sk-or-v1-test-key");
-    const junieKey = vars.find((v) => v.startsWith("JUNIE_OPENROUTER_API_KEY="));
-    expect(junieKey).toBe("JUNIE_OPENROUTER_API_KEY=sk-or-v1-test-key");
+    const junieKey = vars.find((v) => v.startsWith("NEOSANTARA_API_KEY="));
+    expect(junieKey).toBe("NEOSANTARA_API_KEY=sk-or-v1-test-key");
   });
 
-  it("envVars sets OPENROUTER_API_KEY", () => {
+  it("envVars sets NEOSANTARA_API_KEY", () => {
     const { agents } = createCloudAgents(createMockRunner());
     const vars = agents["junie"].envVars("sk-or-v1-test-key");
-    const orKey = vars.find((v) => v.startsWith("OPENROUTER_API_KEY="));
-    expect(orKey).toBe("OPENROUTER_API_KEY=sk-or-v1-test-key");
+    const orKey = vars.find((v) => v.startsWith("NEOSANTARA_API_KEY="));
+    expect(orKey).toBe("NEOSANTARA_API_KEY=sk-or-v1-test-key");
   });
 
   it("launchCmd includes junie", () => {

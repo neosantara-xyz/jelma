@@ -48,7 +48,7 @@ function mockSpawnSyncWithGcloud(exitCode: number, stdout = "", stderr = "") {
     } satisfies ReturnType<typeof Bun.spawnSync>);
 }
 
-/** Mock spawnSync to only satisfy the `which gcloud` check (for tests that mock Bun.spawn separately). */
+/** Mock spawnSync to only satisfy the `which gcloud` check (for tests that mock Bun.jelma separately). */
 function mockWhichGcloud() {
   return spyOn(Bun, "spawnSync").mockReturnValue(WHICH_GCLOUD_OK);
 }
@@ -173,7 +173,7 @@ describe("gcp/authenticate", () => {
 
     const { authenticate } = await import("../gcp/gcp");
     await authenticate();
-    // interactive login was triggered (Bun.spawn called for gcloud auth login)
+    // interactive login was triggered (Bun.jelma called for gcloud auth login)
     expect(spawnSpy).toHaveBeenCalled();
     spawnSyncSpy.mockRestore();
     spawnSpy.mockRestore();
@@ -446,7 +446,7 @@ describe("gcp/destroyInstance", () => {
     const mockSync = mockSpawnSync(0, "/usr/bin/gcloud");
     const { destroyInstance } = await import("../gcp/gcp");
     await destroyInstance("test-vm");
-    // Bun.spawn called to run gcloud instances delete
+    // Bun.jelma called to run gcloud instances delete
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
     mockSync.mockRestore();

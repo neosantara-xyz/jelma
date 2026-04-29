@@ -181,8 +181,8 @@ describe("Display Name Suggestions in Validation Errors", () => {
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       // No "Did you mean" suggestion
       expect(infoCalls.some((msg: string) => msg.includes("Did you mean"))).toBe(false);
-      // But should still suggest "spawn agents"
-      expect(infoCalls.some((msg: string) => msg.includes("spawn agents"))).toBe(true);
+      // But should still suggest "jelma agents"
+      expect(infoCalls.some((msg: string) => msg.includes("jelma agents"))).toBe(true);
     });
 
     it("should prefer key-based suggestion over display name suggestion", async () => {
@@ -231,7 +231,7 @@ describe("Display Name Suggestions in Validation Errors", () => {
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes("Did you mean"))).toBe(false);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn clouds"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma clouds"))).toBe(true);
     });
 
     it("should prefer key-based suggestion over display name suggestion", async () => {
@@ -259,11 +259,11 @@ describe("Display Name Suggestions in Validation Errors", () => {
       expect(infoCalls.some((msg: string) => msg.includes("cc") && msg.includes("Claude Code"))).toBe(true);
     });
 
-    it("should show spawn agents hint for completely unknown agent", async () => {
+    it("should show jelma agents hint for completely unknown agent", async () => {
       await expect(cmdAgentInfo("totallyunknown")).rejects.toThrow("process.exit");
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn agents"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma agents"))).toBe(true);
       expect(infoCalls.some((msg: string) => msg.includes("Did you mean"))).toBe(false);
     });
   });
@@ -280,11 +280,11 @@ describe("Display Name Suggestions in Validation Errors", () => {
       expect(infoCalls.some((msg: string) => msg.includes("sp") && msg.includes("Sprite Cloud"))).toBe(true);
     });
 
-    it("should show spawn clouds hint for completely unknown cloud", async () => {
+    it("should show jelma clouds hint for completely unknown cloud", async () => {
       await expect(cmdCloudInfo("totallyunknown")).rejects.toThrow("process.exit");
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn clouds"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma clouds"))).toBe(true);
       expect(infoCalls.some((msg: string) => msg.includes("Did you mean"))).toBe(false);
     });
   });

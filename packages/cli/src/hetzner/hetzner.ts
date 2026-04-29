@@ -5,7 +5,7 @@ import type { CloudInitTier } from "../shared/agents.js";
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { getErrorMessage, isNumber, isString, toObjectArray, toRecord } from "@openrouter/spawn-shared";
+import { getErrorMessage, isNumber, isString, toObjectArray, toRecord } from "@neosantara/jelma-shared";
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
 import { parseJsonObj } from "../shared/parse.js";
@@ -936,9 +936,9 @@ export async function interactiveSession(cmd: string, ip?: string): Promise<numb
   logWarn(`  ${HETZNER_DASHBOARD_URL}`);
   logWarn("");
   logInfo("To delete from CLI:");
-  logInfo("  spawn delete");
+  logInfo("  jelma delete");
   logInfo("To reconnect:");
-  logInfo("  spawn last");
+  logInfo("  jelma last");
   logInfo(`  or: ssh root@${serverIp}`);
 
   return exitCode;

@@ -4,7 +4,7 @@
 
 import type { CloudOrchestrator } from "../shared/orchestrate.js";
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import pkg from "../../package.json" with { type: "json" };
 import { runOrchestration } from "../shared/orchestrate.js";
 import { initTelemetry } from "../shared/telemetry.js";
@@ -30,13 +30,13 @@ import { runDigitalOceanReadinessGate } from "./readiness.js";
 
 /** DO marketplace image slugs — hardcoded from vendor portal (approved 2026-03-13) */
 const MARKETPLACE_IMAGES: Record<string, string> = {
-  claude: "openrouter-spawnclaude",
-  codex: "openrouter-spawncodex",
-  openclaw: "openrouter-spawnopenclaw",
-  opencode: "openrouter-spawnopencode",
-  kilocode: "openrouter-spawnkilocode",
-  hermes: "openrouter-spawnhermes",
-  junie: "openrouter-spawnjunie",
+  claude: "neosantara-spawnclaude",
+  codex: "neosantara-spawncodex",
+  openclaw: "neosantara-spawnopenclaw",
+  opencode: "neosantara-spawnopencode",
+  kilocode: "neosantara-spawnkilocode",
+  hermes: "neosantara-spawnhermes",
+  junie: "neosantara-spawnjunie",
 };
 
 async function main() {

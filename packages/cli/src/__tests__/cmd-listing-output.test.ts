@@ -39,7 +39,7 @@ const smallManifest: Manifest = {
       install: "npm install -g claude",
       launch: "claude",
       env: {
-        ANTHROPIC_API_KEY: "$OPENROUTER_API_KEY",
+        ANTHROPIC_API_KEY: "$NEOSANTARA_API_KEY",
       },
     },
     codex: {
@@ -49,7 +49,7 @@ const smallManifest: Manifest = {
       install: "npm install -g codex",
       launch: "codex",
       env: {
-        OPENAI_API_KEY: "$OPENROUTER_API_KEY",
+        OPENAI_API_KEY: "$NEOSANTARA_API_KEY",
       },
     },
   },
@@ -209,7 +209,7 @@ describe("cmdMatrix output", () => {
       await cmdMatrix();
 
       const output = captureOutput(consoleMocks.log);
-      expect(output).toContain("spawn <agent> <cloud>");
+      expect(output).toContain("jelma <agent> <cloud>");
     });
   });
 
@@ -416,8 +416,8 @@ describe("cmdAgents output", () => {
       await cmdAgents();
 
       const output = captureOutput(consoleMocks.log);
-      expect(output).toContain("spawn <agent>");
-      expect(output).toContain("spawn <agent> <cloud>");
+      expect(output).toContain("jelma <agent>");
+      expect(output).toContain("jelma <agent> <cloud>");
     });
   });
 
@@ -561,8 +561,8 @@ describe("cmdClouds output", () => {
       await cmdClouds();
 
       const output = captureOutput(consoleMocks.log);
-      expect(output).toContain("spawn <cloud>");
-      expect(output).toContain("spawn <agent> <cloud>");
+      expect(output).toContain("jelma <cloud>");
+      expect(output).toContain("jelma <agent> <cloud>");
     });
   });
 

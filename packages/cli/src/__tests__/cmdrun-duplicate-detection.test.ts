@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
 /**
  * Tests for the --name duplicate detection feature (issue #1864).
  *
- * When `spawn <agent> <cloud> --name "foo"` is run and an active instance named
+ * When `jelma <agent> <cloud> --name "foo"` is run and an active instance named
  * "foo" already exists for that agent + cloud, cmdRun should route the user into
  * the existing-instance picker (handleRecordAction) rather than blindly
  * provisioning a new VM.
@@ -140,7 +140,7 @@ describe("cmdRun --name duplicate detection", () => {
     global.fetch = mockFetchOk();
     await loadManifest(true);
 
-    // Simulate `spawn claude sprite --name "alexclaw-do"`
+    // Simulate `jelma claude sprite --name "alexclaw-do"`
     process.env.SPAWN_NAME = "alexclaw-do";
     await cmdRun("claude", "sprite");
 

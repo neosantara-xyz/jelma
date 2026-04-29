@@ -125,21 +125,21 @@ describe("checkEntity message output", () => {
       checkEntity(manifest, "sprite", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn <agent> <cloud>"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma <agent> <cloud>"))).toBe(true);
     });
 
     it("should show list command hint for wrong-type agent check", () => {
       checkEntity(manifest, "sprite", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn agents"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma agents"))).toBe(true);
     });
 
     it("should show list command hint for wrong-type cloud check", () => {
       checkEntity(manifest, "claude", "cloud");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn clouds"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma clouds"))).toBe(true);
     });
   });
 
@@ -153,18 +153,18 @@ describe("checkEntity message output", () => {
       expect(info.some((m) => m.includes("Did you mean") && m.includes("claude"))).toBe(true);
     });
 
-    it("should show spawn command suggestion for same-kind match", () => {
+    it("should show jelma command suggestion for same-kind match", () => {
       checkEntity(manifest, "claud", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn claude") || m.includes("spawn claud"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma claude") || m.includes("jelma claud"))).toBe(true);
     });
 
     it("should show list command hint after same-kind match", () => {
       checkEntity(manifest, "claud", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn agents"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma agents"))).toBe(true);
     });
 
     it("should suggest 'Did you mean sprite?' for 'sprit' as cloud", () => {
@@ -178,7 +178,7 @@ describe("checkEntity message output", () => {
       checkEntity(manifest, "sprit", "cloud");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn clouds"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma clouds"))).toBe(true);
     });
 
     it("should include display name in suggestion", () => {
@@ -218,7 +218,7 @@ describe("checkEntity message output", () => {
       checkEntity(manifest, "htzner", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn <agent> <cloud>"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma <agent> <cloud>"))).toBe(true);
     });
 
     it("should say 'looks like agent X' for cloud typo matching agent", () => {
@@ -263,7 +263,7 @@ describe("checkEntity message output", () => {
       checkEntity(manifest, "kubernetes", "agent");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn agents"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma agents"))).toBe(true);
       expect(info.some((m) => m.includes("Did you mean"))).toBe(false);
       expect(info.some((m) => m.includes("looks like"))).toBe(false);
     });
@@ -272,7 +272,7 @@ describe("checkEntity message output", () => {
       checkEntity(manifest, "amazonaws", "cloud");
 
       const info = infoCalls();
-      expect(info.some((m) => m.includes("spawn clouds"))).toBe(true);
+      expect(info.some((m) => m.includes("jelma clouds"))).toBe(true);
       expect(info.some((m) => m.includes("Did you mean"))).toBe(false);
       expect(info.some((m) => m.includes("looks like"))).toBe(false);
     });

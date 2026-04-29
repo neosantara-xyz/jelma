@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as p from "@clack/prompts";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { parseJsonWith } from "../shared/parse.js";
 
@@ -126,7 +126,7 @@ describe("maybeShowStarPrompt", () => {
 
     expect(logMessageSpy).toHaveBeenCalledTimes(1);
     const msg = logMessageSpy.mock.calls[0]?.[0];
-    expect(isString(msg) && msg.includes("github.com/OpenRouterTeam/spawn")).toBe(true);
+    expect(isString(msg) && msg.includes("github.com/NeosantaraTeam/spawn")).toBe(true);
   });
 
   it("saves starPromptShownAt to preferences after showing", () => {

@@ -55,7 +55,7 @@ function cleanRcFile(rcPath: string): boolean {
       continue;
     }
 
-    // Legacy format: "# Added by spawn installer" followed by a PATH export
+    // Legacy format: "# Added by jelma installer" followed by a PATH export
     if (line === RC_MARKER_LEGACY) {
       const next = lines[i + 1] ?? "";
       if (next.includes(".local/bin") || next.includes(".bun/bin")) {
@@ -75,7 +75,7 @@ function cleanRcFile(rcPath: string): boolean {
   // Abort to avoid truncating the user's shell config.
   if (insideBlock) {
     p.log.warn(`Spawn block in ${rcPath} is missing end marker — skipping to avoid data loss.`);
-    p.log.warn(`Manually remove the line "${RC_MARKER_START}" and the spawn PATH export from ${rcPath}.`);
+    p.log.warn(`Manually remove the line "${RC_MARKER_START}" and the jelma PATH export from ${rcPath}.`);
     return false;
   }
 
@@ -85,7 +85,7 @@ function cleanRcFile(rcPath: string): boolean {
   return changed;
 }
 
-/** Check if a path is a symlink pointing to the spawn binary. */
+/** Check if a path is a symlink pointing to the jelma binary. */
 function isSpawnSymlink(linkPath: string, binaryPath: string): boolean {
   const result = tryCatch(() => fs.readlinkSync(linkPath));
   if (!result.ok) {
@@ -112,7 +112,7 @@ export async function cmdUninstall(): Promise<void> {
   const configDirExists = fs.existsSync(configDir);
 
   if (!binaryExists && !symlinkExists && !cacheExists && !spawnDirExists && !configDirExists) {
-    p.log.info("Nothing to uninstall — spawn does not appear to be installed.");
+    p.log.info("Nothing to uninstall — jelma does not appear to be installed.");
     p.outro("Done");
     return;
   }
@@ -126,7 +126,7 @@ export async function cmdUninstall(): Promise<void> {
   if (spawnDirExists) {
     options.push({
       value: "history",
-      label: "Remove spawn history",
+      label: "Remove jelma history",
       hint: spawnDir,
     });
   }
@@ -167,7 +167,7 @@ export async function cmdUninstall(): Promise<void> {
   if (cacheExists) {
     p.log.info(`  Cache:     ${cacheDir}`);
   }
-  p.log.info("  Shell RC:  spawn PATH entries");
+  p.log.info("  Shell RC:  jelma PATH entries");
   if (removeHistory) {
     p.log.info(`  History:   ${spawnDir}`);
   }
@@ -256,5 +256,5 @@ export async function cmdUninstall(): Promise<void> {
     p.log.info(`\nRestart your shell or run ${pc.cyan("exec $SHELL")} to apply PATH changes.`);
   }
 
-  p.outro("spawn has been uninstalled");
+  p.outro("jelma has been uninstalled");
 }

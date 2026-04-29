@@ -417,7 +417,7 @@ describe("commands/list.ts coverage", () => {
       await loadManifest(true);
       await cmdList("nonexistent-agent");
       const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn list") || msg.includes("No spawns"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma list") || msg.includes("No spawns"))).toBe(true);
     });
   });
 

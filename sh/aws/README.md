@@ -15,67 +15,67 @@ AWS Lightsail instances via AWS CLI. [AWS Lightsail](https://aws.amazon.com/ligh
 #### Claude Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/claude.sh)
 ```
 
 #### OpenClaw
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/openclaw.sh)
 ```
 
 #### Codex CLI
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/codex.sh)
 ```
 
 #### OpenCode
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/opencode.sh)
 ```
 
 #### Kilo Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/kilocode.sh)
 ```
 
 #### Hermes Agent
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/hermes.sh)
 ```
 
 #### Junie
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/junie.sh)
 ```
 
 #### Cursor CLI
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/cursor.sh)
 ```
 
 #### Pi
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/pi.sh)
 ```
 
 #### T3 Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/t3code.sh)
 ```
 
 ## Non-Interactive Mode
 
 ```bash
 LIGHTSAIL_SERVER_NAME=dev-mk1 \
-OPENROUTER_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://openrouter.ai/labs/spawn/aws/claude.sh)
+NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
+  bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/aws/claude.sh)
 ```

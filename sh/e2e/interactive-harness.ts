@@ -8,7 +8,7 @@
 //
 // Required env:
 //   ANTHROPIC_API_KEY   — For the AI driver (Claude Haiku)
-//   OPENROUTER_API_KEY  — Injected into spawn for the agent
+//   NEOSANTARA_API_KEY  — Injected into spawn for the agent
 //   Cloud credentials   — HCLOUD_TOKEN, DIGITALOCEAN_ACCESS_TOKEN, AWS_ACCESS_KEY_ID, etc.
 //
 // Outputs JSON to stdout: { success: boolean, duration: number, transcript: string, uxIssues?: UxIssue[] }
@@ -31,8 +31,8 @@ if (!apiKey) {
   process.exit(1);
 }
 
-if (!process.env.OPENROUTER_API_KEY) {
-  process.stderr.write("OPENROUTER_API_KEY is required for the spawned agent\n");
+if (!process.env.NEOSANTARA_API_KEY) {
+  process.stderr.write("NEOSANTARA_API_KEY is required for the spawned agent\n");
   process.exit(1);
 }
 
@@ -41,8 +41,8 @@ if (!process.env.OPENROUTER_API_KEY) {
 function buildCredentialHints(): string {
   const creds: string[] = [];
 
-  const orKey = process.env.OPENROUTER_API_KEY ?? "";
-  if (orKey) creds.push(`OpenRouter API key: ${orKey}`);
+  const orKey = process.env.NEOSANTARA_API_KEY ?? "";
+  if (orKey) creds.push(`Neosantara API key: ${orKey}`);
 
   const hetzner = process.env.HCLOUD_TOKEN ?? "";
   if (hetzner) creds.push(`Hetzner token: ${hetzner}`);
@@ -77,7 +77,7 @@ function stripAnsi(text: string): string {
 function redactSecrets(text: string): string {
   let result = text;
   const secrets = [
-    process.env.OPENROUTER_API_KEY,
+    process.env.NEOSANTARA_API_KEY,
     process.env.HCLOUD_TOKEN,
     process.env.DIGITALOCEAN_ACCESS_TOKEN,
     process.env.DIGITALOCEAN_API_TOKEN,
@@ -177,13 +177,13 @@ If nothing is genuinely bad, return: []
 No markdown, no explanation — just the JSON array.`;
 
 async function reviewTranscriptForUX(transcript: string): Promise<UxIssue[]> {
-  const orKey = process.env.OPENROUTER_API_KEY;
+  const orKey = process.env.NEOSANTARA_API_KEY;
   if (!orKey) return [];
 
   process.stderr.write("[harness] Reviewing transcript for UX issues...\n");
 
   try {
-    const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const resp = await fetch("https://api.neosantara.xyz/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

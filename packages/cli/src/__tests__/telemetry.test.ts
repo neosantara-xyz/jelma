@@ -11,7 +11,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 
 // ── Schemas for validating PostHog payloads ─────────────────────────────────
@@ -157,7 +157,7 @@ describe("telemetry", () => {
   }
 
   describe("scrubbing", () => {
-    it("redacts OpenRouter API keys from error messages", async () => {
+    it("redacts Neosantara API keys from error messages", async () => {
       const mod = await import("../shared/telemetry.js");
       mod.initTelemetry("0.0.0-test");
       await drainStaleEvents();

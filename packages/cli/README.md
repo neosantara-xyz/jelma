@@ -1,10 +1,10 @@
 # Spawn CLI
 
-The spawn CLI is a command-line tool for launching AI coding agents on cloud providers, pre-configured with OpenRouter.
+The jelma CLI is a command-line tool for launching AI coding agents on cloud providers, pre-configured with Neosantara.
 
 ## Overview
 
-The spawn CLI provides a unified interface to:
+The jelma CLI provides a unified interface to:
 - Launch any supported AI agent (Claude Code, Codex, etc.) on any supported cloud provider
 - Interactively browse available agents and clouds
 - View the agent × cloud compatibility matrix
@@ -57,13 +57,13 @@ The TypeScript CLI (`src/*.ts`) provides:
 ### Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OpenRouterTeam/spawn/main/sh/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NeosantaraTeam/jelma/main/sh/cli/install.sh | bash
 ```
 
 The installer will:
 1. Install `bun` if not already present
 2. Clone the CLI source
-3. Build and install the `spawn` binary to `~/.local/bin`
+3. Build and install the `jelma` binary to `~/.local/bin`
 
 ### Environment Variables
 
@@ -80,7 +80,7 @@ bun link
 Or build a standalone binary:
 
 ```bash
-bun run compile  # Creates ./spawn executable
+bun run compile  # Creates ./jelma executable
 ```
 
 ## Usage
@@ -88,46 +88,45 @@ bun run compile  # Creates ./spawn executable
 ### Interactive Mode
 
 ```bash
-spawn
-```
+jelma ```
 
 Launches an interactive picker to select an agent and cloud provider.
 
 ### Direct Launch
 
 ```bash
-spawn <agent> <cloud>
+jelma <agent> <cloud>
 ```
 
 Examples:
 ```bash
-spawn claude sprite    # Launch Claude Code on Sprite
-spawn codex hetzner    # Launch Codex CLI on Hetzner Cloud
+jelma claude sprite    # Launch Claude Code on Sprite
+jelma codex hetzner    # Launch Codex CLI on Hetzner Cloud
 ```
 
 ### Agent Information
 
 ```bash
-spawn <agent>
+jelma <agent>
 ```
 
 Show which cloud providers support the specified agent.
 
 Example:
 ```bash
-spawn claude
+jelma claude
 # Output:
 # Claude Code — AI coding agent from Anthropic
 #
 # Available clouds:
-#   Sprite          spawn claude sprite
-#   Hetzner Cloud   spawn claude hetzner
+#   Sprite          jelma claude sprite
+#   Hetzner Cloud   jelma claude hetzner
 ```
 
 ### List All Combinations
 
 ```bash
-spawn list
+jelma list
 ```
 
 Display the full agent × cloud compatibility matrix.
@@ -135,7 +134,7 @@ Display the full agent × cloud compatibility matrix.
 ### List Agents
 
 ```bash
-spawn agents
+jelma agents
 ```
 
 Show all available agents with descriptions.
@@ -143,7 +142,7 @@ Show all available agents with descriptions.
 ### List Cloud Providers
 
 ```bash
-spawn clouds
+jelma clouds
 ```
 
 Show all available cloud providers with descriptions.
@@ -151,7 +150,7 @@ Show all available cloud providers with descriptions.
 ### Update CLI
 
 ```bash
-spawn update
+jelma update
 ```
 
 Displays update instructions (re-run installer).
@@ -161,7 +160,7 @@ Displays update instructions (re-run installer).
 ### Version
 
 ```bash
-spawn version
+jelma version
 ```
 
 Display the current CLI version.
@@ -253,19 +252,19 @@ bun run dev claude sprite
 
 The CLI caches the manifest locally to reduce network requests:
 
-- **Cache location**: `$XDG_CACHE_HOME/spawn/manifest.json` (or `~/.cache/spawn/manifest.json`)
+- **Cache location**: `$XDG_CACHE_HOME/jelma/manifest.json` (or `~/.cache/jelma/manifest.json`)
 - **TTL**: 1 hour (3600 seconds)
 - **Offline fallback**: If fetch fails, uses stale cache if available
-- **Invalidation**: `spawn update` clears the cache
+- **Invalidation**: `jelma update` clears the cache
 
 ## Script Execution Flow
 
-When you run `spawn <agent> <cloud>`:
+When you run `jelma <agent> <cloud>`:
 
 1. **Load manifest**: Fetch from GitHub or use cached version
 2. **Validate combination**: Check that `matrix["<cloud>/<agent>"]` is `"implemented"`
-3. **Download script**: Fetch `https://openrouter.ai/labs/spawn/<cloud>/<agent>.sh`
-   - Fallback to GitHub raw URL if OpenRouter CDN fails
+3. **Download script**: Fetch `https://raw.githubusercontent.com/jelmaai/jelma/main/sh/<cloud>/<agent>.sh`
+   - Fallback to GitHub raw URL if Neosantara CDN fails
 4. **Execute**: Pipe script to `bash -c` with inherited stdio
 5. **Interactive handoff**: User interacts directly with the spawned agent
 

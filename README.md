@@ -1,6 +1,6 @@
-# Spawn
+# Jelma
 
-Launch any AI agent on any cloud with a single command. Coding agents, research agents, self-hosted AI tools — Spawn deploys them all. All models powered by [OpenRouter](https://openrouter.ai). (ALPHA software, use at your own risk!)
+Launch any AI agent on any cloud with a single command. Coding agents, research agents, self-hosted AI tools — Jelma deploys them all. All models powered by Neosantara. (ALPHA software, use at your own risk!)
 
 **9 agents. 7 clouds. 63 working combinations. Zero config.**
 
@@ -8,86 +8,86 @@ Launch any AI agent on any cloud with a single command. Coding agents, research 
 
 **macOS / Linux — and Windows users inside a WSL2 terminal (Ubuntu, Debian, etc.):**
 ```bash
-curl -fsSL https://openrouter.ai/labs/spawn/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash
 ```
 
 **Windows PowerShell (outside WSL):**
 ```powershell
-irm https://openrouter.ai/labs/spawn/cli/install.ps1 | iex
+irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
 ```
 
 ## Usage
 
 ```bash
-spawn                         # Interactive picker
-spawn <agent> <cloud>         # Launch directly
-spawn matrix                  # Show the full agent x cloud matrix
+jelma # Interactive picker
+jelma <agent> <cloud>         # Launch directly
+jelma matrix                  # Show the full agent x cloud matrix
 ```
 
 ### Examples
 
 ```bash
-spawn                                    # Interactive picker
-spawn claude sprite                      # Claude Code on Sprite
-spawn codex hetzner                      # Codex CLI on Hetzner
-spawn claude sprite --prompt "Fix bugs"  # Non-interactive with prompt
-spawn codex sprite -p "Add tests"        # Short form
-spawn claude                             # Show clouds available for Claude
-spawn delete                             # Delete a running server
-spawn delete -c hetzner                  # Delete a server on Hetzner
+jelma # Interactive picker
+jelma claude sprite                      # Claude Code on Sprite
+jelma codex hetzner                      # Codex CLI on Hetzner
+jelma claude sprite --prompt "Fix bugs"  # Non-interactive with prompt
+jelma codex sprite -p "Add tests"        # Short form
+jelma claude                             # Show clouds available for Claude
+jelma delete                             # Delete a running server
+jelma delete -c hetzner                  # Delete a server on Hetzner
 ```
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
-| `spawn` | Interactive agent + cloud picker |
-| `spawn <agent> <cloud>` | Launch agent on cloud directly |
-| `spawn <agent> <cloud> --dry-run` | Preview without provisioning |
-| `spawn <agent> <cloud> --zone <zone>` | Set zone/region for the cloud |
-| `spawn <agent> <cloud> --size <type>` | Set instance size/type for the cloud |
-| `spawn <agent> <cloud> --prompt "text"` | Non-interactive with prompt (or `-p`) |
-| `spawn <agent> <cloud> --prompt-file <file>` | Prompt from file (or `-f`) |
-| `spawn <agent> <cloud> --headless` | Provision and exit (no interactive session) |
-| `spawn <agent> <cloud> --output json` | Headless mode with structured JSON on stdout |
-| `spawn <agent> <cloud> --model <id>` | Set the model ID (overrides agent default) |
-| `spawn <agent> <cloud> --config <file>` | Load options from a JSON config file |
-| `spawn <agent> <cloud> --steps <list>` | Comma-separated setup steps to enable |
-| `spawn <agent> <cloud> --custom` | Show interactive size/region pickers |
-| `spawn <agent>` | Show available clouds for an agent |
-| `spawn <cloud>` | Show available agents for a cloud |
-| `spawn matrix` | Full agent x cloud matrix |
-| `spawn list` | Browse and rerun previous spawns |
-| `spawn list <filter>` | Filter history by agent or cloud name |
-| `spawn list -a <agent>` | Filter history by agent |
-| `spawn list -c <cloud>` | Filter history by cloud |
-| `spawn list --flat` | Show flat list (disable tree view) |
-| `spawn list --json` | Output history as JSON |
-| `spawn list --clear` | Clear all spawn history |
-| `spawn tree` | Show recursive spawn tree (parent/child relationships) |
-| `spawn tree --json` | Output spawn tree as JSON |
-| `spawn history export` | Dump history as JSON to stdout (used by parent VMs) |
-| `spawn fix` | Re-run agent setup on an existing VM (re-inject credentials, reinstall) |
-| `spawn fix <spawn-id>` | Fix a specific spawn by name or ID |
-| `spawn link <ip>` | Register an existing VM by IP |
-| `spawn link <ip> --agent <agent>` | Specify the agent running on the VM |
-| `spawn link <ip> --cloud <cloud>` | Specify the cloud provider |
-| `spawn last` | Instantly rerun the most recent spawn |
-| `spawn agents` | List all agents with descriptions |
-| `spawn clouds` | List all cloud providers |
-| `spawn feedback "message"` | Send feedback to the Spawn team |
-| `spawn uninstall` | Uninstall spawn CLI and optionally remove data |
-| `spawn update` | Check for CLI updates |
-| `spawn delete` | Interactively select and destroy a cloud server |
-| `spawn delete -a <agent>` | Filter servers to delete by agent |
-| `spawn delete -c <cloud>` | Filter servers to delete by cloud |
-| `spawn delete --name <name> --yes` | Headless delete by name (no prompts) |
-| `spawn status` | Show live state of cloud servers |
-| `spawn status -a <agent>` | Filter status by agent |
-| `spawn status -c <cloud>` | Filter status by cloud |
-| `spawn status --prune` | Remove gone servers from history |
-| `spawn help` | Show help message |
-| `spawn version` | Show version |
+| `jelma` | Interactive agent + cloud picker |
+| `jelma <agent> <cloud>` | Launch agent on cloud directly |
+| `jelma <agent> <cloud> --dry-run` | Preview without provisioning |
+| `jelma <agent> <cloud> --zone <zone>` | Set zone/region for the cloud |
+| `jelma <agent> <cloud> --size <type>` | Set instance size/type for the cloud |
+| `jelma <agent> <cloud> --prompt "text"` | Non-interactive with prompt (or `-p`) |
+| `jelma <agent> <cloud> --prompt-file <file>` | Prompt from file (or `-f`) |
+| `jelma <agent> <cloud> --headless` | Provision and exit (no interactive session) |
+| `jelma <agent> <cloud> --output json` | Headless mode with structured JSON on stdout |
+| `jelma <agent> <cloud> --model <id>` | Set the model ID (overrides agent default) |
+| `jelma <agent> <cloud> --config <file>` | Load options from a JSON config file |
+| `jelma <agent> <cloud> --steps <list>` | Comma-separated setup steps to enable |
+| `jelma <agent> <cloud> --custom` | Show interactive size/region pickers |
+| `jelma <agent>` | Show available clouds for an agent |
+| `jelma <cloud>` | Show available agents for a cloud |
+| `jelma matrix` | Full agent x cloud matrix |
+| `jelma list` | Browse and rerun previous jelma instances |
+| `jelma list <filter>` | Filter history by agent or cloud name |
+| `jelma list -a <agent>` | Filter history by agent |
+| `jelma list -c <cloud>` | Filter history by cloud |
+| `jelma list --flat` | Show flat list (disable tree view) |
+| `jelma list --json` | Output history as JSON |
+| `jelma list --clear` | Clear all jelma history |
+| `jelma tree` | Show recursive jelma tree (parent/child relationships) |
+| `jelma tree --json` | Output jelma tree as JSON |
+| `jelma history export` | Dump history as JSON to stdout (used by parent VMs) |
+| `jelma fix` | Re-run agent setup on an existing VM (re-inject credentials, reinstall) |
+| `jelma fix <jelma-id>` | Fix a specific jelma by name or ID |
+| `jelma link <ip>` | Register an existing VM by IP |
+| `jelma link <ip> --agent <agent>` | Specify the agent running on the VM |
+| `jelma link <ip> --cloud <cloud>` | Specify the cloud provider |
+| `jelma last` | Instantly rerun the most recent jelma |
+| `jelma agents` | List all agents with descriptions |
+| `jelma clouds` | List all cloud providers |
+| `jelma feedback "message"` | Send feedback to the Jelma team |
+| `jelma uninstall` | Uninstall jelma CLI and optionally remove data |
+| `jelma update` | Check for CLI updates |
+| `jelma delete` | Interactively select and destroy a cloud server |
+| `jelma delete -a <agent>` | Filter servers to delete by agent |
+| `jelma delete -c <cloud>` | Filter servers to delete by cloud |
+| `jelma delete --name <name> --yes` | Headless delete by name (no prompts) |
+| `jelma status` | Show live state of cloud servers |
+| `jelma status -a <agent>` | Filter status by agent |
+| `jelma status -c <cloud>` | Filter status by cloud |
+| `jelma status --prune` | Remove gone servers from history |
+| `jelma help` | Show help message |
+| `jelma version` | Show version |
 
 #### Config File
 
@@ -106,7 +106,7 @@ The `--config` flag loads options from a JSON file. CLI flags override config va
 ```
 
 ```bash
-spawn codex gcp --config setup.json --headless --output json
+jelma codex gcp --config setup.json --headless --output json
 ```
 
 #### Setup Steps
@@ -114,8 +114,8 @@ spawn codex gcp --config setup.json --headless --output json
 Control which optional setup steps run with `--steps`:
 
 ```bash
-spawn openclaw gcp --steps github,browser     # Only GitHub + Chrome
-spawn claude gcp --steps ""                    # Skip all optional steps
+jelma openclaw gcp --steps github,browser     # Only GitHub + Chrome
+jelma claude gcp --steps ""                    # Skip all optional steps
 ```
 
 Available steps vary by agent:
@@ -123,7 +123,7 @@ Available steps vary by agent:
 | Step | Agents | Description |
 |------|--------|-------------|
 | `github` | All | GitHub CLI + git identity |
-| `reuse-api-key` | All | Reuse saved OpenRouter key |
+| `reuse-api-key` | All | Reuse saved Neosantara key |
 | `browser` | openclaw | Chrome browser (~400 MB) |
 | `telegram` | openclaw | Telegram bot (set `TELEGRAM_BOT_TOKEN` for non-interactive) |
 | `whatsapp` | openclaw | WhatsApp linking (interactive QR scan, skipped in headless) |
@@ -133,7 +133,7 @@ Available steps vary by agent:
 Use `--fast` for significantly faster deploys. Enables all speed optimizations:
 
 ```bash
-spawn claude hetzner --fast
+jelma claude hetzner --fast
 ```
 
 What `--fast` does:
@@ -147,7 +147,7 @@ What `--fast` does:
 Individual optimizations can be enabled separately with `--beta <feature>`. The flag is repeatable:
 
 ```bash
-spawn claude gcp --beta tarball --beta parallel
+jelma claude gcp --beta tarball --beta parallel
 ```
 
 | Feature | Description |
@@ -155,37 +155,37 @@ spawn claude gcp --beta tarball --beta parallel
 | `tarball` | Use pre-built tarball for agent install (faster, skips live install) |
 | `images` | Use pre-built cloud images/snapshots (faster boot) |
 | `parallel` | Parallelize server boot with setup prompts |
-| `recursive` | Install spawn CLI on VM so it can spawn child VMs |
+| `recursive` | Install jelma CLI on VM so it can jelma child VMs |
 | `sandbox` | Run local agents in a Docker container (sandboxed) |
 
 `--fast` enables `tarball`, `images`, and `parallel` (not `recursive` or `sandbox`).
 
-#### Recursive Spawn
+#### Recursive Jelma
 
 Use `--beta recursive` to let spawned VMs create their own child VMs:
 
 ```bash
-spawn claude hetzner --beta recursive
+jelma claude hetzner --beta recursive
 ```
 
 What this does:
-- **Installs spawn CLI** on the remote VM
-- **Delegates credentials** (cloud + OpenRouter) so child VMs can authenticate
+- **Installs jelma CLI** on the remote VM
+- **Delegates credentials** (cloud + Neosantara) so child VMs can authenticate
 - **Injects parent tracking** (`SPAWN_PARENT_ID`, `SPAWN_DEPTH`) into the VM environment
-- **Passes `--beta recursive`** to children so they can also spawn recursively
+- **Passes `--beta recursive`** to children so they can also jelma recursively
 
-View the spawn tree:
+View the jelma tree:
 ```bash
-spawn tree
-# spawn-abc  Claude Code / Hetzner  2m ago
-#   ├─ spawn-def  Codex CLI / Hetzner  1m ago
-#   └─ spawn-ghi  OpenClaw / Hetzner  30s ago
-#       └─ spawn-jkl  Claude Code / Hetzner  10s ago
+jelma tree
+# jelma-abc  Claude Code / Hetzner  2m ago
+#   ├─ jelma-def  Codex CLI / Hetzner  1m ago
+#   └─ jelma-ghi  OpenClaw / Hetzner  30s ago
+#       └─ jelma-jkl  Claude Code / Hetzner  10s ago
 ```
 
 Tear down an entire tree:
 ```bash
-spawn delete --cascade <id>    # Delete a VM and all its children
+jelma delete --cascade <id>    # Delete a VM and all its children
 ```
 
 #### Sandboxed Local
@@ -193,11 +193,11 @@ spawn delete --cascade <id>    # Delete a VM and all its children
 Use `--beta sandbox` to run local agents inside a Docker container instead of directly on your machine:
 
 ```bash
-spawn claude local --beta sandbox
+jelma claude local --beta sandbox
 ```
 
 What this does:
-- **Pulls the agent's Docker image** from `ghcr.io/openrouterteam/spawn-<agent>`
+- **Pulls the agent's Docker image** from `ghcr.io/jelmaai/jelma-<agent>`
 - **Runs the agent in a container** with filesystem, network, and process isolation
 - **Auto-installs Docker** if not present (OrbStack on macOS, docker.io on Linux)
 - **Cleans up the container** automatically when the session ends
@@ -205,8 +205,8 @@ What this does:
 In the interactive picker, `--beta sandbox` adds a "Local Machine (Sandboxed)" option alongside the regular "Local Machine":
 
 ```bash
-spawn --beta sandbox           # Interactive picker shows both local options
-spawn openclaw local --beta sandbox   # Direct launch, sandboxed
+jelma --beta sandbox           # Interactive picker shows both local options
+jelma openclaw local --beta sandbox   # Direct launch, sandboxed
 ```
 
 ### Without the CLI
@@ -214,7 +214,7 @@ spawn openclaw local --beta sandbox   # Direct launch, sandboxed
 Every combination works as a one-liner — no install required:
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/{cloud}/{agent}.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/{cloud}/{agent}.sh)
 ```
 
 ### Non-Interactive Mode
@@ -222,8 +222,8 @@ bash <(curl -fsSL https://openrouter.ai/labs/spawn/{cloud}/{agent}.sh)
 Skip prompts by providing environment variables:
 
 ```bash
-# OpenRouter API key (required for all agents)
-export OPENROUTER_API_KEY=sk-or-v1-xxxxx
+# Neosantara API key (required for all agents)
+export NEOSANTARA_API_KEY=sk-or-v1-xxxxx
 
 # Cloud-specific credentials (varies by provider)
 # Note: Sprite uses `sprite login` for authentication
@@ -231,16 +231,16 @@ export HCLOUD_TOKEN=...           # For Hetzner
 export DIGITALOCEAN_ACCESS_TOKEN=...  # For DigitalOcean
 
 # Run non-interactively
-spawn claude hetzner
+jelma claude hetzner
 ```
 
 You can also use inline environment variables:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-xxxxx spawn claude sprite
+NEOSANTARA_API_KEY=sk-or-v1-xxxxx jelma claude sprite
 ```
 
-Get your OpenRouter API key at: https://openrouter.ai/settings/keys
+Get your Neosantara API key at: https://app.neosantara.xyz/api-keys
 
 For cloud-specific auth, see each cloud's README in this repository.
 
@@ -248,9 +248,9 @@ For cloud-specific auth, see each cloud's README in this repository.
 
 ### Installation issues
 
-If spawn fails to install, try these steps:
+If jelma fails to install, try these steps:
 
-1. **Check bun version**: spawn requires bun >= 1.2.0
+1. **Check bun version**: jelma requires bun >= 1.2.0
    ```bash
    bun --version
    bun upgrade  # if needed
@@ -260,10 +260,10 @@ If spawn fails to install, try these steps:
    ```bash
    curl -fsSL https://bun.sh/install | bash
    source ~/.bashrc  # or ~/.zshrc for zsh
-   curl -fsSL https://openrouter.ai/labs/spawn/cli/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash
    ```
 
-3. **PATH issues**: If `spawn` command not found after install
+3. **PATH issues**: If `jelma` command not found after install
    ```bash
    # Add to your shell config (~/.bashrc or ~/.zshrc)
    export PATH="$HOME/.local/bin:$PATH"
@@ -273,24 +273,24 @@ If spawn fails to install, try these steps:
 
 1. **Use the PowerShell installer** — not the bash one:
    ```powershell
-   irm https://openrouter.ai/labs/spawn/cli/install.ps1 | iex
+   irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
    ```
    The `.ps1` extension is required. The default `install.sh` is bash and won't work in PowerShell.
 
 2. **Set credentials via environment variables** before launching:
    ```powershell
-   $env:OPENROUTER_API_KEY = "sk-or-v1-xxxxx"
+   $env:NEOSANTARA_API_KEY = "sk-or-v1-xxxxx"
    $env:DIGITALOCEAN_ACCESS_TOKEN = "dop_v1_xxxxx"  # For DigitalOcean
    $env:HCLOUD_TOKEN = "xxxxx"              # For Hetzner
-   spawn openclaw digitalocean
+   jelma openclaw digitalocean
    ```
 
 3. **Local build failures during auto-update** are normal on Windows — the CLI falls back to a pre-built binary automatically. You may see a brief build error followed by a successful update.
 
 4. **EISDIR or EEXIST errors on config files**: If you see errors about `digitalocean.json` being a directory, delete it:
    ```powershell
-   Remove-Item -Recurse -Force "$HOME\.config\spawn\digitalocean.json" -ErrorAction SilentlyContinue
-   spawn openclaw digitalocean
+   Remove-Item -Recurse -Force "$HOME\.config\jelma\digitalocean.json" -ErrorAction SilentlyContinue
+   jelma openclaw digitalocean
    ```
 
 ### Headless JSON mode — agent exits immediately
@@ -299,13 +299,13 @@ When using `--headless --output json` with Claude Code, you must also pass `--pr
 
 ```bash
 # WRONG — Claude exits immediately
-spawn claude gcp --headless --output json
+jelma claude gcp --headless --output json
 
 # RIGHT — provide a prompt
-spawn claude gcp --headless --output json --prompt "Fix all linter errors"
+jelma claude gcp --headless --output json --prompt "Fix all linter errors"
 ```
 
-Note: auto-update messages may appear before the JSON on older CLI versions. Run `spawn update` to get the fix.
+Note: auto-update messages may appear before the JSON on older CLI versions. Run `jelma update` to get the fix.
 
 ### Agent launch failures
 
@@ -315,17 +315,17 @@ If an agent fails to install or launch on a cloud:
    ```bash
    # Example for Hetzner
    export HCLOUD_TOKEN=your-token-here
-   spawn claude hetzner
+   jelma claude hetzner
    ```
 
 2. **Try a different cloud**: Some clouds may have temporary issues
    ```bash
-   spawn <agent>  # Interactive picker to choose another cloud
+   jelma <agent>  # Interactive picker to choose another cloud
    ```
 
-3. **Use --dry-run**: Preview what spawn will do before provisioning
+3. **Use --dry-run**: Preview what jelma will do before provisioning
    ```bash
-   spawn claude hetzner --dry-run
+   jelma claude hetzner --dry-run
    ```
 
 4. **Check cloud status**: Visit your cloud provider's status page
@@ -334,11 +334,11 @@ If an agent fails to install or launch on a cloud:
 
 ### Getting help
 
-- **View command history**: `spawn list` shows all previous launches
-- **Rerun last session**: `spawn last` or `spawn rerun`
-- **Check version**: `spawn version` shows CLI version and cache status
-- **Update spawn**: `spawn update` checks for the latest version
-- **Report bugs**: Open an issue at https://github.com/OpenRouterTeam/spawn/issues
+- **View command history**: `jelma list` shows all previous launches
+- **Rerun last session**: `jelma last` or `jelma rerun`
+- **Check version**: `jelma version` shows CLI version and cache status
+- **Update jelma**: `jelma update` checks for the latest version
+- **Report bugs**: Open an issue at https://github.com/jelmaai/jelma/issues
 
 ## Matrix
 
@@ -360,7 +360,7 @@ Each cell in the matrix is a self-contained bash script that:
 
 1. Provisions a server on the cloud provider
 2. Installs the agent
-3. Injects your [OpenRouter](https://openrouter.ai) API key so every agent uses the same billing
+3. Injects your Neosantara API key so every agent uses the same billing
 4. Drops you into an interactive session
 
 Scripts work standalone (`bash <(curl ...)`) or through the CLI.
@@ -368,9 +368,8 @@ Scripts work standalone (`bash <(curl ...)`) or through the CLI.
 ## Development
 
 ```bash
-git clone https://github.com/OpenRouterTeam/spawn.git
-cd spawn
-git config core.hooksPath .githooks
+git clone https://github.com/jelmaai/jelma.git
+cd jelma git config core.hooksPath .githooks
 ```
 
 ### Structure
@@ -392,7 +391,7 @@ manifest.json             # Source of truth for the matrix
 
 1. Add to `manifest.json`
 2. Implement on 1+ cloud by adapting an existing agent script
-3. Must support OpenRouter via env var injection
+3. Must support Neosantara via env var injection
 
 ## Contributing
 
@@ -403,10 +402,10 @@ The easiest way to contribute is by testing and reporting issues. You don't need
 Pick any agent + cloud combination from the matrix and try it out:
 
 ```bash
-spawn claude hetzner      # or any combination
+jelma claude hetzner      # or any combination
 ```
 
-If something breaks, hangs, or behaves unexpectedly, open an issue using the [bug report template](https://github.com/OpenRouterTeam/spawn/issues/new?template=bug_report.yml). Include:
+If something breaks, hangs, or behaves unexpectedly, open an issue using the [bug report template](https://github.com/jelmaai/jelma/issues/new?template=bug_report.yml). Include:
 
 - The exact command you ran
 - The cloud provider and agent
@@ -417,9 +416,9 @@ If something breaks, hangs, or behaves unexpectedly, open an issue using the [bu
 
 Want to see a specific cloud provider or agent supported? Use the dedicated templates:
 
-- [Request a cloud provider](https://github.com/OpenRouterTeam/spawn/issues/new?template=cloud_request.yml)
-- [Request an agent](https://github.com/OpenRouterTeam/spawn/issues/new?template=agent_request.yml)
-- [Request a CLI feature](https://github.com/OpenRouterTeam/spawn/issues/new?template=cli_feature_request.yml)
+- [Request a cloud provider](https://github.com/jelmaai/jelma/issues/new?template=cloud_request.yml)
+- [Request an agent](https://github.com/jelmaai/jelma/issues/new?template=agent_request.yml)
+- [Request a CLI feature](https://github.com/jelmaai/jelma/issues/new?template=cli_feature_request.yml)
 
 Requests with real-world use cases get prioritized.
 

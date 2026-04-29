@@ -8,7 +8,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { _resetCacheForTesting, loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -87,7 +87,7 @@ describe("commands/run.ts coverage", () => {
     it("shows environment variables section when agent has env", () => {
       showDryRunPreview(mockManifest, "claude", "sprite");
       const allCalls = consoleMocks.log.mock.calls.flat().map(String);
-      const hasEnvLine = allCalls.some((c) => c.includes("ANTHROPIC_API_KEY") || c.includes("OpenRouter"));
+      const hasEnvLine = allCalls.some((c) => c.includes("ANTHROPIC_API_KEY") || c.includes("Neosantara"));
       expect(hasEnvLine).toBe(true);
     });
   });

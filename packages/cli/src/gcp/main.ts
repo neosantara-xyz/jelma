@@ -4,7 +4,7 @@
 
 import type { CloudOrchestrator } from "../shared/orchestrate.js";
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import pkg from "../../package.json" with { type: "json" };
 import { shouldSkipCloudInit } from "../shared/cloud-init.js";
 import { DOCKER_CONTAINER_NAME, DOCKER_REGISTRY, makeDockerRunner, runOrchestration } from "../shared/orchestrate.js";

@@ -140,7 +140,7 @@ function renderMatrixFooter(manifest: Manifest, agents: string[], clouds: string
   console.log(pc.green(`${impl}/${total} combinations implemented`));
   console.log(
     pc.dim(
-      `Launch: ${pc.cyan("spawn <agent> <cloud>")}  |  Details: ${pc.cyan("spawn <agent>")} or ${pc.cyan("spawn <cloud>")}`,
+      `Launch: ${pc.cyan("jelma <agent> <cloud>")}  |  Details: ${pc.cyan("jelma <agent>")} or ${pc.cyan("jelma <cloud>")}`,
     ),
   );
   console.log();
@@ -214,7 +214,7 @@ export async function cmdAgents(): Promise<void> {
     console.log(pc.dim(`  ${pc.green("ready")} = credentials detected for at least one cloud`));
   }
   console.log(
-    pc.dim(`  Run ${pc.cyan("spawn <agent>")} for details, or ${pc.cyan("spawn <agent> <cloud>")} to launch.`),
+    pc.dim(`  Run ${pc.cyan("jelma <agent>")} for details, or ${pc.cyan("jelma <agent> <cloud>")} to launch.`),
   );
   console.log();
 }
@@ -260,12 +260,12 @@ export async function cmdClouds(): Promise<void> {
     console.log(pc.dim(`  ${pc.green("ready")} = credentials detected  ${pc.yellow("needs")} = credentials not set`));
   } else {
     console.log(
-      pc.dim(`  ${pc.yellow("needs")} = credentials not set (run ${pc.cyan("spawn <cloud>")} for setup instructions)`),
+      pc.dim(`  ${pc.yellow("needs")} = credentials not set (run ${pc.cyan("jelma <cloud>")} for setup instructions)`),
     );
   }
   console.log(
     pc.dim(
-      `  Run ${pc.cyan("spawn <cloud>")} for setup instructions, or ${pc.cyan("spawn <agent> <cloud>")} to launch.`,
+      `  Run ${pc.cyan("jelma <cloud>")} for setup instructions, or ${pc.cyan("jelma <agent> <cloud>")} to launch.`,
     ),
   );
   console.log();
@@ -274,7 +274,7 @@ export async function cmdClouds(): Promise<void> {
 // ── Agent Info ───────────────────────────────────────────────────────────────
 
 function buildCloudCommandHint(agentKey: string, cloudKey: string, manifest: Manifest): string {
-  const hint = `spawn ${agentKey} ${cloudKey}`;
+  const hint = `jelma ${agentKey} ${cloudKey}`;
   return hasCloudCredentials(manifest.clouds[cloudKey].auth) ? `${hint}  ${pc.green("(credentials detected)")}` : hint;
 }
 
@@ -334,7 +334,7 @@ export async function cmdAgentInfo(agent: string, preloadedManifest?: Manifest):
       auth: cloudDef.auth,
       authVars: parseAuthEnvVars(cloudDef.auth),
       cloudUrl: cloudDef.url,
-      spawnCmd: `spawn ${agentKey} ${exampleCloud}`,
+      spawnCmd: `jelma ${agentKey} ${exampleCloud}`,
     });
   }
 
@@ -351,7 +351,7 @@ function printAgentList(manifest: Manifest, implAgents: string[], missingAgents:
     for (const agent of implAgents) {
       const a = manifest.agents[agent];
       console.log(
-        `  ${pc.green(agent.padEnd(NAME_COLUMN_WIDTH))} ${a.name.padEnd(NAME_COLUMN_WIDTH)} ${pc.dim("spawn " + agent + " " + cloudKey)}`,
+        `  ${pc.green(agent.padEnd(NAME_COLUMN_WIDTH))} ${a.name.padEnd(NAME_COLUMN_WIDTH)} ${pc.dim("jelma " + agent + " " + cloudKey)}`,
       );
     }
   }
@@ -385,7 +385,7 @@ export async function cmdCloudInfo(cloud: string, preloadedManifest?: Manifest):
     auth: c.auth,
     authVars,
     cloudUrl: c.url,
-    spawnCmd: exampleAgent ? `spawn ${exampleAgent} ${cloudKey}` : undefined,
+    spawnCmd: exampleAgent ? `jelma ${exampleAgent} ${cloudKey}` : undefined,
   });
 
   const allAgents = agentKeys(manifest);

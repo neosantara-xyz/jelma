@@ -1,5 +1,5 @@
 // shared/shell.ts — Platform-aware shell execution utilities
-// Enables spawn CLI to work natively on Windows (PowerShell) without requiring bash.
+// Enables jelma CLI to work natively on Windows (PowerShell) without requiring bash.
 
 /**
  * Check if the current platform is Windows.

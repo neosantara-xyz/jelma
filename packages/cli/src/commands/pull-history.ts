@@ -1,4 +1,4 @@
-// commands/pull-history.ts — `spawn pull-history`: recursively pull child spawn history
+// commands/pull-history.ts — `jelma pull-history`: recursively pull child jelma history
 // Called automatically by the parent after a session ends, or manually.
 // SSHes into each active child, tells it to pull from ITS children first,
 // then downloads its history.json and merges into local history.
@@ -73,7 +73,7 @@ export function parseAndMergeChildHistory(json: string, parentSpawnId: string): 
 /**
  * Pull history from all active child VMs recursively.
  * For each active child:
- *   1. SSH in, run `spawn pull-history` (recurse into grandchildren)
+ *   1. SSH in, run `jelma pull-history` (recurse into grandchildren)
  *   2. Download the child's history.json
  *   3. Merge into local history with parent_id links
  */
@@ -130,7 +130,7 @@ async function pullFromChild(ip: string, user: string, parentSpawnId: string, ss
     const recurseProc = Bun.spawnSync(
       [
         ...sshBase,
-        'export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"; spawn pull-history 2>/dev/null || true',
+        'export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"; jelma pull-history 2>/dev/null || true',
       ],
       {
         stdio: [

@@ -6,7 +6,7 @@ import type { Result } from "./ui.js";
 
 import { unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import { setupCursorProxy, startCursorProxy } from "./cursor-proxy.js";
 import { getTmpDir } from "./paths.js";
 import { asyncTryCatch, asyncTryCatchIf, isOperationalError, tryCatchIf } from "./result.js";
@@ -159,7 +159,7 @@ async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string): Promi
   "editor": "vim",
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
-    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+    "ANTHROPIC_BASE_URL": "https://api.neosantara.xyz/anthropic",
     "ANTHROPIC_AUTH_TOKEN": ${escapedKey}
   },
   "permissions": {
@@ -265,7 +265,8 @@ export async function offerGithubAuth(runner: CloudRunner, explicitlyRequested?:
     return;
   }
 
-  let ghCmd = "curl --proto '=https' -fsSL https://openrouter.ai/labs/spawn/shared/github-auth.sh | bash";
+  let ghCmd =
+    "curl --proto '=https' -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/shared/github-auth.sh | bash";
   // Upload the token to a remote temp file so it never appears in `ps auxe`
   // process listings. We use runner.uploadFile() (SCP) — the same proven
   // pattern as uploadConfigFile(). A heredoc won't work here because all
@@ -318,15 +319,15 @@ export async function offerGithubAuth(runner: CloudRunner, explicitlyRequested?:
 // ─── Codex CLI Config ────────────────────────────────────────────────────────
 
 async function setupCodexConfig(runner: CloudRunner): Promise<void> {
-  logStep("Configuring Codex CLI for OpenRouter...");
+  logStep("Configuring Codex CLI for Neosantara...");
   const config = `model = "openai/gpt-5.3-codex"
-model_provider = "openrouter"
+model_provider = "neosantara"
 sandbox_mode = "danger-full-access"
 
-[model_providers.openrouter]
-name = "OpenRouter"
-base_url = "https://openrouter.ai/api/v1"
-env_key = "OPENROUTER_API_KEY"
+[model_providers.neosantara]
+name = "Neosantara"
+base_url = "https://api.neosantara.xyz/v1"
+env_key = "NEOSANTARA_API_KEY"
 wire_api = "responses"
 `;
   await uploadConfigFile(runner, config, "$HOME/.codex/config.toml");
@@ -440,7 +441,7 @@ async function setupOpenclawConfig(
     "source ~/.spawnrc 2>/dev/null; " +
     "export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; " +
     "openclaw onboard --non-interactive" +
-    ` --openrouter-api-key ${shellQuote(apiKey)}` +
+    ` --neosantara-api-key ${shellQuote(apiKey)}` +
     " --gateway-auth token" +
     ` --gateway-token ${shellQuote(gatewayToken)}` +
     " --skip-health" +
@@ -452,7 +453,7 @@ async function setupOpenclawConfig(
     const fallbackConfig = JSON.stringify(
       {
         env: {
-          OPENROUTER_API_KEY: apiKey,
+          NEOSANTARA_API_KEY: apiKey,
         },
         gateway: {
           mode: "local",
@@ -701,7 +702,7 @@ export async function startGateway(runner: CloudRunner): Promise<void> {
  * Start the Hermes Agent web dashboard as a session-scoped background process.
  *
  * Unlike OpenClaw's gateway (long-running, supervised by systemd), the Hermes
- * dashboard only needs to live for the duration of the spawn session — the
+ * dashboard only needs to live for the duration of the jelma session — the
  * user's TUI in the foreground, dashboard reachable via SSH tunnel in the
  * background. A simple setsid/nohup launch is sufficient; no systemd unit.
  *
@@ -728,7 +729,7 @@ export async function startHermesDashboard(runner: CloudRunner): Promise<void> {
     hermesPath,
     `if ${portCheck}; then echo "Hermes dashboard already running on :9119"; exit 0; fi`,
     "_hermes_bin=$(command -v hermes) || { echo 'hermes not found in PATH' >&2; exit 1; }",
-    // --no-open: we're on a remote VM, don't try to spawn a browser there.
+    // --no-open: we're on a remote VM, don't try to jelma a browser there.
     // --host 127.0.0.1: loopback-only; the SSH tunnel is how the user reaches it.
     "if command -v setsid >/dev/null 2>&1; then",
     '  setsid "$_hermes_bin" dashboard --port 9119 --host 127.0.0.1 --no-open > /tmp/hermes-dashboard.log 2>&1 < /dev/null &',
@@ -935,7 +936,7 @@ export async function setupAutoUpdate(runner: CloudRunner, agentName: string, up
     "  # We handle all updates here — running both causes lock conflicts.",
     "  if $_sudo_sys systemctl is-active --quiet unattended-upgrades 2>/dev/null; then",
     "    $_sudo_sys systemctl disable --now unattended-upgrades 2>/dev/null || true",
-    '    log "Disabled unattended-upgrades (spawn handles updates)"',
+    '    log "Disabled unattended-upgrades (jelma handles updates)"',
     "  fi",
     "  # Wait up to 5 min for any in-progress dpkg/apt operation to finish",
     '  $_sudo_sys flock -w 300 /var/lib/dpkg/lock-frontend apt-get update -qq >> "$LOGFILE" 2>&1 || log "apt-get update failed (non-fatal)"',
@@ -976,7 +977,7 @@ export async function setupAutoUpdate(runner: CloudRunner, agentName: string, up
 
   const timerFile = [
     "[Unit]",
-    `Description=Run spawn auto-update for ${agentName} every 6 hours`,
+    `Description=Run jelma auto-update for ${agentName} every 6 hours`,
     "",
     "[Timer]",
     "OnBootSec=15min",
@@ -1098,7 +1099,7 @@ export async function setupSecurityScan(runner: CloudRunner): Promise<void> {
     'log "Auth check done: $_fail_count failed attempts"',
     "",
     "# ── Check 3: Unexpected software ──",
-    "# Flag known attack tools or unexpected daemons that spawn never installs.",
+    "# Flag known attack tools or unexpected daemons that jelma never installs.",
     '_suspicious_bins="nmap masscan hydra john hashcat ettercap aircrack-ng metasploit msfconsole msfvenom netcat ncat socat cryptominer xmrig minerd cgminer"',
     "_found_suspicious=0",
     "for _bin in $_suspicious_bins; do",
@@ -1203,8 +1204,8 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       preProvision: detectGithubAuth,
       install: () => installClaudeCode(runner),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
-        "ANTHROPIC_BASE_URL=https://openrouter.ai/api",
+        `NEOSANTARA_API_KEY=${apiKey}`,
+        "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
         `ANTHROPIC_AUTH_TOKEN=${apiKey}`,
         "ANTHROPIC_API_KEY=",
         "CLAUDE_CODE_SKIP_ONBOARDING=1",
@@ -1232,7 +1233,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           `${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @openai/codex && ${NPM_GLOBAL_PATH_PERSIST}`,
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       configure: () => setupCodexConfig(runner),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex",
@@ -1247,7 +1248,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         name: "OpenClaw",
         cloudInitTier: "full" satisfies AgentConfig["cloudInitTier"],
         preProvision: detectGithubAuth,
-        modelDefault: "openrouter/auto",
+        modelDefault: "neosantara/auto",
         install: async () => {
           await installAgent(
             runner,
@@ -1256,12 +1257,12 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           );
         },
         envVars: (apiKey: string) => [
-          `OPENROUTER_API_KEY=${apiKey}`,
+          `NEOSANTARA_API_KEY=${apiKey}`,
           `ANTHROPIC_API_KEY=${apiKey}`,
-          "ANTHROPIC_BASE_URL=https://openrouter.ai/api",
+          "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
         ],
         configure: (apiKey: string, modelId?: string, enabledSteps?: Set<string>) =>
-          setupOpenclawConfig(runner, apiKey, modelId || "openrouter/auto", dashboardToken, enabledSteps),
+          setupOpenclawConfig(runner, apiKey, modelId || "neosantara/auto", dashboardToken, enabledSteps),
         preLaunch: () => startGateway(runner),
         preLaunchMsg: "Your web dashboard will open automatically — use it for WhatsApp QR scanning and channel setup.",
         launchCmd: () =>
@@ -1282,7 +1283,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       preProvision: detectGithubAuth,
       install: () => installAgent(runner, "OpenCode", openCodeInstallCmd()),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode",
       promptCmd: (prompt) =>
@@ -1302,9 +1303,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           `cd "$HOME" && ${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @kilocode/cli && ${NPM_GLOBAL_PATH_PERSIST} && ${KILOCODE_BINARY_VERIFY}`,
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
-        "KILO_PROVIDER_TYPE=openrouter",
-        `KILO_OPEN_ROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
+        "KILO_PROVIDER_TYPE=neosantara",
+        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
       promptCmd: (prompt) =>
@@ -1329,8 +1330,8 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           600,
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
-        "OPENAI_BASE_URL=https://openrouter.ai/api/v1",
+        `NEOSANTARA_API_KEY=${apiKey}`,
+        "OPENAI_BASE_URL=https://api.neosantara.xyz/v1",
         `OPENAI_API_KEY=${apiKey}`,
         "HERMES_YOLO_MODE=1",
       ],
@@ -1371,8 +1372,8 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           `${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @jetbrains/junie-cli && ${NPM_GLOBAL_PATH_PERSIST} && ${JUNIE_BINARY_VERIFY}`,
         ),
       envVars: (apiKey) => [
-        `JUNIE_OPENROUTER_API_KEY=${apiKey}`,
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie",
       promptCmd: (prompt) =>
@@ -1391,7 +1392,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           `cd "$HOME" && ${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @mariozechner/pi-coding-agent && ${NPM_GLOBAL_PATH_PERSIST}`,
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi",
       promptCmd: (prompt) =>
@@ -1410,11 +1411,11 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           `${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} t3 && ${NPM_GLOBAL_PATH_PERSIST}`,
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
         `ANTHROPIC_API_KEY=${apiKey}`,
-        "ANTHROPIC_BASE_URL=https://openrouter.ai/api",
+        "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
         `OPENAI_API_KEY=${apiKey}`,
-        "OPENAI_BASE_URL=https://openrouter.ai/api/v1",
+        "OPENAI_BASE_URL=https://api.neosantara.xyz/v1",
       ],
       preLaunchMsg: "T3 Code web GUI will open automatically — use it to interact with Claude Code and Codex agents.",
       launchCmd: () =>
@@ -1440,7 +1441,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
             "agent --version",
         ),
       envVars: (apiKey) => [
-        `OPENROUTER_API_KEY=${apiKey}`,
+        `NEOSANTARA_API_KEY=${apiKey}`,
         `CURSOR_API_KEY=${apiKey}`,
       ],
       configure: () => setupCursorProxy(runner),

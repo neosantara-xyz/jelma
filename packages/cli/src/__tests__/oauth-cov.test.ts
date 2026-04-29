@@ -1,7 +1,7 @@
 /**
  * oauth-cov.test.ts — Coverage tests for shared/oauth.ts
  *
- * Covers: generateCsrfState, OAUTH_CSS, hasSavedOpenRouterKey, getOrPromptApiKey
+ * Covers: generateCsrfState, OAUTH_CSS, hasSavedNeosantaraKey, getOrPromptApiKey
  * (env path, saved key path, manual entry).
  *
  * Note: generateCodeVerifier and generateCodeChallenge are fully covered by
@@ -15,7 +15,7 @@ import { join } from "node:path";
 // (which would replace the global mock and disconnect other test files' spies).
 import * as p from "@clack/prompts";
 
-const { generateCsrfState, hasSavedOpenRouterKey, getOrPromptApiKey, OAUTH_CSS } = await import("../shared/oauth.js");
+const { generateCsrfState, hasSavedNeosantaraKey, getOrPromptApiKey, OAUTH_CSS } = await import("../shared/oauth.js");
 
 let stderrSpy: ReturnType<typeof spyOn>;
 let origFetch: typeof global.fetch;
@@ -28,7 +28,7 @@ beforeEach(() => {
   origFetch = global.fetch;
   // Skip API validation in tests
   process.env.BUN_ENV = "test";
-  delete process.env.OPENROUTER_API_KEY;
+  delete process.env.NEOSANTARA_API_KEY;
   delete process.env.SPAWN_ENABLED_STEPS;
   delete process.env.SPAWN_SKIP_API_VALIDATION;
 });
@@ -65,11 +65,11 @@ describe("OAUTH_CSS", () => {
   });
 });
 
-// ── hasSavedOpenRouterKey ──────────────────────────────────────────────
+// ── hasSavedNeosantaraKey ──────────────────────────────────────────────
 
-describe("hasSavedOpenRouterKey", () => {
+describe("hasSavedNeosantaraKey", () => {
   it("returns false when no config file exists", () => {
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 
   it("returns true when valid key is saved", () => {
@@ -79,12 +79,12 @@ describe("hasSavedOpenRouterKey", () => {
     });
     const key = "sk-or-v1-" + "a".repeat(64);
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: key,
       }),
     );
-    expect(hasSavedOpenRouterKey()).toBe(true);
+    expect(hasSavedNeosantaraKey()).toBe(true);
   });
 
   it("returns false when saved key has invalid format", () => {
@@ -93,12 +93,12 @@ describe("hasSavedOpenRouterKey", () => {
       recursive: true,
     });
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: "invalid-key",
       }),
     );
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 
   it("returns false for corrupted JSON", () => {
@@ -106,17 +106,17 @@ describe("hasSavedOpenRouterKey", () => {
     mkdirSync(configDir, {
       recursive: true,
     });
-    writeFileSync(join(configDir, "openrouter.json"), "not json!");
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    writeFileSync(join(configDir, "neosantara.json"), "not json!");
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 });
 
 // ── getOrPromptApiKey ──────────────────────────────────────────────────
 
 describe("getOrPromptApiKey", () => {
-  it("returns key from OPENROUTER_API_KEY env var", async () => {
+  it("returns key from NEOSANTARA_API_KEY env var", async () => {
     const testKey = "sk-or-v1-" + "b".repeat(64);
-    process.env.OPENROUTER_API_KEY = testKey;
+    process.env.NEOSANTARA_API_KEY = testKey;
     const result = await getOrPromptApiKey("agent", "cloud");
     expect(result).toBe(testKey);
   });
@@ -128,7 +128,7 @@ describe("getOrPromptApiKey", () => {
       recursive: true,
     });
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: savedKey,
       }),
@@ -158,7 +158,7 @@ describe("getOrPromptApiKey", () => {
       recursive: true,
     });
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: savedKey,
       }),
@@ -182,12 +182,12 @@ describe("getOrPromptApiKey", () => {
       recursive: true,
     });
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: "",
       }),
     );
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 
   it("returns false when api_key is not a string", () => {
@@ -196,12 +196,12 @@ describe("getOrPromptApiKey", () => {
       recursive: true,
     });
     writeFileSync(
-      join(configDir, "openrouter.json"),
+      join(configDir, "neosantara.json"),
       JSON.stringify({
         api_key: 12345,
       }),
     );
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 
   it("returns key from manual entry via prompt after OAuth fails", async () => {
@@ -219,19 +219,19 @@ describe("getOrPromptApiKey", () => {
     serveSpy.mockRestore();
   });
 
-  it("sets OPENROUTER_API_KEY in process.env on success from manual entry", async () => {
+  it("sets NEOSANTARA_API_KEY in process.env on success from manual entry", async () => {
     const serveSpy = spyOn(Bun, "serve").mockImplementation(() => {
       throw new Error("port in use");
     });
     const validKey = "sk-or-v1-" + "e".repeat(64);
     textSpy.mockImplementation(async () => validKey);
 
-    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.NEOSANTARA_API_KEY;
     await getOrPromptApiKey("agent", "cloud");
-    expect(process.env.OPENROUTER_API_KEY).toBe(validKey);
+    expect(process.env.NEOSANTARA_API_KEY).toBe(validKey);
 
     serveSpy.mockRestore();
-    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.NEOSANTARA_API_KEY;
   });
 
   it("accepts non-standard key format when user confirms", async () => {
@@ -248,12 +248,12 @@ describe("getOrPromptApiKey", () => {
       return "y";
     });
 
-    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.NEOSANTARA_API_KEY;
     const result = await getOrPromptApiKey("agent", "cloud");
     expect(result).toBe("custom-api-key-not-standard");
 
     serveSpy.mockRestore();
-    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.NEOSANTARA_API_KEY;
   });
 
   it("returns false for non-object data in saved config", () => {
@@ -261,7 +261,7 @@ describe("getOrPromptApiKey", () => {
     mkdirSync(configDir, {
       recursive: true,
     });
-    writeFileSync(join(configDir, "openrouter.json"), JSON.stringify(null));
-    expect(hasSavedOpenRouterKey()).toBe(false);
+    writeFileSync(join(configDir, "neosantara.json"), JSON.stringify(null));
+    expect(hasSavedNeosantaraKey()).toBe(false);
   });
 });

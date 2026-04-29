@@ -1,14 +1,14 @@
 {
-  "name": "@openrouter/spawn",
+  "name": "@neosantara/jelma",
   "version": "1.0.26",
   "type": "module",
   "bin": {
-    "spawn": "cli.js"
+    "jelma": "cli.js"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build src/index.ts --outfile cli.js --target bun --minify --packages bundle",
-    "compile": "bun build src/index.ts --compile --outfile spawn",
+    "compile": "bun build src/index.ts --compile --outfile jelma",
     "lint": "biome lint src/",
     "test": "bun test",
     "test:watch": "bun test --watch"
@@ -16,7 +16,7 @@
   "dependencies": {
     "@clack/prompts": "1.0.0",
     "@daytonaio/sdk": "0.160.0",
-    "@openrouter/spawn-shared": "workspace:*",
+    "@neosantara/jelma-shared": "workspace:*",
     "picocolors": "1.1.1",
     "valibot": "1.2.0"
   },

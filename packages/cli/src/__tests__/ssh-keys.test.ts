@@ -8,7 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 import { mockClackPrompts } from "./test-helpers";
 
 mockClackPrompts({

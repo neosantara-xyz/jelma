@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -128,7 +128,7 @@ describe("Commands Error Paths", () => {
   // ── cmdRun: unknown agent/cloud ───────────────────────────────────────
 
   describe("cmdRun - unknown agent or cloud", () => {
-    it("should exit with error and suggest spawn agents for unknown agent", async () => {
+    it("should exit with error and suggest jelma agents for unknown agent", async () => {
       await expect(cmdRun("nonexistent", "sprite")).rejects.toThrow("process.exit");
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
@@ -136,10 +136,10 @@ describe("Commands Error Paths", () => {
       expect(errorCalls.some((msg: string) => msg.includes("Unknown agent"))).toBe(true);
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn agents"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma agents"))).toBe(true);
     });
 
-    it("should exit with error and suggest spawn clouds for unknown cloud", async () => {
+    it("should exit with error and suggest jelma clouds for unknown cloud", async () => {
       await expect(cmdRun("claude", "nonexistent")).rejects.toThrow("process.exit");
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
@@ -147,7 +147,7 @@ describe("Commands Error Paths", () => {
       expect(errorCalls.some((msg: string) => msg.includes("Unknown cloud"))).toBe(true);
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn clouds"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma clouds"))).toBe(true);
     });
   });
 
@@ -161,7 +161,7 @@ describe("Commands Error Paths", () => {
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       // Should suggest sprite as an alternative
-      expect(infoCalls.some((msg: string) => msg.includes("spawn codex sprite"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma codex sprite"))).toBe(true);
       // codex has 1 implemented cloud (sprite)
       expect(infoCalls.some((msg: string) => msg.includes("1 cloud"))).toBe(true);
     });
@@ -341,7 +341,7 @@ describe("Commands Error Paths", () => {
     });
 
     it("should show agent error and cloud-is-actually-agent error together", async () => {
-      // "spawn badagent codex" - badagent is unknown, codex is an agent not a cloud
+      // "jelma badagent codex" - badagent is unknown, codex is an agent not a cloud
       await expect(cmdRun("badagent", "codex")).rejects.toThrow("process.exit");
 
       const errorCalls = mockLogError.mock.calls.map((c: unknown[]) => c.join(" "));
@@ -362,24 +362,24 @@ describe("Commands Error Paths", () => {
 
   describe("cmdRun - mismatched argument types", () => {
     it("should tell user when cloud arg is actually an agent", async () => {
-      // "spawn claude codex" - both are agents, not cloud
+      // "jelma claude codex" - both are agents, not cloud
       await expect(cmdRun("claude", "codex")).rejects.toThrow("process.exit");
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes('"codex" is an agent'))).toBe(true);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn <agent> <cloud>"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma <agent> <cloud>"))).toBe(true);
     });
 
     it("should tell user when agent arg is actually a cloud (not swappable)", async () => {
-      // "spawn hetzner sprite" - both are clouds, swap detection won't fire
+      // "jelma hetzner sprite" - both are clouds, swap detection won't fire
       // because sprite is not an agent
       await expect(cmdRun("hetzner", "sprite")).rejects.toThrow("process.exit");
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes('"hetzner" is a cloud provider'))).toBe(true);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn <agent> <cloud>"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma <agent> <cloud>"))).toBe(true);
     });
   });
 });

@@ -123,7 +123,7 @@ const AGENT_EXTRA_STEPS: Record<string, OptionalStep[]> = {
 const SPAWN_STEP: OptionalStep = {
   value: "spawn",
   label: "Spawn CLI",
-  hint: "install spawn for recursive VM creation",
+  hint: "install jelma for recursive VM creation",
   defaultOn: true,
 };
 
@@ -136,13 +136,13 @@ const COMMON_STEPS: OptionalStep[] = [
   },
   {
     value: "reuse-api-key",
-    label: "Reuse saved OpenRouter key",
+    label: "Reuse saved Neosantara key",
     hint: "off = create a fresh key via OAuth",
   },
   {
     value: "custom-model",
     label: "Custom model",
-    hint: "enter an OpenRouter model ID manually",
+    hint: "enter an Neosantara model ID manually",
   },
   {
     value: "auto-update",

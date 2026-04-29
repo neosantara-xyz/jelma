@@ -71,7 +71,7 @@ export {
 } from "./shared.js";
 // status.ts — cmdStatus
 export { cmdStatus } from "./status.js";
-// tree.ts — cmdTree (recursive spawn tree view)
+// tree.ts — cmdTree (recursive jelma tree view)
 export { cmdTree } from "./tree.js";
 // uninstall.ts — cmdUninstall
 export { cmdUninstall } from "./uninstall.js";

@@ -13,7 +13,7 @@
  *   KEY_SERVER_SECRET   — Bearer auth + HMAC signing (required)
  *   RESEND_API_KEY      — Resend outbound API key (required)
  *   KEY_REQUEST_EMAIL   — Admin email recipient (required)
- *   KEY_FROM_EMAIL      — Sender (default: noreply@openrouter.ai)
+ *   KEY_FROM_EMAIL      — Sender (default: noreply@neosantara.xyz)
  *   KEY_SERVER_HOST     — Public URL for links in emails (required)
  *   KEY_SERVER_PORT     — Default: 8081
  *   REPO_ROOT           — Repository root for manifest.json (default: cwd)
@@ -37,7 +37,7 @@ const PORT = Number.parseInt(process.env.KEY_SERVER_PORT ?? "8081", 10);
 const SECRET = process.env.KEY_SERVER_SECRET ?? "";
 const RESEND_API_KEY = process.env.RESEND_API_KEY ?? "";
 const KEY_REQUEST_EMAIL = process.env.KEY_REQUEST_EMAIL ?? "";
-const KEY_FROM_EMAIL = process.env.KEY_FROM_EMAIL ?? "noreply@openrouter.ai";
+const KEY_FROM_EMAIL = process.env.KEY_FROM_EMAIL ?? "noreply@neosantara.xyz";
 const KEY_SERVER_HOST = process.env.KEY_SERVER_HOST ?? "";
 const REPO_ROOT = process.env.REPO_ROOT ?? process.cwd();
 

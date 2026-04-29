@@ -7,7 +7,7 @@ import type { AgentConfig } from "./agents.js";
 import type { SshTunnelHandle } from "./ssh.js";
 
 import { existsSync, readFileSync, unlinkSync } from "node:fs";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import {
   generateSpawnId,
@@ -108,8 +108,8 @@ export function normalizeRepoUrl(input: string): string | null {
 
 /** Docker container name used by --beta docker deployments. */
 export const DOCKER_CONTAINER_NAME = "spawn-agent";
-/** Docker registry hosting spawn agent images. */
-export const DOCKER_REGISTRY = "ghcr.io/openrouterteam";
+/** Docker registry hosting jelma agent images. */
+export const DOCKER_REGISTRY = "ghcr.io/neosantarateam";
 
 /** Wrap a command to run inside the Docker container instead of the host. */
 function makeDockerExec(cmd: string): string {
@@ -143,7 +143,7 @@ export interface CloudOrchestrator {
   skipCloudInit?: boolean;
   authenticate(): Promise<void>;
   checkAccountReady?(): Promise<void>;
-  /** DigitalOcean: blocking readiness (account, SSH, OpenRouter) before region/size. */
+  /** DigitalOcean: blocking readiness (account, SSH, Neosantara) before region/size. */
   ensureReadyBeforeSizing?(): Promise<void>;
   promptSize(): Promise<void>;
   createServer(name: string): Promise<VMConnection>;
@@ -177,21 +177,21 @@ function wrapWithRestartLoop(cmd: string): string {
     "  _spawn_exit=$?",
     '  if [ "$_spawn_exit" -eq 0 ]; then break; fi',
     "  _spawn_restarts=$((_spawn_restarts + 1))",
-    '  printf "\\n[spawn] Agent exited with code %d. Restarting in 5s (%d/%d)...\\n" "$_spawn_exit" "$_spawn_restarts" "$_spawn_max" >&2',
+    '  printf "\\n[jelma] Agent exited with code %d. Restarting in 5s (%d/%d)...\\n" "$_spawn_exit" "$_spawn_restarts" "$_spawn_max" >&2',
     "  sleep 5",
     "done",
     'if [ "$_spawn_restarts" -ge "$_spawn_max" ]; then',
-    '  printf "\\n[spawn] Agent crashed %d times. Giving up.\\n" "$_spawn_max" >&2',
+    '  printf "\\n[jelma] Agent crashed %d times. Giving up.\\n" "$_spawn_max" >&2',
     "fi",
     'exit "${_spawn_exit:-0}"',
   ].join("\n");
 }
 
-// ── Recursive spawn helpers ──────────────────────────────────────────────────
+// ── Recursive jelma helpers ──────────────────────────────────────────────────
 
-/** Install the spawn CLI on a remote VM. */
+/** Install the jelma CLI on a remote VM. */
 export async function installSpawnCli(runner: CloudRunner): Promise<void> {
-  logStep("Installing spawn CLI on VM...");
+  logStep("Installing jelma CLI on VM...");
   // Build PATH explicitly — non-interactive bash skips .bashrc (PS1 guard),
   // and some platforms (Sprite) have a broken bun shim that finds via
   // `command -v` but doesn't actually work. We prepend all known bun
@@ -201,10 +201,10 @@ export async function installSpawnCli(runner: CloudRunner): Promise<void> {
     'export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"',
     'export PATH="$BUN_INSTALL/bin:$HOME/.local/bin:$HOME/.npm-global/bin:/.sprite/languages/bun/bin:/usr/local/bin:$PATH"',
     'if ! bun --version >/dev/null 2>&1; then curl -fsSL https://bun.sh/install | bash && export PATH="$HOME/.bun/bin:$PATH"; fi',
-    "curl -fsSL https://openrouter.ai/labs/spawn/cli/install.sh | bash",
+    "curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash",
   ].join("; ");
   const result = await asyncTryCatch(() =>
-    withRetry("spawn CLI install", () => wrapSshCall(runner.runServer(installCmd)), 2, 5),
+    withRetry("jelma CLI install", () => wrapSshCall(runner.runServer(installCmd)), 2, 5),
   );
   if (!result.ok) {
     logWarn("Spawn CLI install failed — recursive spawning will not be available on this VM");
@@ -222,7 +222,7 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
     remotePath: string;
   }[] = [];
 
-  // Delegate ALL cloud credentials so the child VM can spawn on any cloud,
+  // Delegate ALL cloud credentials so the child VM can jelma on any cloud,
   // not just the one the parent is running on.
   const cloudNames = [
     "hetzner",
@@ -241,12 +241,12 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
     }
   }
 
-  // OpenRouter credentials (always needed for child spawns)
-  const orConfigPath = getSpawnCloudConfigPath("openrouter");
+  // Neosantara credentials (always needed for child spawns)
+  const orConfigPath = getSpawnCloudConfigPath("neosantara");
   if (existsSync(orConfigPath)) {
     filesToDelegate.push({
       localPath: orConfigPath,
-      remotePath: "~/.config/spawn/openrouter.json",
+      remotePath: "~/.config/spawn/neosantara.json",
     });
   }
 
@@ -257,7 +257,7 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
 
   // Ensure config dir exists on VM
   const mkdirResult = await asyncTryCatch(() =>
-    runner.runServer("mkdir -p ~/.config/spawn && chmod 700 ~/.config/spawn"),
+    runner.runServer("mkdir -p ~/.config/jelma && chmod 700 ~/.config/spawn"),
   );
   if (!mkdirResult.ok) {
     logWarn("Could not create config directory on VM");
@@ -281,7 +281,7 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
   logInfo("Cloud credentials delegated to VM");
 }
 
-/** Get parent_id and depth fields for spawn records (set when running inside a child VM). */
+/** Get parent_id and depth fields for jelma records (set when running inside a child VM). */
 function getParentFields(): {
   parent_id?: string;
   depth?: number;
@@ -318,7 +318,7 @@ function recordSpawn(spawnId: string, agentName: string, cloudName: string, conn
   });
 }
 
-/** Append recursive-spawn env vars to the envPairs array when --beta recursive is active. */
+/** Append recursive-jelma env vars to the envPairs array when --beta recursive is active. */
 export function appendRecursiveEnvVars(envPairs: string[], spawnId: string): void {
   const currentDepth = Number(process.env.SPAWN_DEPTH) || 0;
   envPairs.push(`SPAWN_PARENT_ID=${spawnId}`);
@@ -1020,14 +1020,14 @@ async function postInstall(
   if (isConnectionDrop(exitCode)) {
     process.stderr.write("\n");
     logWarn("Could not reconnect. Server is still running.");
-    logInfo("Reconnect manually: spawn last");
+    logInfo("Reconnect manually: jelma last");
   }
 
   if (tunnelHandle) {
     tunnelHandle.stop();
   }
 
-  // Pull child's spawn history back to the parent for `spawn tree`.
+  // Pull child's jelma history back to the parent for `jelma tree`.
   // Fire-and-forget — never delay exit for a convenience feature.
   // process.exit() below kills any in-flight SSH calls.
   if (cloud.cloudName !== "local") {
@@ -1038,10 +1038,10 @@ async function postInstall(
 }
 
 /**
- * Pull spawn history from a child VM and merge it into local history.
+ * Pull jelma history from a child VM and merge it into local history.
  * First tells the child to recursively pull from ITS children via
- * `spawn pull-history`, then downloads the child's history.json.
- * This enables `spawn tree` to show the full recursive hierarchy.
+ * `jelma pull-history`, then downloads the child's history.json.
+ * This enables `jelma tree` to show the full recursive hierarchy.
  */
 async function pullChildHistory(runner: CloudRunner, parentSpawnId: string): Promise<void> {
   const result = await asyncTryCatch(async () => {
@@ -1050,7 +1050,7 @@ async function pullChildHistory(runner: CloudRunner, parentSpawnId: string): Pro
     // Recursive pull: tell the child to pull from ALL its children first.
     const recursePull = await asyncTryCatch(() =>
       runner.runServer(
-        'export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"; spawn pull-history 2>/dev/null || true',
+        'export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"; jelma pull-history 2>/dev/null || true',
         120,
       ),
     );
@@ -1114,7 +1114,7 @@ async function pullChildHistory(runner: CloudRunner, parentSpawnId: string): Pro
 
     if (validRecords.length > 0) {
       mergeChildHistory(parentSpawnId, validRecords);
-      logInfo(`Pulled ${validRecords.length} spawn record(s) from child VM`);
+      logInfo(`Pulled ${validRecords.length} jelma record(s) from child VM`);
     }
 
     tryCatch(() => unlinkSync(tmpPath));

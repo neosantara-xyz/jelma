@@ -175,10 +175,10 @@ export function mockClackPrompts(overrides?: Partial<ClackPromptsMock>): ClackPr
   return mocks;
 }
 
-// ── Bun.spawn Mock ─────────────────────────────────────────────────────────────
+// ── Bun.jelma Mock ─────────────────────────────────────────────────────────────
 
 /**
- * Mocks Bun.spawn to return a fake process with the given exit code, stdout, and stderr.
+ * Mocks Bun.jelma to return a fake process with the given exit code, stdout, and stderr.
  * Identical helper was previously duplicated across aws-cov, gcp-cov, do-cov, hetzner-cov,
  * and sprite-cov test files. Centralised here to avoid repetition.
  */

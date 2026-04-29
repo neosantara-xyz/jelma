@@ -5,7 +5,7 @@ import pc from "picocolors";
 import { getActiveServers } from "../history.js";
 import { agentKeys } from "../manifest.js";
 import { getAgentOptionalSteps } from "../shared/agents.js";
-import { hasSavedOpenRouterKey } from "../shared/oauth.js";
+import { hasSavedNeosantaraKey } from "../shared/oauth.js";
 import { asyncTryCatch, tryCatch, unwrapOr } from "../shared/result.js";
 import { maybeShowStarPrompt } from "../shared/star-prompt.js";
 import { captureEvent, setTelemetryContext } from "../shared/telemetry.js";
@@ -56,7 +56,7 @@ function getAndValidateCloudChoices(
   if (clouds.length === 0) {
     p.log.error(`No clouds available for ${manifest.agents[agent].name}`);
     p.log.info("This agent has no implemented cloud providers yet.");
-    p.log.info(`Run ${pc.cyan("spawn matrix")} to see the full availability matrix.`);
+    p.log.info(`Run ${pc.cyan("jelma matrix")} to see the full availability matrix.`);
     process.exit(1);
   }
 
@@ -134,7 +134,7 @@ async function selectCloud(
   return cloudChoice;
 }
 
-// Prompt user to enter a display name for the spawn instance.
+// Prompt user to enter a display name for the jelma instance.
 // Any string is allowed (spaces, uppercase, etc.) — the shell scripts
 // derive a kebab-case slug for the actual cloud resource name.
 async function promptSpawnName(): Promise<string | undefined> {
@@ -204,7 +204,7 @@ async function promptSetupOptions(agentName: string): Promise<Set<string> | unde
   // Filter reuse-api-key option if no saved key exists
   const filteredSteps = steps
     .filter((s) => s.value !== "github" || hasLocalGithubToken())
-    .filter((s) => s.value !== "reuse-api-key" || hasSavedOpenRouterKey());
+    .filter((s) => s.value !== "reuse-api-key" || hasSavedNeosantaraKey());
 
   if (filteredSteps.length === 0) {
     return undefined;
@@ -277,7 +277,7 @@ async function maybePromptSkills(manifest: Manifest, agentName: string): Promise
 export { getAndValidateCloudChoices, promptSetupOptions, promptSpawnName, selectCloud };
 
 export async function cmdInteractive(): Promise<void> {
-  p.intro(pc.inverse(` spawn v${VERSION} `));
+  p.intro(pc.inverse(` jelma v${VERSION} `));
 
   // Funnel entry — fires BEFORE any prompt so we catch users who bail at
   // the very first screen. See also: funnel_* events in orchestrate.ts.
@@ -286,7 +286,7 @@ export async function cmdInteractive(): Promise<void> {
   });
 
   // If the user has existing spawns, offer a top-level menu so they can
-  // reconnect without knowing about `spawn list` or `spawn last`.
+  // reconnect without knowing about `jelma list` or `jelma last`.
   const activeServers = getActiveServers();
   if (activeServers.length > 0) {
     captureEvent("menu_shown", {
@@ -336,7 +336,7 @@ export async function cmdInteractive(): Promise<void> {
   });
   setTelemetryContext("cloud", cloudChoice);
 
-  // Handle "Link Existing Server" — redirect to spawn link with the agent pre-selected
+  // Handle "Link Existing Server" — redirect to jelma link with the agent pre-selected
   if (cloudChoice === "link-existing") {
     p.outro("Switching to link mode...");
     await cmdLink([
@@ -376,8 +376,8 @@ export async function cmdInteractive(): Promise<void> {
   const agentName = manifest.agents[agentChoice].name;
   const cloudName = manifest.clouds[cloudChoice].name;
   p.log.step(`Launching ${pc.bold(agentName)} on ${pc.bold(cloudName)}`);
-  p.log.info(`Next time, run directly: ${pc.cyan(`spawn ${agentChoice} ${cloudChoice}`)}`);
-  p.outro("Handing off to spawn script...");
+  p.log.info(`Next time, run directly: ${pc.cyan(`jelma ${agentChoice} ${cloudChoice}`)}`);
+  p.outro("Handing off to jelma script...");
   captureEvent("picker_completed");
 
   const success = await execScript(
@@ -394,12 +394,12 @@ export async function cmdInteractive(): Promise<void> {
   }
 }
 
-/** Interactive cloud selection when agent is already known (e.g. `spawn claude`) */
+/** Interactive cloud selection when agent is already known (e.g. `jelma claude`) */
 export async function cmdAgentInteractive(agent: string, prompt?: string, dryRun?: boolean): Promise<void> {
-  p.intro(pc.inverse(` spawn v${VERSION} `));
+  p.intro(pc.inverse(` jelma v${VERSION} `));
 
   // Same funnel entry as cmdInteractive — mode distinguishes the short-form
-  // (`spawn claude`) entry point from the full interactive picker.
+  // (`jelma claude`) entry point from the full interactive picker.
   captureEvent("spawn_launched", {
     mode: "agent_interactive",
   });
@@ -416,7 +416,7 @@ export async function cmdAgentInteractive(agent: string, prompt?: string, dryRun
     if (agentMatch) {
       p.log.info(`Did you mean ${pc.cyan(agentMatch)} (${manifest.agents[agentMatch].name})?`);
     }
-    p.log.info(`Run ${pc.cyan("spawn agents")} to see available agents.`);
+    p.log.info(`Run ${pc.cyan("jelma agents")} to see available agents.`);
     process.exit(1);
   }
 
@@ -434,7 +434,7 @@ export async function cmdAgentInteractive(agent: string, prompt?: string, dryRun
   });
   setTelemetryContext("cloud", cloudChoice);
 
-  // Handle "Link Existing Server" — redirect to spawn link with the agent pre-selected
+  // Handle "Link Existing Server" — redirect to jelma link with the agent pre-selected
   if (cloudChoice === "link-existing") {
     p.outro("Switching to link mode...");
     await cmdLink([
@@ -474,8 +474,8 @@ export async function cmdAgentInteractive(agent: string, prompt?: string, dryRun
   const agentName = manifest.agents[resolvedAgent].name;
   const cloudName = manifest.clouds[cloudChoice].name;
   p.log.step(`Launching ${pc.bold(agentName)} on ${pc.bold(cloudName)}`);
-  p.log.info(`Next time, run directly: ${pc.cyan(`spawn ${resolvedAgent} ${cloudChoice}`)}`);
-  p.outro("Handing off to spawn script...");
+  p.log.info(`Next time, run directly: ${pc.cyan(`jelma ${resolvedAgent} ${cloudChoice}`)}`);
+  p.outro("Handing off to jelma script...");
   captureEvent("picker_completed");
 
   const success = await execScript(

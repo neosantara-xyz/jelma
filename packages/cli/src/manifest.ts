@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getErrorMessage, isPlainObject } from "@openrouter/spawn-shared";
+import { getErrorMessage, isPlainObject } from "@neosantara/jelma-shared";
 import { parseJsonObj } from "./shared/parse.js";
 import { getCacheDir, getCacheFile } from "./shared/paths.js";
 import { asyncTryCatch, isFileError, tryCatch, tryCatchIf, unwrapOr } from "./shared/result.js";
@@ -111,10 +111,10 @@ export interface Manifest {
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const REPO = "OpenRouterTeam/spawn";
+const REPO = "jelmaai/jelma";
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main` as const;
-/** Primary CDN for shell scripts — maps openrouter.ai/labs/spawn/* → repo sh/* */
-const SPAWN_CDN = "https://openrouter.ai/labs/spawn" as const;
+/** Primary script base for shell launchers hosted from this repository. */
+const SPAWN_CDN = "https://raw.githubusercontent.com/jelmaai/jelma/main/sh" as const;
 /** Static URL for version checks — GitHub release artifact, never changes with repo structure */
 const VERSION_URL = `https://github.com/${REPO}/releases/download/cli-latest/version` as const;
 const FETCH_TIMEOUT = 3_000; // 3 seconds — fast fallback on bad wifi
@@ -161,7 +161,7 @@ function isTestEnv(): boolean {
 function writeCache(data: Manifest): void {
   // In test environments, only write to disk if XDG_CACHE_HOME is set (i.e.,
   // the test has opted into an isolated cache dir). This prevents test fixtures
-  // from leaking into the real ~/.cache/spawn/manifest.json.
+  // from leaking into the real ~/.cache/jelma/manifest.json.
   if (isTestEnv() && !process.env.XDG_CACHE_HOME) {
     return;
   }

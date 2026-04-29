@@ -8,7 +8,7 @@
 # Diff-aware: includes the git diff since the last successful E2E run so the
 # AI can do causal analysis ("this 404 started after commit X which removed Y").
 #
-# Requires: OPENROUTER_API_KEY (reuses the same key used for E2E provisioning)
+# Requires: NEOSANTARA_API_KEY (reuses the same key used for E2E provisioning)
 # Skips gracefully if the key is missing or the API call fails.
 set -eo pipefail
 
@@ -48,7 +48,7 @@ ai_review_logs() {
   local app_name="$2"
   local log_dir="$3"
 
-  local api_key="${OPENROUTER_API_KEY:-}"
+  local api_key="${NEOSANTARA_API_KEY:-}"
   if [ -z "${api_key}" ]; then
     return 0
   fi
@@ -151,13 +151,13 @@ TS_EOF
 
   rm -f "${ts_file}" 2>/dev/null || true
 
-  # Call OpenRouter API
+  # Call Neosantara API
   local response
   response=$(curl -sf --max-time 30 \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${api_key}" \
     -d @"${req_file}" \
-    "https://openrouter.ai/api/v1/chat/completions" 2>/dev/null) || {
+    "https://api.neosantara.xyz/v1/chat/completions" 2>/dev/null) || {
     rm -f "${req_file}" 2>/dev/null || true
     log_warn "AI review skipped (API call failed)"
     return 0

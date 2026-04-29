@@ -2,7 +2,7 @@ import type { SpawnRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
-import { isString, toRecord } from "@openrouter/spawn-shared";
+import { isString, toRecord } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import { filterHistory, markRecordDeleted } from "../history.js";
 import { loadManifest } from "../manifest.js";
@@ -515,7 +515,7 @@ export async function cmdStatus(opts: StatusOpts = {}): Promise<void> {
       return;
     }
     p.log.info("No active cloud servers found in history.");
-    p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to launch your first agent.`);
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to launch your first agent.`);
     return;
   }
 
@@ -572,7 +572,7 @@ export async function cmdStatus(opts: StatusOpts = {}): Promise<void> {
   } else if (!opts.prune && goneRecords.length > 0) {
     p.log.info(
       pc.dim(
-        `${goneRecords.length} server${goneRecords.length !== 1 ? "s" : ""} marked as gone. Run ${pc.cyan("spawn status --prune")} to remove them.`,
+        `${goneRecords.length} server${goneRecords.length !== 1 ? "s" : ""} marked as gone. Run ${pc.cyan("jelma status --prune")} to remove them.`,
       ),
     );
   }
@@ -618,7 +618,7 @@ export async function cmdStatus(opts: StatusOpts = {}): Promise<void> {
   const running = results.filter((r) => r.liveState === "running").length;
   if (running > 0) {
     p.log.info(
-      pc.dim(`${running} server${running !== 1 ? "s" : ""} running. Use ${pc.cyan("spawn list")} to reconnect.`),
+      pc.dim(`${running} server${running !== 1 ? "s" : ""} running. Use ${pc.cyan("jelma list")} to reconnect.`),
     );
   }
 }

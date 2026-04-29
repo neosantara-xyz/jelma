@@ -147,7 +147,7 @@ describe("pullAndStartContainer", () => {
   it("cleans up stale container, pulls image, and starts new container", async () => {
     // Mock spawnSync for cleanup call
     const syncSpy = mockSpawnSync(0);
-    // Mock Bun.spawn for runLocalArgs calls (array-based, no shell)
+    // Mock Bun.jelma for runLocalArgs calls (array-based, no shell)
     const spawnSpy = mockBunSpawn(0);
 
     await pullAndStartContainer("claude");
@@ -160,7 +160,7 @@ describe("pullAndStartContainer", () => {
       "spawn-agent",
     ]);
 
-    // Bun.spawn calls: docker pull, docker run (array args, no shell)
+    // Bun.jelma calls: docker pull, docker run (array args, no shell)
     const spawnCalls = spawnSpy.mock.calls;
     expect(spawnCalls.length).toBe(2);
 
@@ -168,7 +168,7 @@ describe("pullAndStartContainer", () => {
     expect(spawnCalls[0][0]).toEqual([
       "docker",
       "pull",
-      "ghcr.io/openrouterteam/spawn-claude:latest",
+      "ghcr.io/neosantarateam/spawn-claude:latest",
     ]);
 
     // Run command — passed as array directly, not through a shell
@@ -178,7 +178,7 @@ describe("pullAndStartContainer", () => {
       "-d",
       "--name",
       "spawn-agent",
-      "ghcr.io/openrouterteam/spawn-claude:latest",
+      "ghcr.io/neosantarateam/spawn-claude:latest",
     ]);
 
     syncSpy.mockRestore();

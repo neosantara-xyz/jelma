@@ -11,7 +11,7 @@ export function getUserHome(): string {
   return process.env.HOME || homedir();
 }
 
-/** Returns the directory for spawn data, respecting SPAWN_HOME env var.
+/** Returns the directory for jelma data, respecting SPAWN_HOME env var.
  *  SPAWN_HOME must be an absolute path if set; relative paths are rejected
  *  to prevent unintended file writes. */
 export function getSpawnDir(): string {
@@ -30,7 +30,7 @@ export function getSpawnDir(): string {
 
   // SECURITY: Prevent path traversal to system directories
   // Even though the path is absolute, resolve() can normalize paths like
-  // /tmp/../../root/.spawn to /root/.spawn, potentially allowing unauthorized
+  // /tmp/../../root/.jelma to /root/.spawn, potentially allowing unauthorized
   // file writes to sensitive directories.
   const userHome = getUserHome();
   if (!resolved.startsWith(userHome + "/") && resolved !== userHome) {
@@ -40,7 +40,7 @@ export function getSpawnDir(): string {
   return resolved;
 }
 
-/** Path to the spawn history file. */
+/** Path to the jelma history file. */
 export function getHistoryPath(): string {
   return join(getSpawnDir(), "history.json");
 }
@@ -53,7 +53,7 @@ export function getSpawnCloudConfigPath(cloud: string): string {
   return join(getUserHome(), ".config", "spawn", `${cloud}.json`);
 }
 
-/** Return the path to the spawn preferences file: ~/.config/spawn/preferences.json */
+/** Return the path to the jelma preferences file: ~/.config/spawn/preferences.json */
 export function getSpawnPreferencesPath(): string {
   return join(getUserHome(), ".config", "spawn", "preferences.json");
 }
@@ -107,8 +107,8 @@ export function getTmpDir(): string {
  * Shell RC marker comments used by install.sh and uninstall.ts.
  * Keep in sync with sh/cli/install.sh — both files use these exact strings.
  */
-export const RC_MARKER_START = "# >>> spawn >>>";
-export const RC_MARKER_END = "# <<< spawn <<<";
+export const RC_MARKER_START = "# >>> jelma >>>";
+export const RC_MARKER_END = "# <<< jelma <<<";
 
 /** Legacy single-line marker written by installer versions before start/end markers. */
-export const RC_MARKER_LEGACY = "# Added by spawn installer";
+export const RC_MARKER_LEGACY = "# Added by jelma installer";

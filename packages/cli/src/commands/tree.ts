@@ -1,4 +1,4 @@
-// commands/tree.ts — `spawn tree` command: shows the full recursive spawn tree
+// commands/tree.ts — `jelma tree` command: shows the full recursive jelma tree
 
 import type { SpawnRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
@@ -77,8 +77,8 @@ export async function cmdTree(jsonOutput?: boolean): Promise<void> {
   const records = loadHistory();
 
   if (records.length === 0) {
-    p.log.info("No spawn history found.");
-    p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to create your first spawn.`);
+    p.log.info("No jelma history found.");
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create your first spawn.`);
     return;
   }
 

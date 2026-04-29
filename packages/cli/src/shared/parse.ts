@@ -1,4 +1,4 @@
-export { parseJsonObj, parseJsonWith } from "@openrouter/spawn-shared";
+export { parseJsonObj, parseJsonWith } from "@neosantara/jelma-shared";
 
 // CLI-specific schema — not in shared package
 import * as v from "valibot";

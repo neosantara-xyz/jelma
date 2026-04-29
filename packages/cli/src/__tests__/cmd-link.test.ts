@@ -1,5 +1,5 @@
 /**
- * cmd-link.test.ts — Tests for the `spawn link` command.
+ * cmd-link.test.ts — Tests for the `jelma link` command.
  *
  * Uses DI (options.tcpCheck, options.sshCommand) to avoid real network calls.
  * Follows the same pattern as cmd-fix.test.ts.
@@ -8,7 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch } from "@neosantara/jelma-shared";
 import { mockClackPrompts } from "./test-helpers";
 
 // ── Clack prompts mock (must be at module top level) ───────────────────────
@@ -102,7 +102,7 @@ describe("cmdLink", () => {
     expect(clack.logError).toHaveBeenCalledWith(expect.stringContaining("not reachable"));
   });
 
-  it("saves a spawn record when agent and cloud are provided via flags", async () => {
+  it("saves a jelma record when agent and cloud are provided via flags", async () => {
     const { loadHistory } = await import("../history.js");
 
     await cmdLink(

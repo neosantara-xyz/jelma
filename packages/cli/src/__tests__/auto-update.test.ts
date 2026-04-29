@@ -9,7 +9,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch, isNumber, isString, tryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isNumber, isString, tryCatch } from "@neosantara/jelma-shared";
 
 const mockGetOrPromptApiKey = mock(() => Promise.resolve("sk-or-v1-test-key"));
 const mockTryTarballInstall = mock(() => Promise.resolve(false));
@@ -54,7 +54,7 @@ function createMockAgent(overrides: Partial<AgentConfig> = {}): AgentConfig {
     name: "TestAgent",
     install: mock(() => Promise.resolve()),
     envVars: mock((key: string) => [
-      `OPENROUTER_API_KEY=${key}`,
+      `NEOSANTARA_API_KEY=${key}`,
     ]),
     launchCmd: mock(() => "test-agent --start"),
     ...overrides,

@@ -41,7 +41,7 @@ describe("paths", () => {
   });
 
   describe("getSpawnDir", () => {
-    it("returns ~/.spawn by default", () => {
+    it("returns ~/.jelma by default", () => {
       delete process.env.SPAWN_HOME;
       expect(getSpawnDir()).toBe(join(getUserHome(), ".spawn"));
     });
@@ -85,7 +85,7 @@ describe("paths", () => {
   });
 
   describe("getHistoryPath", () => {
-    it("returns history.json inside spawn dir", () => {
+    it("returns history.json inside jelma dir", () => {
       delete process.env.SPAWN_HOME;
       expect(getHistoryPath()).toBe(join(getUserHome(), ".spawn", "history.json"));
     });
@@ -102,7 +102,7 @@ describe("paths", () => {
   });
 
   describe("getCacheDir", () => {
-    it("returns XDG_CACHE_HOME/spawn when XDG_CACHE_HOME is set", () => {
+    it("returns XDG_CACHE_HOME/jelma when XDG_CACHE_HOME is set", () => {
       process.env.XDG_CACHE_HOME = "/custom/cache";
       expect(getCacheDir()).toBe("/custom/cache/spawn");
     });

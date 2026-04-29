@@ -146,7 +146,7 @@ describe("sprite/ensureSpriteCli", () => {
 
     const { ensureSpriteCli } = await import("../sprite/sprite");
     await ensureSpriteCli();
-    // Bun.spawn was called to run the installer
+    // Bun.jelma was called to run the installer
     expect(spawnSpy.mock.calls.length).toBeGreaterThan(0);
     spawnSyncSpy.mockRestore();
     spawnSpy.mockRestore();
@@ -190,7 +190,7 @@ describe("sprite/ensureSpriteAuthenticated", () => {
 
     const { ensureSpriteAuthenticated } = await import("../sprite/sprite");
     await ensureSpriteAuthenticated();
-    // Already authenticated: Bun.spawn (login) should NOT have been invoked
+    // Already authenticated: Bun.jelma (login) should NOT have been invoked
     expect(spawnSpy.mock.calls.length).toBe(0);
     spy.mockRestore();
     spawnSpy.mockRestore();
@@ -221,7 +221,7 @@ describe("sprite/ensureSpriteAuthenticated", () => {
 
     const { ensureSpriteAuthenticated } = await import("../sprite/sprite");
     await ensureSpriteAuthenticated();
-    // org from env + already authed: no Bun.spawn (login) invoked
+    // org from env + already authed: no Bun.jelma (login) invoked
     expect(spawnSpy.mock.calls.length).toBe(0);
     spy.mockRestore();
     spawnSpy.mockRestore();
@@ -265,7 +265,7 @@ describe("sprite/ensureSpriteAuthenticated", () => {
 
     const { ensureSpriteAuthenticated } = await import("../sprite/sprite");
     await ensureSpriteAuthenticated();
-    // Not authenticated initially: Bun.spawn (login) must have been called
+    // Not authenticated initially: Bun.jelma (login) must have been called
     expect(spawnSpy.mock.calls.length).toBeGreaterThan(0);
     spawnSyncSpy.mockRestore();
     spawnSpy.mockRestore();
@@ -328,7 +328,7 @@ describe("sprite/createSprite", () => {
 
     const { createSprite } = await import("../sprite/sprite");
     await createSprite("my-sprite");
-    // Existing sprite found: Bun.spawn (create) should NOT have been called
+    // Existing sprite found: Bun.jelma (create) should NOT have been called
     expect(spawnSpy.mock.calls.length).toBe(0);
     spy.mockRestore();
     spawnSpy.mockRestore();
@@ -376,12 +376,12 @@ describe("sprite/createSprite", () => {
         pid: 4,
       } satisfies ReturnType<typeof Bun.spawnSync>);
 
-    // Bun.spawn for `sprite create`
+    // Bun.jelma for `sprite create`
     const spawnSpy = mockBunSpawn(0);
 
     const { createSprite } = await import("../sprite/sprite");
     await createSprite("new-sprite");
-    // No existing sprite: Bun.spawn (create) must have been called
+    // No existing sprite: Bun.jelma (create) must have been called
     expect(spawnSpy.mock.calls.length).toBeGreaterThan(0);
     spawnSyncSpy.mockRestore();
     spawnSpy.mockRestore();

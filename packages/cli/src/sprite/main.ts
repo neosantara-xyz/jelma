@@ -4,7 +4,7 @@
 
 import type { CloudOrchestrator } from "../shared/orchestrate.js";
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import pkg from "../../package.json" with { type: "json" };
 import { runOrchestration } from "../shared/orchestrate.js";
 import { initTelemetry } from "../shared/telemetry.js";

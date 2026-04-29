@@ -12,7 +12,7 @@ Look at `manifest.json` → `matrix` for any `"missing"` entry. To implement it:
 
 **OpenRouter injection is mandatory.** Every agent script MUST:
 - Set `OPENROUTER_API_KEY` in the shell environment
-- Set provider-specific env vars (e.g., `ANTHROPIC_BASE_URL=https://openrouter.ai/api`)
+- Set provider-specific env vars (e.g., `ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic`)
 - These come from the agent's `env` field in `manifest.json`
 
 ## 2. Add a new cloud provider (HIGH BAR)

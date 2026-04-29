@@ -54,7 +54,7 @@ describe("cmdUninstall", () => {
   });
 
   it("shows nothing to uninstall when nothing exists", async () => {
-    // Ensure spawn dirs and binary don't exist
+    // Ensure jelma dirs and binary don't exist
     const spawnDir = join(home, ".spawn");
     const configDir = join(home, ".config", "spawn");
     const cacheDir = join(home, ".cache", "spawn");
@@ -226,7 +226,7 @@ describe("cmdUninstall", () => {
     });
     fs.writeFileSync(join(configDir, "hetzner.json"), "{}");
 
-    // Remove spawn dir
+    // Remove jelma dir
     const spawnDir = join(home, ".spawn");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
@@ -466,7 +466,7 @@ describe("cmdUninstall", () => {
       });
     }
 
-    // Write a .bashrc with spawn markers
+    // Write a .bashrc with jelma markers
     const rcPath = join(home, ".bashrc");
     fs.writeFileSync(
       rcPath,

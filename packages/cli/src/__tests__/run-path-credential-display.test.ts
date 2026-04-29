@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:te
 import { mockClackPrompts } from "./test-helpers";
 
 /**
- * Tests for critical-path functions in the `spawn <agent> <cloud>` run flow:
+ * Tests for critical-path functions in the `jelma <agent> <cloud>` run flow:
  *
  * - prioritizeCloudsByCredentials: sorts clouds by credential availability,
  *   builds hint overrides, counts clouds with credentials
@@ -23,8 +23,8 @@ function makeManifest(overrides?: Partial<Manifest>): Manifest {
         install: "curl -fsSL https://claude.ai/install.sh | bash",
         launch: "claude",
         env: {
-          ANTHROPIC_BASE_URL: "https://openrouter.ai/api",
-          ANTHROPIC_AUTH_TOKEN: "$OPENROUTER_API_KEY",
+          ANTHROPIC_BASE_URL: "https://api.neosantara.xyz/anthropic",
+          ANTHROPIC_AUTH_TOKEN: "$NEOSANTARA_API_KEY",
           ANTHROPIC_API_KEY: "",
         },
       },
@@ -35,7 +35,7 @@ function makeManifest(overrides?: Partial<Manifest>): Manifest {
         install: "npm install -g codex",
         launch: "codex",
         env: {
-          OPENROUTER_API_KEY: "$OPENROUTER_API_KEY",
+          NEOSANTARA_API_KEY: "$NEOSANTARA_API_KEY",
         },
       },
     },

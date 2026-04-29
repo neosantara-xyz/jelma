@@ -24,7 +24,7 @@ type SpawnConfig = v.InferOutput<typeof SpawnConfigSchema>;
 const MAX_CONFIG_SIZE = 1024 * 1024;
 
 /**
- * Load and validate a spawn config file.
+ * Load and validate a jelma config file.
  * Returns null on parse failure (with warning to stderr).
  * Throws on missing file or security violations.
  */

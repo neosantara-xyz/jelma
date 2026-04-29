@@ -3,7 +3,7 @@
 import type { Manifest } from "./manifest.js";
 
 import { readFileSync } from "node:fs";
-import { getErrorMessage, isString, toRecord } from "@openrouter/spawn-shared";
+import { getErrorMessage, isString, toRecord } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import pkg from "../package.json" with { type: "json" };
 import {
@@ -65,7 +65,7 @@ function handleError(err: unknown): never {
   captureError("cli_error", err);
   const msg = getErrorMessage(err);
   console.error(pc.red(`Error: ${msg}`));
-  console.error(`\nRun ${pc.cyan("spawn help")} for usage information.`);
+  console.error(`\nRun ${pc.cyan("jelma help")} for usage information.`);
   process.exit(1);
 }
 
@@ -153,29 +153,29 @@ function checkUnknownFlags(args: string[]): void {
     console.error(`    ${pc.cyan("--beta parallel")}     Parallelize server boot with setup prompts`);
     console.error(`    ${pc.cyan("--beta docker")}       Use Docker CE app image on Hetzner/GCP (faster boot)`);
     console.error(`    ${pc.cyan("--beta sandbox")}      Run local agents in a Docker container (sandboxed)`);
-    console.error(`    ${pc.cyan("--beta recursive")}    Install spawn CLI on VM for recursive spawning`);
+    console.error(`    ${pc.cyan("--beta recursive")}    Install jelma CLI on VM for recursive spawning`);
     console.error(`    ${pc.cyan("--help, -h")}          Show help information`);
     console.error(`    ${pc.cyan("--version, -v")}       Show version`);
     console.error();
-    console.error(`  For ${pc.cyan("spawn pick")}:`);
+    console.error(`  For ${pc.cyan("jelma pick")}:`);
     console.error(`    ${pc.cyan("--default")}           Pre-selected value in the picker`);
     console.error();
-    console.error(`  For ${pc.cyan("spawn link")}:`);
+    console.error(`  For ${pc.cyan("jelma link")}:`);
     console.error(`    ${pc.cyan("-a, --agent")}         Agent running on the server`);
     console.error(`    ${pc.cyan("-c, --cloud")}         Cloud provider the server is on`);
     console.error(`    ${pc.cyan("-u, --user")}          SSH user (default: root)`);
     console.error(`    ${pc.cyan("--name")}              Custom name for this linked spawn`);
     console.error();
-    console.error(`  For ${pc.cyan("spawn list")}:`);
+    console.error(`  For ${pc.cyan("jelma list")}:`);
     console.error(`    ${pc.cyan("-a, --agent")}         Filter history by agent`);
     console.error(`    ${pc.cyan("-c, --cloud")}         Filter history by cloud`);
-    console.error(`    ${pc.cyan("--clear")}             Clear all spawn history`);
+    console.error(`    ${pc.cyan("--clear")}             Clear all jelma history`);
     console.error();
-    console.error(`  For ${pc.cyan("spawn delete")}:`);
+    console.error(`  For ${pc.cyan("jelma delete")}:`);
     console.error(`    ${pc.cyan("--name <name>")}       Filter by server name or ID`);
     console.error(`    ${pc.cyan("--yes, -y")}           Skip confirmation (required for non-interactive)`);
     console.error();
-    console.error(`  Run ${pc.cyan("spawn help")} for full usage information.`);
+    console.error(`  Run ${pc.cyan("jelma help")} for full usage information.`);
     process.exit(1);
   }
 }
@@ -198,9 +198,9 @@ function showUnknownCommandError(name: string, manifest: Manifest): never {
     console.error(`  Did you mean ${suggestions.join(" or ")}?`);
   }
   console.error();
-  console.error(`  Run ${pc.cyan("spawn agents")} to see available agents.`);
-  console.error(`  Run ${pc.cyan("spawn clouds")} to see available clouds.`);
-  console.error(`  Run ${pc.cyan("spawn help")} for usage information.`);
+  console.error(`  Run ${pc.cyan("jelma agents")} to see available agents.`);
+  console.error(`  Run ${pc.cyan("jelma clouds")} to see available clouds.`);
+  console.error(`  Run ${pc.cyan("jelma help")} for usage information.`);
   process.exit(1);
 }
 
@@ -261,7 +261,7 @@ async function handleDefaultCommand(
         );
       } else {
         console.error(pc.red("Error: --headless requires both <agent> and <cloud>"));
-        console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud> --headless --output json")}`);
+        console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud> --headless --output json")}`);
       }
       process.exit(3);
     }
@@ -279,7 +279,7 @@ async function handleDefaultCommand(
   }
   if (dryRun) {
     console.error(pc.red("Error: --dry-run requires both <agent> and <cloud>"));
-    console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud> --dry-run")}`);
+    console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud> --dry-run")}`);
     process.exit(1);
   }
   if (prompt) {
@@ -288,8 +288,8 @@ async function handleDefaultCommand(
   }
 
   // Check if the single argument is a cloud name before routing to agent-interactive.
-  // This fixes: `spawn digitalocean` telling users to run `spawn digitalocean` for
-  // setup instructions, but `spawn digitalocean` routing to "Unknown agent: digitalocean".
+  // This fixes: `jelma digitalocean` telling users to run `jelma digitalocean` for
+  // setup instructions, but `jelma digitalocean` routing to "Unknown agent: digitalocean".
   const cloudCheckResult = await asyncTryCatchIf(isNetworkError, () => loadManifest());
   if (cloudCheckResult.ok) {
     const resolvedCloud = resolveCloudKey(cloudCheckResult.data, agent);
@@ -311,7 +311,7 @@ async function handleDefaultCommand(
 /** Show "prompt requires cloud" error and suggest available clouds for the agent */
 async function suggestCloudsForPrompt(agent: string): Promise<void> {
   console.error(pc.red("Error: --prompt requires both <agent> and <cloud>"));
-  console.error(`\nUsage: ${pc.cyan(`spawn ${agent} <cloud> --prompt "your prompt here"`)}`);
+  console.error(`\nUsage: ${pc.cyan(`jelma ${agent} <cloud> --prompt "your prompt here"`)}`);
 
   const manifestResult = await asyncTryCatchIf(isNetworkError, () => loadManifest());
   if (manifestResult.ok) {
@@ -331,10 +331,10 @@ async function suggestCloudsForPrompt(agent: string): Promise<void> {
     const agentName = manifest.agents[resolvedAgent].name;
     console.error(`\nAvailable clouds for ${pc.bold(agentName)}:`);
     for (const c of clouds.slice(0, 5)) {
-      console.error(`  ${pc.cyan(`spawn ${resolvedAgent} ${c} --prompt "..."`)}`);
+      console.error(`  ${pc.cyan(`jelma ${resolvedAgent} ${c} --prompt "..."`)}`);
     }
     if (clouds.length > 5) {
-      console.error(`  Run ${pc.cyan(`spawn ${resolvedAgent}`)} to see all ${clouds.length} clouds.`);
+      console.error(`  Run ${pc.cyan(`jelma ${resolvedAgent}`)} to see all ${clouds.length} clouds.`);
     }
   }
 }
@@ -409,7 +409,7 @@ async function resolvePrompt(args: string[]): Promise<
       "--prompt",
       "-p",
     ],
-    'spawn <agent> <cloud> --prompt "your prompt here"',
+    'jelma <agent> <cloud> --prompt "your prompt here"',
   );
 
   const [promptFile, finalArgs] = extractFlagValue(
@@ -418,15 +418,15 @@ async function resolvePrompt(args: string[]): Promise<
       "--prompt-file",
       "-f",
     ],
-    "spawn <agent> <cloud> --prompt-file instructions.txt",
+    "jelma <agent> <cloud> --prompt-file instructions.txt",
   );
   filteredArgs = finalArgs;
 
   if (prompt && promptFile) {
     console.error(pc.red("Error: --prompt and --prompt-file cannot be used together"));
     console.error("\nUse one or the other:");
-    console.error(`  ${pc.cyan('spawn <agent> <cloud> --prompt "your prompt here"')}`);
-    console.error(`  ${pc.cyan("spawn <agent> <cloud> --prompt-file instructions.txt")}`);
+    console.error(`  ${pc.cyan('jelma <agent> <cloud> --prompt "your prompt here"')}`);
+    console.error(`  ${pc.cyan("jelma <agent> <cloud> --prompt-file instructions.txt")}`);
     process.exit(1);
   }
 
@@ -444,12 +444,12 @@ async function resolvePrompt(args: string[]): Promise<
 async function handleNoCommand(prompt: string | undefined, dryRun?: boolean): Promise<void> {
   if (dryRun) {
     console.error(pc.red("Error: --dry-run requires both <agent> and <cloud>"));
-    console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud> --dry-run")}`);
+    console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud> --dry-run")}`);
     process.exit(1);
   }
   if (prompt) {
     console.error(pc.red("Error: --prompt requires both <agent> and <cloud>"));
-    console.error(`\nUsage: ${pc.cyan('spawn <agent> <cloud> --prompt "your prompt here"')}`);
+    console.error(`\nUsage: ${pc.cyan('jelma <agent> <cloud> --prompt "your prompt here"')}`);
     process.exit(1);
   }
   if (isInteractiveTTY()) {
@@ -458,11 +458,11 @@ async function handleNoCommand(prompt: string | undefined, dryRun?: boolean): Pr
     console.error(pc.yellow("Cannot run interactive picker: not a terminal"));
     console.error(pc.dim("  (stdin/stdout is piped or redirected)"));
     console.error();
-    console.error(`  Launch directly:  ${pc.cyan("spawn <agent> <cloud>")}`);
-    console.error(`  Rerun previous:   ${pc.cyan("spawn list")}`);
-    console.error(`  Browse agents:    ${pc.cyan("spawn agents")}`);
-    console.error(`  Browse clouds:    ${pc.cyan("spawn clouds")}`);
-    console.error(`  Full help:        ${pc.cyan("spawn help")}`);
+    console.error(`  Launch directly:  ${pc.cyan("jelma <agent> <cloud>")}`);
+    console.error(`  Rerun previous:   ${pc.cyan("jelma list")}`);
+    console.error(`  Browse agents:    ${pc.cyan("jelma agents")}`);
+    console.error(`  Browse clouds:    ${pc.cyan("jelma clouds")}`);
+    console.error(`  Full help:        ${pc.cyan("jelma help")}`);
     console.error();
     process.exit(1);
   }
@@ -485,7 +485,7 @@ function formatCacheAge(seconds: number): string {
 }
 
 function showVersion(): void {
-  console.log(`spawn v${VERSION}`);
+  console.log(`jelma v${VERSION}`);
   const binPath = process.argv[1];
   if (binPath) {
     console.log(pc.dim(`  ${binPath}`));
@@ -497,8 +497,8 @@ function showVersion(): void {
   );
   const age = getCacheAge();
   console.log(pc.dim(`  manifest cache: ${formatCacheAge(age)}`));
-  console.log(pc.dim("  https://github.com/OpenRouterTeam/spawn"));
-  console.log(pc.dim(`  Run ${pc.cyan("spawn feedback")} to tell us what to improve.`));
+  console.log(pc.dim("  https://github.com/jelmaai/jelma"));
+  console.log(pc.dim(`  Run ${pc.cyan("jelma feedback")} to tell us what to improve.`));
 }
 
 const IMMEDIATE_COMMANDS: Record<string, () => void> = {
@@ -550,7 +550,7 @@ const STATUS_COMMANDS = new Set([
   "ps",
 ]);
 
-// Common verb prefixes that users naturally try (e.g. "spawn run claude sprite")
+// Common verb prefixes that users naturally try (e.g. "jelma run claude sprite")
 // These are not real subcommands -- we strip them and forward to the default handler
 const VERB_ALIASES = new Set([
   "run",
@@ -565,13 +565,13 @@ function warnExtraArgs(filteredArgs: string[], maxExpected: number): void {
   const extra = filteredArgs.slice(maxExpected);
   if (extra.length > 0) {
     console.error(pc.yellow(`Extra argument${extra.length > 1 ? "s" : ""} ignored: ${extra.join(", ")}`));
-    console.error(pc.dim(`  Usage: spawn <agent> <cloud> [--prompt "..."]`));
+    console.error(pc.dim(`  Usage: jelma <agent> <cloud> [--prompt "..."]`));
     console.error();
   }
 }
 
 /** Parse -a/--agent <agent> and -c/--cloud <cloud> filter flags from args.
- *  Also accepts a bare positional arg as a filter (e.g. "spawn list claude"). */
+ *  Also accepts a bare positional arg as a filter (e.g. "jelma list claude"). */
 function parseListFilters(args: string[]): {
   agentFilter?: string;
   cloudFilter?: string;
@@ -583,7 +583,7 @@ function parseListFilters(args: string[]): {
     if (args[i] === "-a" || args[i] === "--agent") {
       if (!args[i + 1] || args[i + 1].startsWith("-")) {
         console.error(pc.red(`Error: ${pc.bold(args[i])} requires an agent name`));
-        console.error(`\nUsage: ${pc.cyan("spawn list -a <agent>")}`);
+        console.error(`\nUsage: ${pc.cyan("jelma list -a <agent>")}`);
         process.exit(1);
       }
       agentFilter = args[i + 1];
@@ -591,7 +591,7 @@ function parseListFilters(args: string[]): {
     } else if (args[i] === "-c" || args[i] === "--cloud") {
       if (!args[i + 1] || args[i + 1].startsWith("-")) {
         console.error(pc.red(`Error: ${pc.bold(args[i])} requires a cloud name`));
-        console.error(`\nUsage: ${pc.cyan("spawn list -c <cloud>")}`);
+        console.error(`\nUsage: ${pc.cyan("jelma list -c <cloud>")}`);
         process.exit(1);
       }
       cloudFilter = args[i + 1];
@@ -601,7 +601,7 @@ function parseListFilters(args: string[]): {
     }
   }
 
-  // Support bare positional filter: "spawn list claude" or "spawn list hetzner"
+  // Support bare positional filter: "jelma list claude" or "jelma list hetzner"
   if (!agentFilter && !cloudFilter && positional.length > 0) {
     agentFilter = positional[0];
   }
@@ -686,11 +686,11 @@ async function dispatchSubcommand(cmd: string, filteredArgs: string[]): Promise<
     return;
   }
 
-  // "spawn agents <name>" or "spawn clouds <name>" -> show info for that name
+  // "jelma agents <name>" or "jelma clouds <name>" -> show info for that name
   if ((cmd === "agents" || cmd === "clouds") && filteredArgs.length > 1 && !filteredArgs[1].startsWith("-")) {
     const name = filteredArgs[1];
     warnExtraArgs(filteredArgs, 2);
-    console.error(pc.dim(`Tip: next time you can just run ${pc.cyan(`spawn ${name}`)}`));
+    console.error(pc.dim(`Tip: next time you can just run ${pc.cyan(`jelma ${name}`)}`));
     console.error();
     await showInfoOrError(name);
     return;
@@ -700,7 +700,7 @@ async function dispatchSubcommand(cmd: string, filteredArgs: string[]): Promise<
   await SUBCOMMANDS[cmd]();
 }
 
-/** Handle verb aliases like "spawn run claude sprite" -> "spawn claude sprite" */
+/** Handle verb aliases like "jelma run claude sprite" -> "jelma claude sprite" */
 async function dispatchVerbAlias(
   cmd: string,
   filteredArgs: string[],
@@ -725,12 +725,12 @@ async function dispatchVerbAlias(
     return;
   }
   console.error(pc.red(`Error: ${pc.bold(cmd)} requires an agent and cloud`));
-  console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud>")}`);
-  console.error(pc.dim(`  The "${cmd}" keyword is optional -- just use ${pc.cyan("spawn <agent> <cloud>")} directly.`));
+  console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud>")}`);
+  console.error(pc.dim(`  The "${cmd}" keyword is optional -- just use ${pc.cyan("jelma <agent> <cloud>")} directly.`));
   process.exit(1);
 }
 
-/** Handle slash notation: "spawn claude/hetzner" -> "spawn claude hetzner" */
+/** Handle slash notation: "jelma claude/hetzner" -> "jelma claude hetzner" */
 async function dispatchSlashNotation(
   cmd: string,
   prompt: string | undefined,
@@ -742,7 +742,7 @@ async function dispatchSlashNotation(
   const parts = cmd.split("/");
   if (parts.length === 2 && parts[0] && parts[1]) {
     if (!headless) {
-      console.error(pc.dim(`Tip: use a space instead of slash: ${pc.cyan(`spawn ${parts[0]} ${parts[1]}`)}`));
+      console.error(pc.dim(`Tip: use a space instead of slash: ${pc.cyan(`jelma ${parts[0]} ${parts[1]}`)}`));
       console.error();
     }
     await handleDefaultCommand(parts[0], parts[1], prompt, dryRun, debug, headless, outputFormat);
@@ -798,7 +798,7 @@ async function dispatchCommand(
       cmdHelp();
       return;
     }
-    // Optional positional argument: spawn fix [spawn-id]
+    // Optional positional argument: jelma fix [spawn-id]
     const spawnId = filteredArgs[1] && !filteredArgs[1].startsWith("-") ? filteredArgs[1] : undefined;
     await cmdFix(spawnId);
     return;
@@ -846,7 +846,7 @@ async function dispatchCommand(
 async function main(): Promise<void> {
   const rawArgs = process.argv.slice(2);
 
-  // ── `spawn pick` — bypass all flag parsing; used by bash scripts ──────────
+  // ── `jelma pick` — bypass all flag parsing; used by bash scripts ──────────
   // Must be handled before expandEqualsFlags / resolvePrompt so that pick's
   // own --prompt flag is not mistakenly consumed by the top-level prompt logic.
   // Runs before initFeatureFlags() — this is a hot path called by shell
@@ -859,7 +859,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  // ── `spawn feedback` — bypass flag parsing; rest of args are the message ───
+  // ── `jelma feedback` — bypass flag parsing; rest of args are the message ───
   // Also runs before initFeatureFlags() for the same reason as `pick`.
   if (rawArgs[0] === "feedback") {
     await cmdFeedback(rawArgs.slice(1));
@@ -936,7 +936,7 @@ async function main(): Promise<void> {
     "sandbox",
     "skills",
   ]);
-  const betaFeatures = extractAllFlagValues(filteredArgs, "--beta", "spawn <agent> <cloud> --beta parallel");
+  const betaFeatures = extractAllFlagValues(filteredArgs, "--beta", "jelma <agent> <cloud> --beta parallel");
   const userOptedIntoBeta = betaFeatures.length > 0 || process.env.SPAWN_FAST === "1";
   for (const flag of betaFeatures) {
     if (!VALID_BETA_FEATURES.has(flag)) {
@@ -948,7 +948,7 @@ async function main(): Promise<void> {
       console.error(`  ${pc.cyan("docker")}      Use Docker CE app image on Hetzner/GCP (faster boot)`);
       console.error(`  ${pc.cyan("sandbox")}     Run local agents in a Docker container (sandboxed)`);
       console.error(`  ${pc.cyan("skills")}      Pre-install MCP servers and tools on the VM`);
-      console.error(`  ${pc.cyan("recursive")}   Install spawn CLI on VM for recursive spawning`);
+      console.error(`  ${pc.cyan("recursive")}   Install jelma CLI on VM for recursive spawning`);
       process.exit(1);
     }
   }
@@ -981,7 +981,7 @@ async function main(): Promise<void> {
       "--model",
       "-m",
     ],
-    'spawn <agent> <cloud> --model "openai/gpt-5.3-codex"',
+    'jelma <agent> <cloud> --model "openai/gpt-5.3-codex"',
   );
   filteredArgs.splice(0, filteredArgs.length, ...modelFilteredArgs);
   if (modelFlag) {
@@ -994,7 +994,7 @@ async function main(): Promise<void> {
     [
       "--config",
     ],
-    "spawn <agent> <cloud> --config setup.json",
+    "jelma <agent> <cloud> --config setup.json",
   );
   filteredArgs.splice(0, filteredArgs.length, ...configFilteredArgs);
 
@@ -1032,7 +1032,7 @@ async function main(): Promise<void> {
     [
       "--steps",
     ],
-    "spawn <agent> <cloud> --steps github,browser,telegram",
+    "jelma <agent> <cloud> --steps github,browser,telegram",
   );
   filteredArgs.splice(0, filteredArgs.length, ...stepsFilteredArgs);
   if (stepsFlag !== undefined) {
@@ -1046,7 +1046,7 @@ async function main(): Promise<void> {
     [
       "--output",
     ],
-    "spawn <agent> <cloud> --headless --output json",
+    "jelma <agent> <cloud> --headless --output json",
   );
   // Replace filteredArgs contents in-place (splice + push to maintain reference)
   filteredArgs.splice(0, filteredArgs.length, ...outputFilteredArgs);
@@ -1054,7 +1054,7 @@ async function main(): Promise<void> {
   // Validate --output value
   if (outputFormat && outputFormat !== "json") {
     console.error(pc.red(`Error: --output only supports "json" (got "${outputFormat}")`));
-    console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud> --headless --output json")}`);
+    console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud> --headless --output json")}`);
     process.exit(1);
   }
 
@@ -1064,7 +1064,7 @@ async function main(): Promise<void> {
     [
       "--name",
     ],
-    'spawn <agent> <cloud> --name "my-dev-box"',
+    'jelma <agent> <cloud> --name "my-dev-box"',
   );
   filteredArgs.splice(0, filteredArgs.length, ...nameFilteredArgs);
   if (nameFlag) {
@@ -1077,7 +1077,7 @@ async function main(): Promise<void> {
     [
       "--repo",
     ],
-    'spawn <agent> <cloud> --repo "user/my-template"',
+    'jelma <agent> <cloud> --repo "user/my-template"',
   );
   filteredArgs.splice(0, filteredArgs.length, ...repoFilteredArgs);
   if (repoFlag) {
@@ -1091,7 +1091,7 @@ async function main(): Promise<void> {
       "--zone",
       "--region",
     ],
-    "spawn <agent> gcp --zone us-east1-b",
+    "jelma <agent> gcp --zone us-east1-b",
   );
   filteredArgs.splice(0, filteredArgs.length, ...zoneFilteredArgs);
   if (zoneFlag) {
@@ -1108,7 +1108,7 @@ async function main(): Promise<void> {
       "--machine-type",
       "--size",
     ],
-    "spawn <agent> gcp --machine-type e2-standard-4",
+    "jelma <agent> gcp --machine-type e2-standard-4",
   );
   filteredArgs.splice(0, filteredArgs.length, ...sizeFilteredArgs);
   if (sizeFlag) {
@@ -1157,7 +1157,7 @@ async function main(): Promise<void> {
           );
         } else {
           console.error(pc.red("Error: --headless requires both <agent> and <cloud>"));
-          console.error(`\nUsage: ${pc.cyan("spawn <agent> <cloud> --headless --output json")}`);
+          console.error(`\nUsage: ${pc.cyan("jelma <agent> <cloud> --headless --output json")}`);
         }
         process.exit(3);
       }

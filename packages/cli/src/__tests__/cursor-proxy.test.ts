@@ -1,5 +1,5 @@
 /**
- * cursor-proxy.test.ts — Tests for the Cursor CLI → OpenRouter proxy.
+ * cursor-proxy.test.ts — Tests for the Cursor CLI → Neosantara proxy.
  * Covers: protobuf encoding, ConnectRPC framing, model details, deployment functions.
  */
 

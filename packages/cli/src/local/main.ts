@@ -5,7 +5,7 @@
 import type { CloudOrchestrator } from "../shared/orchestrate.js";
 
 import * as p from "@clack/prompts";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import pkg from "../../package.json" with { type: "json" };
 import { createCloudAgents } from "../shared/agent-setup.js";
 import { makeDockerRunner, runOrchestration } from "../shared/orchestrate.js";

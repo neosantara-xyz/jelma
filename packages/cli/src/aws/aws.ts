@@ -6,7 +6,7 @@ import type { CloudInitTier } from "../shared/agents.js";
 import { createHash, createHmac } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
@@ -612,7 +612,7 @@ export async function authenticate(): Promise<void> {
           logInfo(`AWS CLI ready with credentials cached by spawn. Using region: ${cachedRegion}`);
           return;
         }
-        logWarn("Credentials cached by spawn are invalid or expired");
+        logWarn("Credentials cached by jelma are invalid or expired");
         _state.accessKeyId = "";
         _state.secretAccessKey = "";
         delete process.env.AWS_ACCESS_KEY_ID;
@@ -1233,9 +1233,9 @@ export async function interactiveSession(cmd: string): Promise<number> {
   logWarn(`  ${DASHBOARD_URL}`);
   logWarn("");
   logInfo("To delete from CLI:");
-  logInfo("  spawn delete");
+  logInfo("  jelma delete");
   logInfo("To reconnect:");
-  logInfo("  spawn last");
+  logInfo("  jelma last");
   logInfo(`  or: ssh ${SSH_USER}@${_state.instanceIp}`);
 
   return exitCode;

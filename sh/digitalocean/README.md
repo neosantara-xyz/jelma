@@ -7,61 +7,61 @@ DigitalOcean Droplets via REST API. [DigitalOcean](https://www.digitalocean.com/
 #### Claude Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/claude.sh)
 ```
 
 #### OpenClaw
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/openclaw.sh)
 ```
 
 #### Codex CLI
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/codex.sh)
 ```
 
 #### OpenCode
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/opencode.sh)
 ```
 
 #### Kilo Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/kilocode.sh)
 ```
 
 #### Hermes
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/hermes.sh)
 ```
 
 #### Junie
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/junie.sh)
 ```
 
 #### Cursor CLI
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/cursor.sh)
 ```
 
 #### Pi
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/pi.sh)
 ```
 
 #### T3 Code
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/t3code.sh)
 ```
 
 ## Environment Variables
@@ -77,7 +77,7 @@ bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/t3code.sh)
 
 ### Pre-flight readiness
 
-Before region/size selection, the CLI checks DigitalOcean account state (`GET /v2/account`), SSH keys registered on your account, and OpenRouter credentials. If something blocks deployment (unverified email, locked or warning billing status, droplet quota, missing SSH registration, or invalid OpenRouter key), you get guided steps and a readiness checklist. Billing issues open the add-payment flow: `https://cloud.digitalocean.com/account/billing?defer-onboarding-for=or&open-add-payment-method=true`.
+Before region/size selection, the CLI checks DigitalOcean account state (`GET /v2/account`), SSH keys registered on your account, and Neosantara credentials. If something blocks deployment (unverified email, locked or warning billing status, droplet quota, missing SSH registration, or invalid Neosantara key), you get guided steps and a readiness checklist. Billing issues open the add-payment flow: `https://cloud.digitalocean.com/account/billing?defer-onboarding-for=or&open-add-payment-method=true`.
 
 OAuth tokens requested by the CLI include `tag:create` so droplets can be tagged `spawn` for attribution. If your token cannot create tags, the CLI retries creation without the tag.
 
@@ -112,8 +112,8 @@ OAuth tokens requested by the CLI include `tag:create` so droplets can be tagged
 ```bash
 DO_DROPLET_NAME=dev-mk1 \
 DIGITALOCEAN_ACCESS_TOKEN=your-token \
-OPENROUTER_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/claude.sh)
+NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
+  bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/claude.sh)
 ```
 
 Override region and droplet size:
@@ -122,8 +122,8 @@ Override region and droplet size:
 DO_REGION=fra1 \
 DO_DROPLET_SIZE=s-1vcpu-2gb \
 DIGITALOCEAN_ACCESS_TOKEN=your-token \
-OPENROUTER_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/claude.sh)
+NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
+  bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/claude.sh)
 ```
 
 ## Interactive Region and Size Picker
@@ -131,5 +131,5 @@ OPENROUTER_API_KEY=sk-or-v1-xxxxx \
 Pass `--custom` to select from a menu of regions and droplet sizes interactively:
 
 ```bash
-bash <(curl -fsSL https://openrouter.ai/labs/spawn/digitalocean/claude.sh) --custom
+bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/digitalocean/claude.sh) --custom
 ```

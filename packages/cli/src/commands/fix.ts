@@ -3,14 +3,14 @@ import type { Manifest } from "../manifest.js";
 import type { CloudRunner } from "../shared/agent-setup.js";
 
 import * as p from "@clack/prompts";
-import { getErrorMessage, isString } from "@openrouter/spawn-shared";
+import { getErrorMessage, isString } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import { getActiveServers } from "../history.js";
 import { loadManifest } from "../manifest.js";
 import { validateConnectionIP, validateIdentifier, validateServerIdentifier, validateUsername } from "../security.js";
 import { createCloudAgents, setupAutoUpdate, wrapSshCall } from "../shared/agent-setup.js";
 import { generateEnvConfig } from "../shared/agents.js";
-import { loadSavedOpenRouterKey } from "../shared/oauth.js";
+import { loadSavedNeosantaraKey } from "../shared/oauth.js";
 import { injectEnvVarsToRunner } from "../shared/orchestrate.js";
 import { getHistoryPath } from "../shared/paths.js";
 import { asyncTryCatch, tryCatch } from "../shared/result.js";
@@ -51,7 +51,7 @@ export interface FixOptions {
 export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, options?: FixOptions): Promise<void> {
   const conn = record.connection;
   if (!conn) {
-    p.log.error("Cannot fix: spawn has no connection information.");
+    p.log.error("Cannot fix: jelma has no connection information.");
     p.log.info("This usually means provisioning failed before SSH was established.");
     return;
   }
@@ -60,7 +60,7 @@ export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, o
     return;
   }
   if (conn.ip === "sprite-console") {
-    p.log.error("Cannot fix: Sprite console connections are not supported by 'spawn fix'.");
+    p.log.error("Cannot fix: Sprite console connections are not supported by 'jelma fix'.");
     p.log.info("SSH directly into the VM and re-run the setup script manually.");
     return;
   }
@@ -86,7 +86,7 @@ export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, o
   });
   if (!validationResult.ok) {
     p.log.error(`Security validation failed: ${getErrorMessage(validationResult.error)}`);
-    p.log.info("Your spawn history file may be corrupted or tampered with.");
+    p.log.info("Your jelma history file may be corrupted or tampered with.");
     p.log.info(`Location: ${getHistoryPath()}`);
     return;
   }
@@ -105,22 +105,22 @@ export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, o
   const agentManifest = man.agents[record.agent];
   if (!agentManifest) {
     p.log.error(`Unknown agent: ${pc.bold(record.agent)}`);
-    p.log.info("This spawn may have been created with an agent that no longer exists.");
+    p.log.info("This jelma may have been created with an agent that no longer exists.");
     return;
   }
 
-  // Ensure OPENROUTER_API_KEY is available
-  if (!process.env.OPENROUTER_API_KEY) {
-    const savedKey = loadSavedOpenRouterKey();
+  // Ensure NEOSANTARA_API_KEY is available
+  if (!process.env.NEOSANTARA_API_KEY) {
+    const savedKey = loadSavedNeosantaraKey();
     if (savedKey) {
-      process.env.OPENROUTER_API_KEY = savedKey;
+      process.env.NEOSANTARA_API_KEY = savedKey;
     } else {
-      p.log.error("No OpenRouter API key found.");
-      p.log.info("Set OPENROUTER_API_KEY in your environment, or run a new spawn to authenticate via OAuth.");
+      p.log.error("No Neosantara API key found.");
+      p.log.info("Set NEOSANTARA_API_KEY in your environment, or run a new jelma to authenticate via OAuth.");
       return;
     }
   }
-  const apiKey = process.env.OPENROUTER_API_KEY ?? "";
+  const apiKey = process.env.NEOSANTARA_API_KEY ?? "";
 
   const label = record.name || conn.server_name || conn.ip;
   const agentDisplayName = agentManifest.name;
@@ -161,7 +161,7 @@ export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, o
     await ensureDaytonaAutoUpdate(conn, record.agent);
 
     p.log.success(`${pc.bold(agentDisplayName)} fixed successfully!`);
-    p.log.info(`Reconnect: ${pc.cyan("spawn last")}`);
+    p.log.info(`Reconnect: ${pc.cyan("jelma last")}`);
     return;
   }
 
@@ -238,7 +238,7 @@ export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, o
 
   console.log();
   p.log.success(`${pc.bold(agentDisplayName)} fixed successfully!`);
-  p.log.info(`Reconnect: ${pc.cyan("spawn last")}`);
+  p.log.info(`Reconnect: ${pc.cyan("jelma last")}`);
 }
 
 export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<void> {
@@ -246,7 +246,7 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
 
   if (servers.length === 0) {
     p.log.info("No active spawns to fix.");
-    p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to create a spawn first.`);
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create a jelma first.`);
     return;
   }
 
@@ -258,7 +258,7 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
     const record = servers.find((r) => r.id === spawnId || r.name === spawnId || r.connection?.server_name === spawnId);
     if (!record) {
       p.log.error(`Spawn not found: ${pc.bold(spawnId)}`);
-      p.log.info(`Run ${pc.cyan("spawn list")} to see your active spawns.`);
+      p.log.info(`Run ${pc.cyan("jelma list")} to see your active spawns.`);
       process.exit(1);
     }
     await fixSpawn(record, manifest, options);
@@ -273,8 +273,8 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
 
   // Non-interactive fallback (multiple servers require picking)
   if (!isInteractiveTTY()) {
-    p.log.error("spawn fix requires an interactive terminal or a spawn name/ID.");
-    p.log.info(`Usage: ${pc.cyan("spawn fix <spawn-id>")}`);
+    p.log.error("jelma fix requires an interactive terminal or a jelma name/ID.");
+    p.log.info(`Usage: ${pc.cyan("jelma fix <spawn-id>")}`);
     process.exit(1);
   }
 
@@ -286,7 +286,7 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
   }));
 
   const selected = await p.select({
-    message: "Select a spawn to fix",
+    message: "Select a jelma to fix",
     options: pickerOptions,
   });
 

@@ -204,7 +204,7 @@ describe("cmdUpdate", () => {
       runUpdate: updateFn,
     });
 
-    expect(clack.logInfo).toHaveBeenCalledWith(expect.stringContaining("Run spawn again"));
+    expect(clack.logInfo).toHaveBeenCalledWith(expect.stringContaining("Run jelma again"));
   });
 
   it("shows manual install command after failed update", async () => {

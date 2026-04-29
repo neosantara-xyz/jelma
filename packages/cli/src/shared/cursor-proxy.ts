@@ -1,6 +1,6 @@
-// cursor-proxy.ts — OpenRouter proxy for Cursor CLI
+// cursor-proxy.ts — Neosantara proxy for Cursor CLI
 // Deploys a local translation proxy that intercepts Cursor's proprietary
-// ConnectRPC/protobuf protocol and translates it to OpenRouter's OpenAI-compatible API.
+// ConnectRPC/protobuf protocol and translates it to Neosantara's OpenAI-compatible API.
 //
 // Architecture:
 //   Cursor CLI → Caddy (HTTPS/H2, port 443) → split routing:
@@ -126,7 +126,7 @@ function log(msg){try{appendFileSync(LOG,new Date().toISOString()+" "+msg+"\\n")
 
 ${PROTO_HELPERS}
 
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || "";
+const OPENROUTER_KEY = process.env.NEOSANTARA_API_KEY || "";
 
 const server = http2.createServer();
 server.on("stream", (stream, headers) => {
@@ -152,9 +152,9 @@ server.on("stream", (stream, headers) => {
     stream.respond({":status": 200, "content-type": "application/connect+proto"});
 
     if (OPENROUTER_KEY) {
-      callOpenRouter(msg, stream);
+      callNeosantara(msg, stream);
     } else {
-      stream.write(tdf("Cursor proxy is working but OPENROUTER_API_KEY is not set. "));
+      stream.write(tdf("Cursor proxy is working but NEOSANTARA_API_KEY is not set. "));
       stream.write(tdf("Please configure the API key to connect to real models."));
       stream.write(tef());
       stream.end(ct());
@@ -165,16 +165,16 @@ server.on("stream", (stream, headers) => {
   });
 });
 
-async function callOpenRouter(msg, stream) {
+async function callNeosantara(msg, stream) {
   try {
-    const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const r = await fetch("https://api.neosantara.xyz/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + OPENROUTER_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openrouter/auto",
+        model: "neosantara/auto",
         messages: [{ role: "user", content: msg }],
         stream: true,
       }),
@@ -182,7 +182,7 @@ async function callOpenRouter(msg, stream) {
 
     if (!r.ok) {
       const errText = await r.text().catch(() => "");
-      stream.write(tdf("OpenRouter error " + r.status + ": " + errText.slice(0, 200)));
+      stream.write(tdf("Neosantara error " + r.status + ": " + errText.slice(0, 200)));
       stream.write(tef());
       stream.end(ct());
       return;
@@ -213,9 +213,9 @@ async function callOpenRouter(msg, stream) {
 
     stream.write(tef());
     stream.end(ct());
-    log("  OpenRouter stream complete");
+    log("  Neosantara stream complete");
   } catch(e) {
-    log("  OpenRouter error: " + e.message);
+    log("  Neosantara error: " + e.message);
     try {
       stream.write(tdf("Proxy error: " + e.message));
       stream.write(tef());
@@ -276,7 +276,7 @@ const CURSOR_DOMAINS = [
  * Installs Caddy, uploads proxy scripts, writes Caddyfile, configures /etc/hosts.
  */
 export async function setupCursorProxy(runner: CloudRunner): Promise<void> {
-  logStep("Deploying Cursor→OpenRouter proxy...");
+  logStep("Deploying Cursor→Neosantara proxy...");
 
   // 1. Install Caddy if not present
   const installCaddy = [
@@ -414,7 +414,7 @@ export async function startCursorProxy(runner: CloudRunner): Promise<void> {
     "RestartSec=3",
     "User=$(whoami)",
     "Environment=HOME=$HOME",
-    'Environment=OPENROUTER_API_KEY=$(grep OPENROUTER_API_KEY ~/.spawnrc 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\'")',
+    'Environment=NEOSANTARA_API_KEY=$(grep NEOSANTARA_API_KEY ~/.spawnrc 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\'")',
     "Environment=PATH=$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin",
     "[Install]",
     "WantedBy=multi-user.target",

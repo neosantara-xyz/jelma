@@ -5,7 +5,7 @@ import type { VMConnection } from "../history.js";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { dirname as posixDirname } from "node:path/posix";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import { getUserHome } from "../shared/paths.js";
 import { asyncTryCatch } from "../shared/result.js";
 import { killWithTimeout, sleep, spawnInteractive, validateRemotePath } from "../shared/ssh.js";
@@ -706,7 +706,7 @@ export async function downloadFileSprite(remotePath: string, localPath: string):
  */
 export async function installSpriteKeepAlive(): Promise<void> {
   logStep("Installing Sprite keep-alive...");
-  const scriptUrl = "https://openrouter.ai/labs/spawn/shared/sprite-keep-running.sh";
+  const scriptUrl = "https://raw.githubusercontent.com/jelmaai/jelma/main/sh/shared/sprite-keep-running.sh";
   const keepAliveResult = await asyncTryCatch(() =>
     runSprite(
       "mkdir -p ~/.local/bin && " +
@@ -778,8 +778,8 @@ export async function interactiveSession(cmd: string, spawnFn?: (args: string[])
         sessionScript,
       ];
 
-  const spawn = spawnFn ?? spawnInteractive;
-  const exitCode = spawn(args);
+  const runSpawn = spawnFn ?? spawnInteractive;
+  const exitCode = runSpawn(args);
 
   // Post-session summary
   process.stderr.write("\n");
@@ -789,7 +789,7 @@ export async function interactiveSession(cmd: string, spawnFn?: (args: string[])
   logInfo("To destroy:");
   logInfo(`  sprite destroy ${_state.name}`);
   logInfo("To reconnect:");
-  logInfo("  spawn last");
+  logInfo("  jelma last");
   logInfo(`  or: sprite console -s ${_state.name}`);
 
   return exitCode;

@@ -5,7 +5,7 @@ import { execFileSync as nodeExecFileSync } from "node:child_process";
 import fs from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { getErrorMessage, hasStatus } from "@openrouter/spawn-shared";
+import { getErrorMessage, hasStatus } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import pkg from "../package.json" with { type: "json" };
 import { RAW_BASE, SPAWN_CDN, VERSION_URL } from "./manifest.js";
@@ -172,7 +172,7 @@ function printUpdateBanner(latestVersion: string): void {
 
 /**
  * Show a non-blocking update notice without auto-installing.
- * Users can update manually with `spawn update` or set SPAWN_AUTO_UPDATE=1.
+ * Users can update manually with `jelma update` or set SPAWN_AUTO_UPDATE=1.
  */
 function printUpdateNotice(latestVersion: string): void {
   console.error();
@@ -183,13 +183,13 @@ function printUpdateNotice(latestVersion: string): void {
       pc.green(pc.bold(`v${latestVersion}`)),
   );
   console.error(
-    pc.dim(`  Run ${pc.cyan("spawn update")} to install, or set SPAWN_AUTO_UPDATE=1 for automatic updates`),
+    pc.dim(`  Run ${pc.cyan("jelma update")} to install, or set SPAWN_AUTO_UPDATE=1 for automatic updates`),
   );
   console.error();
 }
 
 /**
- * Find the spawn binary to re-exec after an update.
+ * Find the jelma binary to re-exec after an update.
  *
  * Prefers PATH resolution over process.argv[1] because the installer may place
  * the new binary in a different directory than where the currently running
@@ -229,9 +229,9 @@ function reExecWithArgs(): void {
   const binPath = findUpdatedBinary();
 
   if (args.length === 0) {
-    console.error(pc.dim("  Restarting spawn with updated version..."));
+    console.error(pc.dim("  Restarting jelma with updated version..."));
   } else {
-    console.error(pc.dim(`  Rerunning: spawn ${args.join(" ")}`));
+    console.error(pc.dim(`  Rerunning: jelma ${args.join(" ")}`));
   }
   console.error();
 
@@ -293,7 +293,7 @@ function performAutoUpdate(latestVersion: string, jsonOutput = false): void {
   const installCmd = getInstallCmd(SPAWN_CDN);
 
   // When JSON output is active, redirect install script stdout to stderr to
-  // avoid polluting stdout with [spawn] install messages before the JSON result.
+  // avoid polluting stdout with [jelma] install messages before the JSON result.
   const installStdio: ExecFileSyncOptions["stdio"] = jsonOutput
     ? [
         "pipe",
@@ -399,7 +399,7 @@ function performAutoUpdate(latestVersion: string, jsonOutput = false): void {
  * Caches successful checks for 1 hour to avoid blocking every run with network I/O.
  *
  * @param jsonOutput - When true, redirects install script stdout to stderr so
- *   [spawn] install messages do not pollute structured JSON output on stdout.
+ *   [jelma] install messages do not pollute structured JSON output on stdout.
  */
 export async function checkForUpdates(jsonOutput = false): Promise<void> {
   // Skip in test environment

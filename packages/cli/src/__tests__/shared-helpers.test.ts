@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { hasStatus, toObjectArray, toRecord } from "@openrouter/spawn-shared";
+import { hasStatus, toObjectArray, toRecord } from "@neosantara/jelma-shared";
 import { generateEnvConfig } from "../shared/agents";
 
 // ─── generateEnvConfig ──────────────────────────────────────────────────────

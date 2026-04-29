@@ -249,7 +249,7 @@ describe("injectSpawnSkill", () => {
     // Extract the base64 string from the command
     const b64Match = capturedCmd.match(/printf '%s' '([A-Za-z0-9+/=]+)'/);
     expect(b64Match).not.toBeNull();
-    // Decode and verify it contains spawn skill content
+    // Decode and verify it contains jelma skill content
     const decoded = Buffer.from(b64Match![1], "base64").toString("utf-8");
     expect(decoded).toContain("Spawn");
     expect(decoded).toContain("spawn");
@@ -258,7 +258,7 @@ describe("injectSpawnSkill", () => {
 
 // ─── "spawn" step visibility tests ──────────────────────────────────────────
 
-describe("spawn step gating", () => {
+describe("jelma step gating", () => {
   const savedBeta = process.env.SPAWN_BETA;
 
   afterEach(() => {
@@ -269,7 +269,7 @@ describe("spawn step gating", () => {
     }
   });
 
-  it("spawn step appears when SPAWN_BETA includes recursive", async () => {
+  it("jelma step appears when SPAWN_BETA includes recursive", async () => {
     process.env.SPAWN_BETA = "recursive";
     const { getAgentOptionalSteps } = await import("../shared/agents.js");
     const steps = getAgentOptionalSteps("claude");
@@ -278,7 +278,7 @@ describe("spawn step gating", () => {
     expect(spawnStep!.defaultOn).toBe(true);
   });
 
-  it("spawn step does not appear without --beta recursive", async () => {
+  it("jelma step does not appear without --beta recursive", async () => {
     delete process.env.SPAWN_BETA;
     const { getAgentOptionalSteps } = await import("../shared/agents.js");
     const steps = getAgentOptionalSteps("claude");
@@ -286,7 +286,7 @@ describe("spawn step gating", () => {
     expect(spawnStep).toBeUndefined();
   });
 
-  it("spawn step appears alongside other beta features", async () => {
+  it("jelma step appears alongside other beta features", async () => {
     process.env.SPAWN_BETA = "tarball,recursive";
     const { getAgentOptionalSteps } = await import("../shared/agents.js");
     const steps = getAgentOptionalSteps("openclaw");

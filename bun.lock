@@ -19,7 +19,7 @@
     ".claude/skills/setup-spa": {
       "name": "spawn-slack-bot",
       "dependencies": {
-        "@openrouter/spawn-shared": "workspace:*",
+        "@neosantara/jelma-shared": "workspace:*",
         "@slack/bolt": "4.6.0",
         "@slack/types": "^2.14.0",
         "@slack/web-api": "^7.14.1",
@@ -28,7 +28,7 @@
       },
     },
     "packages/cli": {
-      "name": "@openrouter/spawn",
+      "name": "@neosantara/jelma",
       "version": "0.31.0",
       "bin": {
         "spawn": "cli.js",
@@ -36,7 +36,7 @@
       "dependencies": {
         "@clack/prompts": "1.0.0",
         "@daytonaio/sdk": "0.160.0",
-        "@openrouter/spawn-shared": "workspace:*",
+        "@neosantara/jelma-shared": "workspace:*",
         "picocolors": "1.1.1",
         "valibot": "1.2.0",
       },
@@ -46,7 +46,7 @@
       },
     },
     "packages/shared": {
-      "name": "@openrouter/spawn-shared",
+      "name": "@neosantara/jelma-shared",
       "version": "0.2.0",
       "dependencies": {
         "valibot": "1.2.0",
@@ -218,9 +218,9 @@
 
     "@nodelib/fs.walk": ["@nodelib/fs.walk@1.2.8", "", { "dependencies": { "@nodelib/fs.scandir": "2.1.5", "fastq": "^1.6.0" } }, "sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg=="],
 
-    "@openrouter/spawn": ["@openrouter/spawn@workspace:packages/cli"],
+    "@neosantara/jelma": ["@neosantara/jelma@workspace:packages/cli"],
 
-    "@openrouter/spawn-shared": ["@openrouter/spawn-shared@workspace:packages/shared"],
+    "@neosantara/jelma-shared": ["@neosantara/jelma-shared@workspace:packages/shared"],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.1", "", {}, "sha512-gLyJlPHPZYdAk1JENA9LeHejZe1Ti77/pTeFm/nMXmQH/HFZlcS/O2XJB+L8fkbrNSqhdtlvjBVjxwUYanNH5Q=="],
 

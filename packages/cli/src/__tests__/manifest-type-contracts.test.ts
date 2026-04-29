@@ -20,7 +20,7 @@ import { resolve } from "node:path";
  * - config_files keys are strings (file paths)
  * - deps is an array of strings when present
  * - Cloud provision/exec/interactive methods are non-empty strings
- * - Agent env contains OPENROUTER_API_KEY (mandatory per CLAUDE.md)
+ * - Agent env contains NEOSANTARA_API_KEY (mandatory per CLAUDE.md)
  *
  * Unlike manifest-integrity.test.ts which checks truthiness, these tests
  * verify exact types to prevent subtle runtime bugs from type mismatches.
@@ -84,19 +84,19 @@ describe("Agent required field types", () => {
   });
 });
 
-// ── Agent OPENROUTER_API_KEY requirement ──────────────────────────────────
+// ── Agent NEOSANTARA_API_KEY requirement ──────────────────────────────────
 
-describe("Agent OPENROUTER_API_KEY requirement", () => {
-  it("all agents should reference OPENROUTER_API_KEY in env", () => {
+describe("Agent NEOSANTARA_API_KEY requirement", () => {
+  it("all agents should reference NEOSANTARA_API_KEY in env", () => {
     for (const [key, agent] of allAgents) {
-      // Per CLAUDE.md: "OpenRouter injection is mandatory"
-      // Every agent's env should contain OPENROUTER_API_KEY as a key
-      // OR reference it in a value via ${OPENROUTER_API_KEY}
+      // Per CLAUDE.md: "Neosantara injection is mandatory"
+      // Every agent's env should contain NEOSANTARA_API_KEY as a key
+      // OR reference it in a value via ${NEOSANTARA_API_KEY}
       const envKeys = Object.keys(agent.env);
       const envValues = Object.values(agent.env);
-      const hasKeyDirect = envKeys.includes("OPENROUTER_API_KEY");
-      const hasKeyRef = envValues.some((v) => v.includes("OPENROUTER_API_KEY"));
-      expect(hasKeyDirect || hasKeyRef, `agent "${key}" missing OPENROUTER_API_KEY`).toBe(true);
+      const hasKeyDirect = envKeys.includes("NEOSANTARA_API_KEY");
+      const hasKeyRef = envValues.some((v) => v.includes("NEOSANTARA_API_KEY"));
+      expect(hasKeyDirect || hasKeyRef, `agent "${key}" missing NEOSANTARA_API_KEY`).toBe(true);
     }
   });
 });

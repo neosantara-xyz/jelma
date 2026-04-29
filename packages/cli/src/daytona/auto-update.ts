@@ -2,13 +2,13 @@
 
 import type { VMConnection } from "../history.js";
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import { logWarn } from "../shared/ui.js";
 import { resolveAgent } from "./agents.js";
 import { setupAutoUpdateSessionForSandbox } from "./daytona.js";
 
 /**
- * Re-arm Daytona auto-update when the saved record says it was enabled at spawn time.
+ * Re-arm Daytona auto-update when the saved record says it was enabled at jelma time.
  */
 export async function ensureDaytonaAutoUpdate(connection: VMConnection, agentKey: string): Promise<void> {
   if (connection.cloud !== "daytona") {

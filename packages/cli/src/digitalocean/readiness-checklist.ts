@@ -4,7 +4,7 @@ import type { ReadinessBlockerCode, ReadinessState } from "./readiness.js";
 
 import pc from "picocolors";
 
-/** Display order: DO → email → SSH → payment → OpenRouter → capacity. */
+/** Display order: DO → email → SSH → payment → Neosantara → capacity. */
 export const READINESS_CHECKLIST_ROWS: {
   code: ReadinessBlockerCode;
   label: string;
@@ -26,8 +26,8 @@ export const READINESS_CHECKLIST_ROWS: {
     label: "Payment method added",
   },
   {
-    code: "openrouter_missing",
-    label: "OpenRouter connected",
+    code: "neosantara_missing",
+    label: "Neosantara connected",
   },
   {
     code: "droplet_limit",

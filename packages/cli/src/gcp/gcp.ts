@@ -5,7 +5,7 @@ import type { CloudInitTier } from "../shared/agents.js";
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isString, toObjectArray } from "@openrouter/spawn-shared";
+import { isString, toObjectArray } from "@neosantara/jelma-shared";
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
 import { getUserHome } from "../shared/paths.js";
@@ -217,7 +217,7 @@ function requireGcloudCmd(): string {
       "gcloud CLI not found. Install it first:\n" +
         "  macOS:  brew install --cask google-cloud-sdk\n" +
         "  Linux:  curl https://sdk.cloud.google.com | bash\n" +
-        "  Or run: spawn <agent> gcp  (auto-installs gcloud)",
+        "  Or run: jelma <agent> gcp  (auto-installs gcloud)",
     );
   }
   return cmd;
@@ -1134,9 +1134,9 @@ export async function interactiveSession(cmd: string): Promise<number> {
   logWarn(`  ${DASHBOARD_URL}`);
   logWarn("");
   logInfo("To delete from CLI:");
-  logInfo("  spawn delete");
+  logInfo("  jelma delete");
   logInfo("To reconnect:");
-  logInfo("  spawn last");
+  logInfo("  jelma last");
   logInfo(`  or: gcloud compute ssh ${_state.instanceName} --zone=${_state.zone} --project=${_state.project}`);
 
   return exitCode;

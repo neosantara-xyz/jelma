@@ -11,4 +11,4 @@ export {
   tryCatch,
   tryCatchIf,
   unwrapOr,
-} from "@openrouter/spawn-shared";
+} from "@neosantara/jelma-shared";

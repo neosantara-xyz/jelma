@@ -1,8 +1,8 @@
-// shared/oauth.ts — OpenRouter OAuth flow + API key management
+// shared/oauth.ts — Neosantara OAuth flow + API key management
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { getErrorMessage, isString } from "@openrouter/spawn-shared";
+import { getErrorMessage, isString } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { OAUTH_CODE_REGEX } from "./oauth-constants.js";
 import { parseJsonObj, parseJsonWith } from "./parse.js";
@@ -18,8 +18,8 @@ const OAuthKeySchema = v.object({
 
 // ─── Key Validation ──────────────────────────────────────────────────────────
 
-/** Validate an OpenRouter API key via the public auth endpoint (used by readiness + key flows). */
-export async function verifyOpenRouterApiKey(apiKey: string): Promise<boolean> {
+/** Validate an Neosantara API key via the public auth endpoint (used by readiness + key flows). */
+export async function verifyNeosantaraApiKey(apiKey: string): Promise<boolean> {
   if (!apiKey) {
     return false;
   }
@@ -28,7 +28,7 @@ export async function verifyOpenRouterApiKey(apiKey: string): Promise<boolean> {
   }
 
   const result = await asyncTryCatchIf(isNetworkError, async () => {
-    const resp = await fetch("https://openrouter.ai/api/v1/auth/key", {
+    const resp = await fetch("https://app.neosantara.xyz/api/v1/auth/key", {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
@@ -38,8 +38,8 @@ export async function verifyOpenRouterApiKey(apiKey: string): Promise<boolean> {
       return true;
     }
     if (resp.status === 401 || resp.status === 403) {
-      logError("OpenRouter API key is invalid or expired");
-      logError("Get a new key at: https://openrouter.ai/settings/keys");
+      logError("Neosantara API key is invalid or expired");
+      logError("Get a new key at: https://app.neosantara.xyz/api-keys");
       return false;
     }
     return true; // unknown status = don't block
@@ -84,21 +84,21 @@ const SUCCESS_HTML = `<html><head><meta name="viewport" content="width=device-wi
 
 const ERROR_HTML = `<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${OAUTH_CSS}h1{color:#dc2626}@media(prefers-color-scheme:dark){h1{color:#ef4444}}</style></head><body><div class="card"><div class="icon">&#10007;</div><h1>Authentication Failed</h1><p>Invalid or missing state parameter (CSRF protection). Please try again.</p></div></body></html>`;
 
-const DENIAL_HTML = `<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${OAUTH_CSS}h1{color:#dc2626}@media(prefers-color-scheme:dark){h1{color:#ef4444}}</style></head><body><div class="card"><div class="icon">&#10007;</div><h1>Authorization Denied</h1><p>You denied access to OpenRouter. You can close this tab and return to your terminal.</p></div></body></html>`;
+const DENIAL_HTML = `<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${OAUTH_CSS}h1{color:#dc2626}@media(prefers-color-scheme:dark){h1{color:#ef4444}}</style></head><body><div class="card"><div class="icon">&#10007;</div><h1>Authorization Denied</h1><p>You denied access to Neosantara. You can close this tab and return to your terminal.</p></div></body></html>`;
 
 async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?: string): Promise<string | null> {
   logStep("Attempting OAuth authentication...");
 
   // Check network connectivity
   const reachable = await asyncTryCatchIf(isNetworkError, async () => {
-    await fetch("https://openrouter.ai", {
+    await fetch("https://app.neosantara.xyz", {
       method: "HEAD",
       signal: AbortSignal.timeout(5_000),
     });
     return true;
   });
   if (!reachable.ok) {
-    logWarn("Cannot reach openrouter.ai — network may be unavailable");
+    logWarn("Cannot reach app.neosantara.xyz — network may be unavailable");
     return null;
   }
 
@@ -123,7 +123,7 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
             const error = url.searchParams.get("error");
             if (error) {
               const desc = url.searchParams.get("error_description") || error;
-              logError(`OpenRouter authorization denied: ${desc}`);
+              logError(`Neosantara authorization denied: ${desc}`);
               oauthDenied = true;
               return new Response(DENIAL_HTML, {
                 status: 403,
@@ -187,14 +187,14 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
   logInfo(`OAuth server listening on port ${actualPort}`);
 
   const callbackUrl = `http://localhost:${actualPort}/callback`;
-  let authUrl = `https://openrouter.ai/auth?callback_url=${encodeURIComponent(callbackUrl)}&state=${csrfState}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+  let authUrl = `https://app.neosantara.xyz/auth?callback_url=${encodeURIComponent(callbackUrl)}&state=${csrfState}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
   if (agentSlug) {
     authUrl += `&spawn_agent=${encodeURIComponent(agentSlug)}`;
   }
   if (cloudSlug) {
     authUrl += `&spawn_cloud=${encodeURIComponent(cloudSlug)}`;
   }
-  logStep("Opening browser to authenticate with OpenRouter...");
+  logStep("Opening browser to authenticate with Neosantara...");
   openBrowser(authUrl);
 
   // Wait up to 120 seconds
@@ -209,21 +209,21 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
   if (oauthDenied) {
     logError("OAuth authorization was denied by the user");
     logError("Alternative: Use a manual API key instead");
-    logError("  export OPENROUTER_API_KEY=sk-or-v1-...");
+    logError("  export NEOSANTARA_API_KEY=sk-or-v1-...");
     return null;
   }
 
   if (!oauthCode) {
     logError("OAuth authentication timed out after 120 seconds");
     logError("Alternative: Use a manual API key instead");
-    logError("  export OPENROUTER_API_KEY=sk-or-v1-...");
+    logError("  export NEOSANTARA_API_KEY=sk-or-v1-...");
     return null;
   }
 
   // Exchange code for API key
   logStep("Exchanging OAuth code for API key...");
   const exchangeResult = await asyncTryCatchIf(isNetworkError, async () => {
-    const resp = await fetch("https://openrouter.ai/api/v1/auth/keys", {
+    const resp = await fetch("https://app.neosantara.xyz/api/v1/auth/keys", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -237,14 +237,14 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
     });
     const data = parseJsonWith(await resp.text(), OAuthKeySchema);
     if (data?.key) {
-      logInfo("Successfully obtained OpenRouter API key via OAuth!");
+      logInfo("Successfully obtained Neosantara API key via OAuth!");
       return data.key;
     }
     logError("Failed to exchange OAuth code for API key");
     return null;
   });
   if (!exchangeResult.ok) {
-    logError("Failed to contact OpenRouter API");
+    logError("Failed to contact Neosantara API");
     return null;
   }
   return exchangeResult.data;
@@ -252,10 +252,10 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
 
 // ─── API Key Persistence ─────────────────────────────────────────────────────
 
-/** Save OpenRouter API key to ~/.config/spawn/openrouter.json so it persists across runs. */
-async function saveOpenRouterKey(key: string): Promise<void> {
+/** Save Neosantara API key to ~/.config/spawn/neosantara.json so it persists across runs. */
+async function saveNeosantaraKey(key: string): Promise<void> {
   const result = await asyncTryCatchIf(isFileError, async () => {
-    const configPath = getSpawnCloudConfigPath("openrouter");
+    const configPath = getSpawnCloudConfigPath("neosantara");
     mkdirSync(dirname(configPath), {
       recursive: true,
       mode: 0o700,
@@ -280,15 +280,15 @@ async function saveOpenRouterKey(key: string): Promise<void> {
   }
 }
 
-/** Check whether a saved OpenRouter API key exists (without loading it). */
-export function hasSavedOpenRouterKey(): boolean {
-  return loadSavedOpenRouterKey() !== null;
+/** Check whether a saved Neosantara API key exists (without loading it). */
+export function hasSavedNeosantaraKey(): boolean {
+  return loadSavedNeosantaraKey() !== null;
 }
 
-/** Load a previously saved OpenRouter API key from ~/.config/spawn/openrouter.json. */
-export function loadSavedOpenRouterKey(): string | null {
+/** Load a previously saved Neosantara API key from ~/.config/spawn/neosantara.json. */
+export function loadSavedNeosantaraKey(): string | null {
   const result = tryCatch(() => {
-    const configPath = getSpawnCloudConfigPath("openrouter");
+    const configPath = getSpawnCloudConfigPath("neosantara");
     const data = parseJsonObj(readFileSync(configPath, "utf-8"));
     if (!data) {
       return null;
@@ -308,14 +308,14 @@ async function promptAndValidateApiKey(): Promise<string | null> {
   let attempts = 0;
   while (attempts < 3) {
     attempts++;
-    const key = await prompt("Enter your OpenRouter API key: ");
+    const key = await prompt("Enter your Neosantara API key: ");
     if (!key) {
       logError("API key cannot be empty");
       continue;
     }
     // Validate format
     if (!/^sk-or-v1-[a-f0-9]{64}$/.test(key)) {
-      logWarn("This doesn't look like an OpenRouter API key (expected format: sk-or-v1-...)");
+      logWarn("This doesn't look like an Neosantara API key (expected format: sk-or-v1-...)");
       const confirm = await prompt("Use this key anyway? (y/N): ");
       if (!/^[Yy]$/.test(confirm)) {
         continue;
@@ -324,7 +324,7 @@ async function promptAndValidateApiKey(): Promise<string | null> {
     return key;
   }
   logError("Too many failed attempts.");
-  logError("Get your key from: https://openrouter.ai/settings/keys");
+  logError("Get your key from: https://app.neosantara.xyz/api-keys");
   return null;
 }
 
@@ -332,10 +332,10 @@ export async function getOrPromptApiKey(agentSlug?: string, cloudSlug?: string):
   process.stderr.write("\n");
 
   // 1. Check env var
-  if (process.env.OPENROUTER_API_KEY) {
-    logInfo("Using OpenRouter API key from environment");
-    if (await verifyOpenRouterApiKey(process.env.OPENROUTER_API_KEY)) {
-      return process.env.OPENROUTER_API_KEY;
+  if (process.env.NEOSANTARA_API_KEY) {
+    logInfo("Using Neosantara API key from environment");
+    if (await verifyNeosantaraApiKey(process.env.NEOSANTARA_API_KEY)) {
+      return process.env.NEOSANTARA_API_KEY;
     }
     logWarn("Environment key failed validation, prompting for a new one...");
   }
@@ -343,11 +343,11 @@ export async function getOrPromptApiKey(agentSlug?: string, cloudSlug?: string):
   // 2. Check saved key from previous session (only if user opted in via setup options)
   const reuseKeyEnabled = process.env.SPAWN_ENABLED_STEPS?.split(",").includes("reuse-api-key");
   if (reuseKeyEnabled) {
-    const savedKey = loadSavedOpenRouterKey();
+    const savedKey = loadSavedNeosantaraKey();
     if (savedKey) {
-      logInfo("Using saved OpenRouter API key");
-      if (await verifyOpenRouterApiKey(savedKey)) {
-        process.env.OPENROUTER_API_KEY = savedKey;
+      logInfo("Using saved Neosantara API key");
+      if (await verifyNeosantaraApiKey(savedKey)) {
+        process.env.NEOSANTARA_API_KEY = savedKey;
         return savedKey;
       }
       logWarn("Saved key failed validation, prompting for a new one...");
@@ -359,22 +359,22 @@ export async function getOrPromptApiKey(agentSlug?: string, cloudSlug?: string):
     for (let attempt = 1; attempt <= 3; attempt++) {
       // Try OAuth first
       const key = await tryOauthFlow(5180, agentSlug, cloudSlug);
-      if (key && (await verifyOpenRouterApiKey(key))) {
-        process.env.OPENROUTER_API_KEY = key;
-        await saveOpenRouterKey(key);
+      if (key && (await verifyNeosantaraApiKey(key))) {
+        process.env.NEOSANTARA_API_KEY = key;
+        await saveNeosantaraKey(key);
         return key;
       }
 
       // OAuth failed — fall through to manual entry
       process.stderr.write("\n");
       logWarn("Browser-based login was not completed.");
-      logInfo("Get your API key from: https://openrouter.ai/settings/keys");
+      logInfo("Get your API key from: https://app.neosantara.xyz/api-keys");
       process.stderr.write("\n");
 
       const manualKey = await promptAndValidateApiKey();
-      if (manualKey && (await verifyOpenRouterApiKey(manualKey))) {
-        process.env.OPENROUTER_API_KEY = manualKey;
-        await saveOpenRouterKey(manualKey);
+      if (manualKey && (await verifyNeosantaraApiKey(manualKey))) {
+        process.env.NEOSANTARA_API_KEY = manualKey;
+        await saveNeosantaraKey(manualKey);
         return manualKey;
       }
     }

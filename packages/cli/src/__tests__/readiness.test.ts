@@ -35,7 +35,7 @@ describe("sortBlockers", () => {
     expect(
       sortBlockers([
         "droplet_limit",
-        "openrouter_missing",
+        "neosantara_missing",
         "ssh_missing",
         "payment_required",
         "email_unverified",
@@ -46,7 +46,7 @@ describe("sortBlockers", () => {
       "email_unverified",
       "payment_required",
       "ssh_missing",
-      "openrouter_missing",
+      "neosantara_missing",
       "droplet_limit",
     ]);
   });

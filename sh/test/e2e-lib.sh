@@ -70,7 +70,7 @@ assert_exit() {
 # ---------------------------------------------------------------------------
 
 # Stub out commands that common.sh checks for (we don't need real ones for unit tests)
-export OPENROUTER_API_KEY="test-key-for-unit-tests"
+export NEOSANTARA_API_KEY="test-key-for-unit-tests"
 
 # Source common.sh (provides helpers, constants, logging)
 source "${REPO_ROOT}/sh/e2e/lib/common.sh"
@@ -216,33 +216,33 @@ assert_eq "PROVISION_TIMEOUT injection reset" "720" "${result}"
 result=$(AGENT_TIMEOUT="" bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${AGENT_TIMEOUT}"' 2>/dev/null)
 assert_eq "AGENT_TIMEOUT empty reset" "1800" "${result}"
 
-# --- OpenRouter API key fallback ---
-printf '%b\n' "${BOLD}Testing: OpenRouter API key fallback${NC}"
+# --- Neosantara API key fallback ---
+printf '%b\n' "${BOLD}Testing: Neosantara API key fallback${NC}"
 
-# Test: ANTHROPIC_AUTH_TOKEN with openrouter base URL should set OPENROUTER_API_KEY
+# Test: ANTHROPIC_AUTH_TOKEN with neosantara base URL should set NEOSANTARA_API_KEY
 result=$(
-  unset OPENROUTER_API_KEY
+  unset NEOSANTARA_API_KEY
   ANTHROPIC_AUTH_TOKEN="sk-or-test-123" \
-  ANTHROPIC_BASE_URL="https://openrouter.ai/api" \
-  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${OPENROUTER_API_KEY:-}"' 2>/dev/null
+  ANTHROPIC_BASE_URL="https://api.neosantara.xyz/anthropic" \
+  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${NEOSANTARA_API_KEY:-}"' 2>/dev/null
 )
-assert_eq "API key fallback (openrouter URL)" "sk-or-test-123" "${result}"
+assert_eq "API key fallback (neosantara URL)" "sk-or-test-123" "${result}"
 
-# Test: non-openrouter base URL should NOT set OPENROUTER_API_KEY
+# Test: non-neosantara base URL should NOT set NEOSANTARA_API_KEY
 result=$(
-  unset OPENROUTER_API_KEY
+  unset NEOSANTARA_API_KEY
   ANTHROPIC_AUTH_TOKEN="sk-ant-test-456" \
   ANTHROPIC_BASE_URL="https://api.anthropic.com" \
-  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${OPENROUTER_API_KEY:-}"' 2>/dev/null
+  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${NEOSANTARA_API_KEY:-}"' 2>/dev/null
 )
-assert_eq "API key fallback (non-openrouter URL)" "" "${result}"
+assert_eq "API key fallback (non-neosantara URL)" "" "${result}"
 
-# Test: existing OPENROUTER_API_KEY should NOT be overwritten
+# Test: existing NEOSANTARA_API_KEY should NOT be overwritten
 result=$(
-  OPENROUTER_API_KEY="existing-key" \
+  NEOSANTARA_API_KEY="existing-key" \
   ANTHROPIC_AUTH_TOKEN="sk-or-new-key" \
-  ANTHROPIC_BASE_URL="https://openrouter.ai/api" \
-  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${OPENROUTER_API_KEY}"' 2>/dev/null
+  ANTHROPIC_BASE_URL="https://api.neosantara.xyz/anthropic" \
+  bash -c 'source "'"${REPO_ROOT}"'/sh/e2e/lib/common.sh" && printf "%s" "${NEOSANTARA_API_KEY}"' 2>/dev/null
 )
 assert_eq "API key fallback (existing key preserved)" "existing-key" "${result}"
 

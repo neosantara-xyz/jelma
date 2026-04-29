@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { HISTORY_SCHEMA_VERSION } from "../history.js";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
@@ -75,8 +75,8 @@ function mockFetchForDownload(opts: {
       return new Response(JSON.stringify(mockManifest));
     }
 
-    // Primary script URL (openrouter.ai)
-    if (urlStr.includes("openrouter.ai")) {
+    // Primary script URL (raw.githubusercontent.com)
+    if (urlStr.includes("raw.githubusercontent.com/jelmaai/jelma/main/sh")) {
       if (primaryOk) {
         return new Response(scriptContent, {
           status: primaryStatus,
@@ -170,10 +170,10 @@ describe("cmdRun happy-path pipeline", () => {
 
       await cmdRun("claude", "sprite");
 
-      // Should have fetched the manifest + the primary script URL
-      const scriptFetches = fetchCalls.filter((c) => !c.url.includes("manifest.json"));
+      // Should have fetched the manifest + the script URL (plus potential model-list fetch)
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/main/sh/"));
       expect(scriptFetches.length).toBe(1);
-      expect(scriptFetches[0].url).toContain("openrouter.ai");
+      expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
     });
 
     it("should log download start and completion messages for successful download", async () => {
@@ -203,50 +203,42 @@ describe("cmdRun happy-path pipeline", () => {
 
   // ── Fallback download success ─────────────────────────────────────────────
 
-  describe("fallback URL download success", () => {
-    it("should fall back to GitHub when primary URL fails", async () => {
+  describe("script URL download behavior", () => {
+    it("should download from raw GitHub script source", async () => {
       global.fetch = mockFetchForDownload({
-        primaryOk: false,
-        primaryStatus: 500,
-        fallbackOk: true,
+        primaryOk: true,
       });
       await loadManifest(true);
 
       await cmdRun("claude", "sprite");
 
-      // Should have fetched manifest + primary (failed) + fallback (success)
-      const scriptFetches = fetchCalls.filter((c) => !c.url.includes("manifest.json"));
-      expect(scriptFetches.length).toBe(2);
-      expect(scriptFetches[0].url).toContain("openrouter.ai");
-      expect(scriptFetches[1].url).toContain("raw.githubusercontent.com");
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/main/sh/"));
+      expect(scriptFetches.length).toBe(1);
+      expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
     });
 
-    it("should log fallback step message when primary fails", async () => {
+    it("should log download success for raw source", async () => {
       global.fetch = mockFetchForDownload({
-        primaryOk: false,
-        primaryStatus: 502,
-        fallbackOk: true,
+        primaryOk: true,
       });
       await loadManifest(true);
 
       await cmdRun("claude", "sprite");
 
       const stderrOutput = stderrSpy.mock.calls.map((c: unknown[]) => String(c[0])).join("");
-      expect(stderrOutput).toContain("fallback");
+      expect(stderrOutput).toContain("Downloading");
+      expect(stderrOutput).toContain("downloaded");
     });
 
-    it("should log 'fallback' in completion message when fallback succeeds", async () => {
+    it("should not call process.exit on successful raw-source download", async () => {
       global.fetch = mockFetchForDownload({
-        primaryOk: false,
-        primaryStatus: 403,
-        fallbackOk: true,
+        primaryOk: true,
       });
       await loadManifest(true);
 
       await cmdRun("claude", "sprite");
 
-      const stderrOutput = stderrSpy.mock.calls.map((c: unknown[]) => String(c[0])).join("");
-      expect(stderrOutput).toContain("fallback");
+      expect(processExitSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -451,7 +443,9 @@ describe("cmdRun happy-path pipeline", () => {
       await cmdRun("claude", "sprite", undefined, true);
 
       // No script download — only manifest fetch
-      const scriptFetches = fetchCalls.filter((c) => c.url.includes("openrouter.ai") && !c.url.includes("manifest"));
+      const scriptFetches = fetchCalls.filter(
+        (c) => c.url.includes("app.neosantara.xyz") && !c.url.includes("manifest"),
+      );
       expect(scriptFetches).toHaveLength(0);
 
       // No history written

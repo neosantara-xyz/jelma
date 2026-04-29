@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -233,7 +233,7 @@ describe("cmdInteractive", () => {
       expect(errorCalls.some((msg: string) => msg.includes("Codex"))).toBe(true);
     });
 
-    it("should suggest 'spawn matrix' when no clouds available", async () => {
+    it("should suggest 'jelma matrix' when no clouds available", async () => {
       const noCloudManifest = {
         ...mockManifest,
         matrix: {
@@ -255,7 +255,7 @@ describe("cmdInteractive", () => {
       await asyncTryCatch(() => cmdInteractive());
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn matrix"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma matrix"))).toBe(true);
     });
   });
 
@@ -325,7 +325,7 @@ describe("cmdInteractive", () => {
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       const hintMsg = infoCalls.find((msg: string) => msg.includes("Next time"));
       expect(hintMsg).toBeDefined();
-      expect(hintMsg).toContain("spawn claude sprite");
+      expect(hintMsg).toContain("jelma claude sprite");
     });
 
     it("should show outro message before handing off", async () => {
@@ -345,7 +345,7 @@ describe("cmdInteractive", () => {
       await cmdInteractive();
 
       const outroArg = mockOutro.mock.calls[0]?.[0] ?? "";
-      expect(outroArg).toContain("spawn script");
+      expect(outroArg).toContain("jelma script");
     });
 
     it("should work with codex agent on sprite cloud", async () => {
@@ -477,9 +477,9 @@ describe("cmdInteractive", () => {
         "sprite",
       ];
       const savedKey = process.env.SPRITE_API_KEY;
-      const savedOR = process.env.OPENROUTER_API_KEY;
+      const savedOR = process.env.NEOSANTARA_API_KEY;
       process.env.SPRITE_API_KEY = "test-sprite-key";
-      process.env.OPENROUTER_API_KEY = "sk-or-test";
+      process.env.NEOSANTARA_API_KEY = "sk-or-test";
 
       global.fetch = mock(async (url: string) => {
         if (isString(url) && url.includes("manifest.json")) {
@@ -502,9 +502,9 @@ describe("cmdInteractive", () => {
         process.env.SPRITE_API_KEY = savedKey;
       }
       if (savedOR === undefined) {
-        delete process.env.OPENROUTER_API_KEY;
+        delete process.env.NEOSANTARA_API_KEY;
       } else {
-        process.env.OPENROUTER_API_KEY = savedOR;
+        process.env.NEOSANTARA_API_KEY = savedOR;
       }
     });
 

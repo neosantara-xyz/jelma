@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "@openrouter/spawn",
+      "name": "@neosantara/jelma",
       "dependencies": {
         "@clack/prompts": "^1.0.0",
         "picocolors": "^1.1.1",

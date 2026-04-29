@@ -1,4 +1,4 @@
-import type { ValueOf } from "@openrouter/spawn-shared";
+import type { ValueOf } from "@neosantara/jelma-shared";
 import type { CloudInstance, SpawnRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
@@ -76,7 +76,7 @@ export function formatRelativeTime(iso: string): string {
   );
 }
 
-/** Build a display label (line 1: name) for a spawn record in the interactive picker */
+/** Build a display label (line 1: name) for a jelma record in the interactive picker */
 export function buildRecordLabel(r: SpawnRecord): string {
   return r.name || r.connection?.server_name || "unnamed";
 }
@@ -123,11 +123,11 @@ async function suggestFilterCorrection(
 ): Promise<void> {
   const resolved = resolveKey(manifest, filter);
   if (resolved && resolved !== filter) {
-    p.log.info(`Did you mean ${pc.cyan(`spawn list ${flag} ${resolved}`)}?`);
+    p.log.info(`Did you mean ${pc.cyan(`jelma list ${flag} ${resolved}`)}?`);
   } else if (!resolved) {
     const match = findClosestKeyByNameOrKey(filter, keys, getDisplayName);
     if (match) {
-      p.log.info(`Did you mean ${pc.cyan(`spawn list ${flag} ${match}`)}?`);
+      p.log.info(`Did you mean ${pc.cyan(`jelma list ${flag} ${match}`)}?`);
     }
   }
 }
@@ -135,7 +135,7 @@ async function suggestFilterCorrection(
 async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string): Promise<void> {
   if (!agentFilter && !cloudFilter) {
     p.log.info("No spawns recorded yet.");
-    p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to launch your first agent.`);
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to launch your first agent.`);
     return;
   }
 
@@ -176,7 +176,7 @@ async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string):
   const totalRecords = filterHistory();
   if (totalRecords.length > 0) {
     p.log.info(
-      `Run ${pc.cyan("spawn list")} to see all ${totalRecords.length} recorded spawn${totalRecords.length !== 1 ? "s" : ""}.`,
+      `Run ${pc.cyan("jelma list")} to see all ${totalRecords.length} recorded spawn${totalRecords.length !== 1 ? "s" : ""}.`,
     );
   }
 }
@@ -193,12 +193,12 @@ function buildListFooterLines(records: SpawnRecord[], agentFilter?: string, clou
     lines.push(
       pc.dim(`Showing ${records.length} of ${totalRecords.length} spawn${totalRecords.length !== 1 ? "s" : ""}`),
     );
-    lines.push(pc.dim(`Clear filter: ${pc.cyan("spawn list")}`));
+    lines.push(pc.dim(`Clear filter: ${pc.cyan("jelma list")}`));
   } else {
     lines.push(pc.dim(`${records.length} spawn${records.length !== 1 ? "s" : ""} recorded`));
     lines.push(
       pc.dim(
-        `Filter: ${pc.cyan("spawn list -a <agent>")}  or  ${pc.cyan("spawn list -c <cloud>")}  |  Clear: ${pc.cyan("spawn list --clear")}`,
+        `Filter: ${pc.cyan("jelma list -a <agent>")}  or  ${pc.cyan("jelma list -c <cloud>")}  |  Clear: ${pc.cyan("jelma list --clear")}`,
       ),
     );
   }
@@ -574,7 +574,7 @@ export const RecordActionOutcome = {
 export type RecordActionOutcome = ValueOf<typeof RecordActionOutcome>;
 
 /**
- * Handle reconnect or rerun action for a selected spawn record.
+ * Handle reconnect or rerun action for a selected jelma record.
  * Returns Back if the picker should navigate back to the list (delete/remove),
  * or Exit for terminal actions (enter/reconnect/rerun) that exit the picker.
  */
@@ -583,7 +583,7 @@ export async function handleRecordAction(
   manifest: Manifest | null,
 ): Promise<RecordActionOutcome> {
   if (!selected.connection) {
-    // No connection info -- just rerun, reusing the existing spawn name
+    // No connection info -- just rerun, reusing the existing jelma name
     if (selected.name) {
       process.env.SPAWN_NAME = selected.name;
     }
@@ -601,7 +601,7 @@ export async function handleRecordAction(
     hint?: string;
   }[] = [];
 
-  // Prefer stored launch command (captured at spawn time), fall back to manifest
+  // Prefer stored launch command (captured at jelma time), fall back to manifest
   const agentDef = manifest?.agents?.[selected.agent];
   const launchCmd = conn.launch_cmd || agentDef?.launch;
 
@@ -625,7 +625,7 @@ export async function handleRecordAction(
   if (!conn.deleted) {
     const reconnectHint =
       conn.cloud === "daytona"
-        ? "spawn last"
+        ? "jelma last"
         : conn.ip === "sprite-console"
           ? `sprite console -s ${conn.server_name}`
           : `ssh ${conn.user}@${conn.ip}`;
@@ -678,7 +678,7 @@ export async function handleRecordAction(
   if (action === "enter" || action === "reconnect" || action === "fix") {
     const refreshResult = await asyncTryCatch(() => refreshConnectionIp(selected));
     if (refreshResult.ok && refreshResult.data === "gone") {
-      p.log.info(`Use ${pc.cyan(`spawn ${selected.agent} ${selected.cloud}`)} to start a new one.`);
+      p.log.info(`Use ${pc.cyan(`jelma ${selected.agent} ${selected.cloud}`)} to start a new one.`);
       return RecordActionOutcome.Back;
     }
     if (!refreshResult.ok) {
@@ -693,7 +693,7 @@ export async function handleRecordAction(
       p.log.error(`Connection failed: ${getErrorMessage(enterResult.error)}`);
 
       p.log.info(
-        `VM may no longer be running. Use ${pc.cyan(`spawn ${selected.agent} ${selected.cloud}`)} to start a new one.`,
+        `VM may no longer be running. Use ${pc.cyan(`jelma ${selected.agent} ${selected.cloud}`)} to start a new one.`,
       );
     }
     return RecordActionOutcome.Exit;
@@ -717,7 +717,7 @@ export async function handleRecordAction(
       p.log.error(`Connection failed: ${getErrorMessage(reconnectResult.error)}`);
 
       p.log.info(
-        `VM may no longer be running. Use ${pc.cyan(`spawn ${selected.agent} ${selected.cloud}`)} to start a new one.`,
+        `VM may no longer be running. Use ${pc.cyan(`jelma ${selected.agent} ${selected.cloud}`)} to start a new one.`,
       );
     }
     return RecordActionOutcome.Exit;
@@ -771,7 +771,7 @@ export async function activeServerPicker(records: SpawnRecord[], manifest: Manif
     }));
 
     const result = pickToTTYWithActions({
-      message: `Select a spawn (${remaining.length} server${remaining.length !== 1 ? "s" : ""})`,
+      message: `Select a jelma (${remaining.length} server${remaining.length !== 1 ? "s" : ""})`,
       options,
       deleteKey: true,
     });
@@ -858,19 +858,19 @@ export async function activeServerPicker(records: SpawnRecord[], manifest: Manif
 export async function cmdListClear(forceYes?: boolean): Promise<void> {
   const records = filterHistory();
   if (records.length === 0) {
-    p.log.info("No spawn history to clear.");
+    p.log.info("No jelma history to clear.");
     return;
   }
 
   if (!isInteractiveTTY() && !forceYes) {
-    p.log.error("spawn list --clear requires --yes in non-interactive mode.");
-    p.log.info(`Usage: ${pc.cyan("spawn list --clear --yes")}`);
+    p.log.error("jelma list --clear requires --yes in non-interactive mode.");
+    p.log.info(`Usage: ${pc.cyan("jelma list --clear --yes")}`);
     process.exit(1);
   }
 
   if (isInteractiveTTY() && !forceYes) {
     const shouldClear = await p.confirm({
-      message: `Delete ${records.length} spawn record${records.length !== 1 ? "s" : ""} from history?`,
+      message: `Delete ${records.length} jelma record${records.length !== 1 ? "s" : ""} from history?`,
       initialValue: false,
     });
     if (p.isCancel(shouldClear) || !shouldClear) {
@@ -879,7 +879,7 @@ export async function cmdListClear(forceYes?: boolean): Promise<void> {
   }
 
   const count = clearHistory();
-  p.log.success(`Cleared ${count} spawn record${count !== 1 ? "s" : ""} from history.`);
+  p.log.success(`Cleared ${count} jelma record${count !== 1 ? "s" : ""} from history.`);
 }
 
 export async function cmdList(agentFilter?: string, cloudFilter?: string): Promise<void> {
@@ -905,7 +905,7 @@ export async function cmdList(agentFilter?: string, cloudFilter?: string): Promi
       const historyRecords = filterHistory(agentFilter, cloudFilter);
       if (historyRecords.length > 0) {
         await assertValidDaytonaRecords(historyRecords);
-        p.log.info("No active servers found. Showing spawn history:");
+        p.log.info("No active servers found. Showing jelma history:");
         renderListTable(historyRecords, manifest);
         showListFooter(historyRecords, agentFilter, cloudFilter);
       } else {
@@ -951,8 +951,8 @@ export async function cmdLast(): Promise<void> {
   const records = filterHistory();
 
   if (records.length === 0) {
-    p.log.info("No spawn history found.");
-    p.log.info(`Run ${pc.cyan("spawn <agent> <cloud>")} to create your first spawn.`);
+    p.log.info("No jelma history found.");
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create your first spawn.`);
     return;
   }
 

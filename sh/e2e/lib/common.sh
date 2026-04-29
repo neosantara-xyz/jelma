@@ -20,16 +20,16 @@ case "${INPUT_TEST_TIMEOUT}" in ''|*[!0-9]*) INPUT_TEST_TIMEOUT=120 ;; esac
 case "${AGENT_TIMEOUT}" in ''|*[!0-9]*) AGENT_TIMEOUT=1800 ;; esac
 
 # ---------------------------------------------------------------------------
-# OpenRouter API key fallback
+# Neosantara API key fallback
 #
-# On QA VMs that run Claude Code via OpenRouter, the API key is stored as
+# On QA VMs that run Claude Code via Neosantara, the API key is stored as
 # ANTHROPIC_AUTH_TOKEN (because Claude Code uses ANTHROPIC_BASE_URL + token).
-# Export OPENROUTER_API_KEY from ANTHROPIC_AUTH_TOKEN when using OpenRouter.
+# Export NEOSANTARA_API_KEY from ANTHROPIC_AUTH_TOKEN when using Neosantara.
 # ---------------------------------------------------------------------------
-if [ -z "${OPENROUTER_API_KEY:-}" ] && [ -n "${ANTHROPIC_AUTH_TOKEN:-}" ]; then
+if [ -z "${NEOSANTARA_API_KEY:-}" ] && [ -n "${ANTHROPIC_AUTH_TOKEN:-}" ]; then
   case "${ANTHROPIC_BASE_URL:-}" in
-    *openrouter*)
-      export OPENROUTER_API_KEY="${ANTHROPIC_AUTH_TOKEN}"
+    *neosantara*)
+      export NEOSANTARA_API_KEY="${ANTHROPIC_AUTH_TOKEN}"
       ;;
   esac
 fi
@@ -233,7 +233,7 @@ get_agent_timeout() {
 # ---------------------------------------------------------------------------
 # require_common_env
 #
-# Validates tools and env vars common to ALL clouds (bun, jq, OPENROUTER_API_KEY).
+# Validates tools and env vars common to ALL clouds (bun, jq, NEOSANTARA_API_KEY).
 # Cloud-specific validation is handled by cloud_validate_env().
 # ---------------------------------------------------------------------------
 require_common_env() {
@@ -249,8 +249,8 @@ require_common_env() {
     missing=1
   fi
 
-  if [ -z "${OPENROUTER_API_KEY:-}" ]; then
-    log_err "OPENROUTER_API_KEY is not set"
+  if [ -z "${NEOSANTARA_API_KEY:-}" ]; then
+    log_err "NEOSANTARA_API_KEY is not set"
     missing=1
   fi
 

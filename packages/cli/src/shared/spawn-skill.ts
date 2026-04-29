@@ -1,5 +1,4 @@
-// shared/spawn-skill.ts — Skill injection for recursive spawn
-// Writes agent-native instruction files teaching each agent how to use `spawn`.
+// shared/spawn-skill.ts — Skill injection for recursive jelma // Writes agent-native instruction files teaching each agent how to use `spawn`.
 // Content is embedded directly so it works when installed via npm (no fs reads).
 
 import type { CloudRunner } from "./agent-setup.js";
@@ -12,8 +11,7 @@ import { logInfo, logWarn } from "./ui.js";
 
 /** YAML frontmatter skill (Claude Code, Codex CLI, OpenClaw). */
 const SKILL_FRONTMATTER = `---
-name: spawn
-description: Create child cloud VMs with AI coding agents using the spawn CLI
+name: jelma description: Create child cloud VMs with AI coding agents using the jelma CLI
 allowed-tools: Bash
 ---
 
@@ -27,7 +25,7 @@ You have the \`spawn\` CLI installed. Use it to provision cloud VMs with AI agen
 ## Provision a Child VM
 
 \`\`\`bash
-spawn <agent> <cloud> --headless --output json --prompt "task description"
+jelma <agent> <cloud> --headless --output json --prompt "task description"
 \`\`\`
 
 **Agents:** claude, codex, cursor, openclaw, opencode, kilocode, hermes, junie, pi
@@ -56,15 +54,15 @@ ssh -o StrictHostKeyChecking=accept-new root@<ip> "bash -lc 'codex --quiet \\"yo
 
 ## Managing Children
 
-- \`spawn list --json\` — see running children
-- \`spawn delete --name <name> --yes\` — tear down a child VM (headless)
-- \`spawn tree\` — see the full spawn tree
+- \`jelma list --json\` — see running children
+- \`jelma delete --name <name> --yes\` — tear down a child VM (headless)
+- \`jelma tree\` — see the full jelma tree
 
 ## Context
 
 - You are running inside a spawned VM (SPAWN_DEPTH is set)
 - Cloud credentials are pre-configured — no auth prompts
-- OpenRouter billing is shared with the parent
+- Neosantara billing is shared with the parent
 `;
 
 /** Short snippet for Hermes (appended to SOUL.md, 20K char cap). */
@@ -73,9 +71,9 @@ const HERMES_SNIPPET = `
 ## Spawn Capability
 
 You have the \`spawn\` CLI for creating child cloud VMs with AI agents.
-Use \`spawn <agent> <cloud> --headless --output json --prompt "task"\` to delegate work.
+Use \`jelma <agent> <cloud> --headless --output json --prompt "task"\` to delegate work.
 Available agents: claude, codex, cursor, openclaw, opencode, kilocode, hermes, junie, pi.
-Cloud credentials are pre-configured. Run \`spawn list --json\` to see children.
+Cloud credentials are pre-configured. Run \`jelma list --json\` to see children.
 \`--headless\` only provisions. To run a prompt on the child: \`ssh root@<ip> "bash -lc 'claude -p --dangerously-skip-permissions \\"prompt\\"'"\`. Always use \`bash -lc\` (binaries are in ~/.local/bin/).
 `;
 
@@ -136,7 +134,7 @@ const AGENT_SKILLS: Record<string, SkillConfig> = {
   },
 };
 
-/** Get the remote target path for a given agent's spawn skill file. */
+/** Get the remote target path for a given agent's jelma skill file. */
 export function getSpawnSkillPath(agentName: string): string | undefined {
   return AGENT_SKILLS[agentName]?.remotePath;
 }
@@ -152,14 +150,14 @@ export function getSkillContent(agentName: string): string | undefined {
 }
 
 /**
- * Inject the spawn skill file onto a remote VM for the given agent.
+ * Inject the jelma skill file onto a remote VM for the given agent.
  * Base64-encodes embedded content and writes to the agent's native
  * instruction file path on the remote.
  */
 export async function injectSpawnSkill(runner: CloudRunner, agentName: string): Promise<void> {
   const config = AGENT_SKILLS[agentName];
   if (!config) {
-    logWarn(`No spawn skill file for agent: ${agentName}`);
+    logWarn(`No jelma skill file for agent: ${agentName}`);
     return;
   }
 
@@ -183,6 +181,6 @@ export async function injectSpawnSkill(runner: CloudRunner, agentName: string): 
   if (result.ok) {
     logInfo(`Spawn skill injected: ${remotePath}`);
   } else {
-    logWarn("Spawn skill injection failed — agent will work without spawn instructions");
+    logWarn("Spawn skill injection failed — agent will work without jelma instructions");
   }
 }

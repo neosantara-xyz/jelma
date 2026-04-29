@@ -11,7 +11,7 @@ import { mockClackPrompts } from "./test-helpers";
 /**
  * Tests for clearHistory (history.ts) and cmdListClear (commands/list.ts).
  *
- * clearHistory is invoked via `spawn list --clear` and performs a destructive
+ * clearHistory is invoked via `jelma list --clear` and performs a destructive
  * operation (deleting the history file). It has zero existing test coverage.
  * cmdListClear wraps clearHistory with user-facing output and also has
  * zero existing test coverage.
@@ -322,7 +322,7 @@ describe("cmdListClear", () => {
     await cmdListClear(true);
     expect(mockLogInfo).toHaveBeenCalledTimes(1);
     const msg = String(mockLogInfo.mock.calls[0][0]);
-    expect(msg).toContain("No spawn history to clear");
+    expect(msg).toContain("No jelma history to clear");
   });
 
   it("should call log.success with count when clearing records", async () => {
@@ -343,7 +343,7 @@ describe("cmdListClear", () => {
     await cmdListClear(true);
     expect(mockLogSuccess).toHaveBeenCalledTimes(1);
     const msg = String(mockLogSuccess.mock.calls[0][0]);
-    expect(msg).toContain("Cleared 2 spawn records from history");
+    expect(msg).toContain("Cleared 2 jelma records from history");
   });
 
   it("should use singular 'record' for a single entry", async () => {
@@ -359,9 +359,9 @@ describe("cmdListClear", () => {
     await cmdListClear(true);
     expect(mockLogSuccess).toHaveBeenCalledTimes(1);
     const msg = String(mockLogSuccess.mock.calls[0][0]);
-    expect(msg).toContain("Cleared 1 spawn record from history");
+    expect(msg).toContain("Cleared 1 jelma record from history");
     // Should NOT say "records" (plural)
-    expect(msg).not.toContain("Cleared 1 spawn records");
+    expect(msg).not.toContain("Cleared 1 jelma records");
   });
 
   it("should actually delete the history file", async () => {
@@ -385,7 +385,7 @@ describe("cmdListClear", () => {
     expect(mockLogInfo).toHaveBeenCalledTimes(1);
     expect(mockLogSuccess).not.toHaveBeenCalled();
     const msg = String(mockLogInfo.mock.calls[0][0]);
-    expect(msg).toContain("No spawn history to clear");
+    expect(msg).toContain("No jelma history to clear");
   });
 
   it("should handle corrupted history file as no history", async () => {
@@ -395,7 +395,7 @@ describe("cmdListClear", () => {
     expect(mockLogInfo).toHaveBeenCalledTimes(1);
     expect(mockLogSuccess).not.toHaveBeenCalled();
     const msg = String(mockLogInfo.mock.calls[0][0]);
-    expect(msg).toContain("No spawn history to clear");
+    expect(msg).toContain("No jelma history to clear");
   });
 
   it("should display correct count for large history", async () => {
@@ -412,7 +412,7 @@ describe("cmdListClear", () => {
     await cmdListClear(true);
     expect(mockLogSuccess).toHaveBeenCalledTimes(1);
     const msg = String(mockLogSuccess.mock.calls[0][0]);
-    expect(msg).toContain("Cleared 50 spawn records from history");
+    expect(msg).toContain("Cleared 50 jelma records from history");
   });
 
   it("should allow saving new records after clearing via cmdListClear", async () => {

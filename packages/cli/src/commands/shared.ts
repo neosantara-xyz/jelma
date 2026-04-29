@@ -3,12 +3,12 @@ import type { Manifest } from "../manifest.js";
 
 import * as fs from "node:fs";
 import * as p from "@clack/prompts";
-import { getErrorMessage, isString } from "@openrouter/spawn-shared";
+import { getErrorMessage, isString } from "@neosantara/jelma-shared";
 import pc from "picocolors";
 import pkg from "../../package.json" with { type: "json" };
 import { agentKeys, cloudKeys, isStaleCache, loadManifest, matrixStatus } from "../manifest.js";
 import { validateIdentifier, validatePrompt } from "../security.js";
-import { hasSavedOpenRouterKey } from "../shared/oauth.js";
+import { hasSavedNeosantaraKey } from "../shared/oauth.js";
 import { PkgVersionSchema, parseJsonObj } from "../shared/parse.js";
 import { getSpawnCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch, tryCatch, unwrapOr } from "../shared/result.js";
@@ -200,13 +200,13 @@ const ENTITY_DEFS: Record<"agent" | "cloud", EntityDef> = {
   agent: {
     label: "agent",
     labelPlural: "agents",
-    listCmd: "spawn agents",
+    listCmd: "jelma agents",
     opposite: "cloud provider",
   },
   cloud: {
     label: "cloud",
     labelPlural: "clouds",
-    listCmd: "spawn clouds",
+    listCmd: "jelma clouds",
     opposite: "agent",
   },
 };
@@ -235,7 +235,7 @@ function checkWrongKind(value: string, kind: "agent" | "cloud", manifest: Manife
     const kindLabel = kind === "agent" ? "a cloud provider" : "an agent";
     const wrongLabel = kind === "agent" ? "an agent" : "a cloud provider";
     p.log.info(`"${value}" is ${kindLabel}, not ${wrongLabel}.`);
-    p.log.info(`Usage: ${pc.cyan("spawn <agent> <cloud>")}`);
+    p.log.info(`Usage: ${pc.cyan("jelma <agent> <cloud>")}`);
     p.log.info(`Run ${pc.cyan(def.listCmd)} to see available ${def.labelPlural}.`);
     return true;
   }
@@ -258,7 +258,7 @@ function checkSameKindTypo(
   const match = suggestTypoCorrection(value, manifest, kind);
   if (match) {
     p.log.info(`Did you mean ${pc.cyan(match)} (${collection[match].name})?`);
-    p.log.info(`  ${pc.cyan(`spawn ${match}`)}`);
+    p.log.info(`  ${pc.cyan(`jelma ${match}`)}`);
     p.log.info(`Run ${pc.cyan(def.listCmd)} to see available ${def.labelPlural}.`);
     return true;
   }
@@ -277,7 +277,7 @@ function checkOppositeKindTypo(value: string, kind: "agent" | "cloud", manifest:
       `"${pc.bold(value)}" looks like ${oppositeDef.label} ${pc.cyan(oppositeMatch)} (${oppositeCollection[oppositeMatch].name}).`,
     );
     p.log.info("Did you swap the agent and cloud arguments?");
-    p.log.info(`Usage: ${pc.cyan("spawn <agent> <cloud>")}`);
+    p.log.info(`Usage: ${pc.cyan("jelma <agent> <cloud>")}`);
     return true;
   }
   return false;
@@ -361,7 +361,7 @@ export function validateImplementation(manifest: Manifest, cloud: string, agent:
       const { sortedClouds, credCount } = prioritizeCloudsByCredentials(availableClouds, manifest);
       const examples = sortedClouds.slice(0, 3).map((c) => {
         const hasCredsMarker = hasCloudCredentials(manifest.clouds[c].auth) ? " (ready)" : "";
-        return `spawn ${agent} ${c}${hasCredsMarker}`;
+        return `jelma ${agent} ${c}${hasCredsMarker}`;
       });
       console.log();
       p.log.info(
@@ -371,7 +371,7 @@ export function validateImplementation(manifest: Manifest, cloud: string, agent:
         p.log.info(`  ${pc.cyan(cmd)}`);
       }
       if (availableClouds.length > 3) {
-        p.log.info(`\nRun ${pc.cyan(`spawn ${agent}`)} to see all ${availableClouds.length} options.`);
+        p.log.info(`\nRun ${pc.cyan(`jelma ${agent}`)} to see all ${availableClouds.length} options.`);
       }
       if (credCount > 0) {
         console.log();
@@ -380,7 +380,7 @@ export function validateImplementation(manifest: Manifest, cloud: string, agent:
     } else {
       console.log();
       p.log.info("This agent has no implemented cloud providers yet.");
-      p.log.info(`Run ${pc.cyan("spawn matrix")} to see the full availability matrix.`);
+      p.log.info(`Run ${pc.cyan("jelma matrix")} to see the full availability matrix.`);
     }
     process.exit(1);
   }
@@ -555,8 +555,8 @@ function hasCloudConfigCredentials(cloud: string): boolean {
 
 export function collectMissingCredentials(authVars: string[], cloud?: string): string[] {
   const missing: string[] = [];
-  if (!process.env.OPENROUTER_API_KEY && !hasSavedOpenRouterKey()) {
-    missing.push("OPENROUTER_API_KEY");
+  if (!process.env.NEOSANTARA_API_KEY && !hasSavedNeosantaraKey()) {
+    missing.push("NEOSANTARA_API_KEY");
   }
   for (const v of authVars) {
     if (!isAuthEnvVarSet(v)) {
@@ -572,11 +572,11 @@ export function collectMissingCredentials(authVars: string[], cloud?: string): s
   return missing;
 }
 
-function getCredentialGuidance(cloud: string, onlyOpenRouter: boolean): string {
-  if (onlyOpenRouter) {
-    return "You will be prompted to authenticate with OpenRouter during setup.";
+function getCredentialGuidance(cloud: string, onlyNeosantara: boolean): string {
+  if (onlyNeosantara) {
+    return "You will be prompted to authenticate with Neosantara during setup.";
   }
-  return `Run ${pc.cyan(`spawn ${cloud}`)} for setup instructions.`;
+  return `Run ${pc.cyan(`jelma ${cloud}`)} for setup instructions.`;
 }
 
 export async function preflightCredentialCheck(manifest: Manifest, cloud: string): Promise<void> {
@@ -585,7 +585,7 @@ export async function preflightCredentialCheck(manifest: Manifest, cloud: string
     return;
   }
 
-  // Interactive DigitalOcean runs use the guided readiness checklist for credentials and OpenRouter.
+  // Interactive DigitalOcean runs use the guided readiness checklist for credentials and Neosantara.
   if (cloud === "digitalocean" && isInteractiveTTY()) {
     return;
   }
@@ -599,8 +599,8 @@ export async function preflightCredentialCheck(manifest: Manifest, cloud: string
   const cloudName = manifest.clouds[cloud].name;
   p.log.warn(`Missing credentials for ${cloudName}: ${missing.map((v) => pc.cyan(v)).join(", ")}`);
 
-  const onlyOpenRouter = missing.length === 1 && missing[0] === "OPENROUTER_API_KEY";
-  p.log.info(getCredentialGuidance(cloud, onlyOpenRouter));
+  const onlyNeosantara = missing.length === 1 && missing[0] === "NEOSANTARA_API_KEY";
+  p.log.info(getCredentialGuidance(cloud, onlyNeosantara));
 
   // No confirmation needed — the warning + guidance above is sufficient.
   // The orchestration pipeline will prompt for credentials as needed.
@@ -616,7 +616,7 @@ export function getAuthHint(manifest: Manifest, cloud: string): string | undefin
 export function credentialHints(cloud: string, authHint?: string, verb = "Missing or invalid"): string[] {
   if (!authHint) {
     return [
-      `  - ${verb} credentials (run ${pc.cyan(`spawn ${cloud}`)} for setup)`,
+      `  - ${verb} credentials (run ${pc.cyan(`jelma ${cloud}`)} for setup)`,
     ];
   }
 
@@ -627,7 +627,7 @@ export function credentialHints(cloud: string, authHint?: string, verb = "Missin
     .filter(Boolean);
   const allVars = [
     ...authVars,
-    "OPENROUTER_API_KEY",
+    "NEOSANTARA_API_KEY",
   ];
 
   const missing = allVars.filter((v) => !process.env[v]);
@@ -637,7 +637,7 @@ export function credentialHints(cloud: string, authHint?: string, verb = "Missin
     return [
       `  - Credentials appear to be set (${allVars.map((v) => pc.cyan(v)).join(", ")})`,
       "    The error may be due to invalid or expired credentials",
-      `    Run ${pc.cyan(`spawn ${cloud}`)} for setup instructions`,
+      `    Run ${pc.cyan(`jelma ${cloud}`)} for setup instructions`,
     ];
   }
 
@@ -647,7 +647,7 @@ export function credentialHints(cloud: string, authHint?: string, verb = "Missin
   for (const v of missing) {
     lines.push(`      ${pc.cyan(v)} -- not set`);
   }
-  lines.push(`    Run ${pc.cyan(`spawn ${cloud}`)} for setup instructions`);
+  lines.push(`    Run ${pc.cyan(`jelma ${cloud}`)} for setup instructions`);
 
   return lines;
 }
@@ -670,8 +670,8 @@ export function validateRunSecurity(agent: string, cloud: string, prompt?: strin
     process.exit(1);
   }
 
-  validateNonEmptyString(agent, "Agent name", "spawn agents");
-  validateNonEmptyString(cloud, "Cloud name", "spawn clouds");
+  validateNonEmptyString(agent, "Agent name", "jelma agents");
+  validateNonEmptyString(cloud, "Cloud name", "jelma clouds");
 }
 
 /** Validate agent and cloud exist in manifest, showing all errors before exiting */
@@ -730,18 +730,18 @@ export function printGroupedList(
 
 function checkAllCredentialsReady(auth: string): boolean {
   const hasCreds = hasCloudCredentials(auth);
-  const hasOpenRouterKey = !!process.env.OPENROUTER_API_KEY;
-  return hasOpenRouterKey && (hasCreds || auth.toLowerCase() === "none");
+  const hasNeosantaraKey = !!process.env.NEOSANTARA_API_KEY;
+  return hasNeosantaraKey && (hasCreds || auth.toLowerCase() === "none");
 }
 
 function printAuthVariableStatus(authVars: string[], cloudUrl?: string): void {
-  console.log(formatAuthVarLine("OPENROUTER_API_KEY", "https://openrouter.ai/settings/keys"));
+  console.log(formatAuthVarLine("NEOSANTARA_API_KEY", "https://app.neosantara.xyz/api-keys"));
   for (let i = 0; i < authVars.length; i++) {
     console.log(formatAuthVarLine(authVars[i], i === 0 ? cloudUrl : undefined));
   }
 }
 
-/** Print quick-start instructions showing credential status and example spawn command */
+/** Print quick-start instructions showing credential status and example jelma command */
 export function printQuickStart(opts: {
   auth: string;
   authVars: string[];
@@ -780,12 +780,12 @@ export function buildRetryCommand(agent: string, cloud: string, prompt?: string,
   const safeName = spawnName ? spawnName.replace(/"/g, '\\"') : "";
   const nameFlag = spawnName ? ` --name "${safeName}"` : "";
   if (!prompt) {
-    return `spawn ${agent} ${cloud}${nameFlag}`;
+    return `jelma ${agent} ${cloud}${nameFlag}`;
   }
   if (prompt.length <= 80) {
     const safe = prompt.replace(/"/g, '\\"');
-    return `spawn ${agent} ${cloud}${nameFlag} --prompt "${safe}"`;
+    return `jelma ${agent} ${cloud}${nameFlag} --prompt "${safe}"`;
   }
   // Long prompts: suggest --prompt-file instead of truncating into a broken command
-  return `spawn ${agent} ${cloud}${nameFlag} --prompt-file <your-prompt-file>`;
+  return `jelma ${agent} ${cloud}${nameFlag} --prompt-file <your-prompt-file>`;
 }

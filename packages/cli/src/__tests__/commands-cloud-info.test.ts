@@ -117,15 +117,15 @@ describe("cmdCloudInfo", () => {
     it("should show launch command hint for each agent", async () => {
       await cmdCloudInfo("sprite");
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("spawn claude sprite");
-      expect(output).toContain("spawn codex sprite");
+      expect(output).toContain("jelma claude sprite");
+      expect(output).toContain("jelma codex sprite");
     });
 
     it("should only show implemented agents for hetzner", async () => {
       await cmdCloudInfo("hetzner");
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("spawn claude hetzner");
-      expect(output).not.toContain("spawn codex hetzner");
+      expect(output).toContain("jelma claude hetzner");
+      expect(output).not.toContain("jelma codex hetzner");
     });
 
     it("should show hetzner description", async () => {
@@ -180,7 +180,7 @@ describe("cmdCloudInfo", () => {
   // ── Error paths: unknown cloud ────────────────────────────────────
 
   describe("unknown cloud", () => {
-    it("should exit with error and suggest spawn clouds for unknown cloud", async () => {
+    it("should exit with error and suggest jelma clouds for unknown cloud", async () => {
       await expect(cmdCloudInfo("nonexistent")).rejects.toThrow("process.exit");
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
@@ -188,7 +188,7 @@ describe("cmdCloudInfo", () => {
       expect(errorCalls.some((msg: string) => msg.includes("Unknown cloud"))).toBe(true);
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
-      expect(infoCalls.some((msg: string) => msg.includes("spawn clouds"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma clouds"))).toBe(true);
     });
 
     it("should suggest closest match for typo", async () => {
@@ -210,7 +210,7 @@ describe("cmdCloudInfo", () => {
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes("Did you mean"))).toBe(false);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn clouds"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma clouds"))).toBe(true);
     });
   });
 

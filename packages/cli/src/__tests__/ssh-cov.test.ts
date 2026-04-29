@@ -228,7 +228,7 @@ describe("waitForSsh", () => {
       return fakeSocket;
     });
 
-    // Mock Bun.spawn for SSH handshake
+    // Mock Bun.jelma for SSH handshake
     let exitCode: number | null = null;
     const mockProc = {
       get exitCode() {

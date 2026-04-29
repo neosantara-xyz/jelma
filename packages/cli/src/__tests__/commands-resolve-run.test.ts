@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -298,7 +298,7 @@ describe("cmdRun - display name resolution", () => {
       expect(infoCalls.some((msg: string) => msg.includes("4") && msg.includes("cloud"))).toBe(true);
       // Should suggest up to 3 example commands
       const exampleCmds = infoCalls.filter(
-        (msg: string) => msg.includes("spawn claude") && !msg.includes("see all") && !msg.includes("to see"),
+        (msg: string) => msg.includes("jelma claude") && !msg.includes("see all") && !msg.includes("to see"),
       );
       expect(exampleCmds.length).toBeGreaterThanOrEqual(1);
       expect(exampleCmds.length).toBeLessThanOrEqual(3);
@@ -320,14 +320,14 @@ describe("cmdRun - display name resolution", () => {
   // ── validateImplementation: no implemented clouds ──────────────────
 
   describe("validateImplementation - no implemented clouds", () => {
-    it("should show 'no implemented cloud providers' and suggest 'spawn matrix'", async () => {
+    it("should show 'no implemented cloud providers' and suggest 'jelma matrix'", async () => {
       await setManifestAndScript(noCloudManifest);
 
       await asyncTryCatch(() => cmdRun("codex", "sprite"));
 
       const infoCalls = mockLogInfo.mock.calls.map((c: unknown[]) => c.join(" "));
       expect(infoCalls.some((msg: string) => msg.includes("no implemented cloud providers"))).toBe(true);
-      expect(infoCalls.some((msg: string) => msg.includes("spawn matrix"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma matrix"))).toBe(true);
     });
   });
 

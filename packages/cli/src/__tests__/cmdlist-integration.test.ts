@@ -71,8 +71,7 @@ describe("cmdList integration", () => {
       ...process.env,
     };
     process.env.SPAWN_HOME = testDir;
-    // Isolate disk cache so tests don't read/write the real ~/.cache/spawn
-    process.env.XDG_CACHE_HOME = join(testDir, "cache");
+    // Isolate disk cache so tests don't read/write the real ~/.cache/jelma process.env.XDG_CACHE_HOME = join(testDir, "cache");
 
     consoleMocks = createConsoleMocks();
     mockLogError.mockClear();
@@ -120,11 +119,11 @@ describe("cmdList integration", () => {
       expect(info).toContain("No spawns recorded yet");
     });
 
-    it("should suggest 'spawn <agent> <cloud>' for first spawn", async () => {
+    it("should suggest 'jelma <agent> <cloud>' for first spawn", async () => {
       await cmdList();
 
       const info = logInfoOutput();
-      expect(info).toContain("spawn <agent> <cloud>");
+      expect(info).toContain("jelma <agent> <cloud>");
     });
 
     it("should show 'No spawns found matching' when filter matches nothing", async () => {
@@ -160,7 +159,7 @@ describe("cmdList integration", () => {
       await cmdList("nonexistent");
 
       const info = logInfoOutput();
-      expect(info).toContain("spawn list");
+      expect(info).toContain("jelma list");
       // Should mention total record count
       expect(info).toContain("2");
     });
@@ -265,7 +264,7 @@ describe("cmdList integration", () => {
       const output = consoleOutput();
       expect(output).toContain("Rerun last:");
       // The most recent record is claude/hetzner
-      expect(output).toContain("spawn claude hetzner");
+      expect(output).toContain("jelma claude hetzner");
     });
 
     it("should show record count in footer", async () => {
@@ -293,7 +292,7 @@ describe("cmdList integration", () => {
       await cmdList();
 
       const output = consoleOutput();
-      // Should say "1 spawn recorded" not "1 spawns recorded"
+      // Should say "1 jelma recorded" not "1 spawns recorded"
       expect(output).toMatch(/1 spawn[^s]/);
     });
   });
@@ -411,7 +410,7 @@ describe("cmdList integration", () => {
 
       const output = consoleOutput();
       expect(output).toContain("Clear filter");
-      expect(output).toContain("spawn list");
+      expect(output).toContain("jelma list");
     });
 
     it("should show filter suggestion hint when no filters active", async () => {
@@ -502,7 +501,7 @@ describe("cmdList integration", () => {
       const output = consoleOutput();
       // Should not contain --prompt in rerun hint
       expect(output).not.toContain("--prompt");
-      expect(output).toContain("spawn claude sprite");
+      expect(output).toContain("jelma claude sprite");
     });
   });
 });

@@ -6,7 +6,7 @@ import type { CloudInitTier } from "../shared/agents.js";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import * as p from "@clack/prompts";
-import { getErrorMessage, isNumber, isString, toObjectArray, toRecord } from "@openrouter/spawn-shared";
+import { getErrorMessage, isNumber, isString, toObjectArray, toRecord } from "@neosantara/jelma-shared";
 import { isInteractiveTTY } from "../commands/shared.js";
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
@@ -96,7 +96,7 @@ const DO_CLIENT_ID = "c82b64ac5f9cd4d03b686bebf17546c603b9c368a296a8c4c0718b1f40
 const DO_CLIENT_SECRET =
   process.env["DO_CLIENT_SECRET"] ?? "8083ef0317481d802d15b68f1c0b545b726720dbf52d00d17f649cc794efdfd9";
 
-// Fine-grained scopes for spawn (minimum required)
+// Fine-grained scopes for jelma (minimum required)
 const DO_SCOPES = [
   "account:read",
   "droplet:create",
@@ -1202,7 +1202,7 @@ export async function createServer(
     throw new Error("Invalid region");
   }
 
-  // imageOverride can be a numeric snapshot ID or a marketplace slug (e.g. "openrouter-spawnclaude")
+  // imageOverride can be a numeric snapshot ID or a marketplace slug (e.g. "neosantara-spawnclaude")
   const image: string | number = imageOverride
     ? /^\d+$/.test(imageOverride)
       ? Number(imageOverride)
@@ -1665,9 +1665,9 @@ export async function interactiveSession(cmd: string, ip?: string): Promise<numb
   logWarn(`  ${DO_DASHBOARD_URL}`);
   logWarn("");
   logInfo("To delete from CLI:");
-  logInfo("  spawn delete");
+  logInfo("  jelma delete");
   logInfo("To reconnect:");
-  logInfo("  spawn last");
+  logInfo("  jelma last");
   logInfo(`  or: ssh root@${serverIp}`);
 
   return exitCode;

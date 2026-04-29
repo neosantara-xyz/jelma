@@ -149,8 +149,8 @@ describe("Commands Display Output", () => {
     it("should show launch command hint for each cloud", async () => {
       await cmdAgentInfo("claude");
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("spawn claude sprite");
-      expect(output).toContain("spawn claude hetzner");
+      expect(output).toContain("jelma claude sprite");
+      expect(output).toContain("jelma claude hetzner");
     });
 
     it("should show codex agent info with only sprite cloud", async () => {
@@ -158,8 +158,8 @@ describe("Commands Display Output", () => {
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
       expect(output).toContain("Codex");
       expect(output).toContain("AI pair programmer");
-      expect(output).toContain("spawn codex sprite");
-      expect(output).not.toContain("spawn codex hetzner");
+      expect(output).toContain("jelma codex sprite");
+      expect(output).not.toContain("jelma codex hetzner");
     });
 
     it("should show no-clouds message when agent has no implementations", async () => {
@@ -190,12 +190,12 @@ describe("Commands Display Output", () => {
     it("should show all subcommands", () => {
       cmdHelp();
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("spawn list");
-      expect(output).toContain("spawn agents");
-      expect(output).toContain("spawn clouds");
-      expect(output).toContain("spawn update");
-      expect(output).toContain("spawn version");
-      expect(output).toContain("spawn help");
+      expect(output).toContain("jelma list");
+      expect(output).toContain("jelma agents");
+      expect(output).toContain("jelma clouds");
+      expect(output).toContain("jelma update");
+      expect(output).toContain("jelma version");
+      expect(output).toContain("jelma help");
     });
 
     it("should show examples section", () => {
@@ -208,7 +208,7 @@ describe("Commands Display Output", () => {
       cmdHelp();
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
       expect(output).toContain("AUTHENTICATION");
-      expect(output).toContain("OpenRouter");
+      expect(output).toContain("Neosantara");
     });
 
     it("should show troubleshooting section", () => {
@@ -241,7 +241,7 @@ describe("Commands Display Output", () => {
     it("should show repository URL", () => {
       cmdHelp();
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("OpenRouterTeam/spawn");
+      expect(output).toContain("NeosantaraTeam/spawn");
     });
   });
 
@@ -264,7 +264,7 @@ describe("Commands Display Output", () => {
           ...mockManifest.agents,
           codex: {
             ...mockManifest.agents.codex,
-            notes: "Natively supports OpenRouter",
+            notes: "Natively supports Neosantara",
           },
         },
       };
@@ -273,7 +273,7 @@ describe("Commands Display Output", () => {
 
       await cmdAgentInfo("codex");
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("Natively supports OpenRouter");
+      expect(output).toContain("Natively supports Neosantara");
     });
 
     it("should not show notes line when agent has no notes", async () => {
@@ -293,11 +293,11 @@ describe("Commands Display Output", () => {
 
       await cmdAgentInfo("claude");
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("spawn claude sprite");
-      expect(output).toContain("spawn claude hetzner");
-      expect(output).toContain("spawn claude vultr");
-      expect(output).toContain("spawn claude linode");
-      expect(output).toContain("spawn claude digitalocean");
+      expect(output).toContain("jelma claude sprite");
+      expect(output).toContain("jelma claude hetzner");
+      expect(output).toContain("jelma claude vultr");
+      expect(output).toContain("jelma claude linode");
+      expect(output).toContain("jelma claude digitalocean");
     });
   });
 });

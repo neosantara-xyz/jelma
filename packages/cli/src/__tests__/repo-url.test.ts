@@ -6,7 +6,7 @@ import { normalizeRepoUrl } from "../shared/orchestrate.js";
 
 describe("normalizeRepoUrl", () => {
   it("expands GitHub shorthand to a full HTTPS URL", () => {
-    expect(normalizeRepoUrl("openrouterteam/spawn")).toBe("https://github.com/openrouterteam/spawn.git");
+    expect(normalizeRepoUrl("neosantarateam/spawn")).toBe("https://github.com/neosantarateam/spawn.git");
     expect(normalizeRepoUrl("user/my-repo")).toBe("https://github.com/user/my-repo.git");
     expect(normalizeRepoUrl("user.name/repo.dot")).toBe("https://github.com/user.name/repo.dot.git");
   });

@@ -24,7 +24,7 @@ bun test src/__tests__/manifest.test.ts
 
 ### Commands: happy paths
 - `cmdrun-happy-path.test.ts` — Successful download, history recording, env var passing
-- `pull-history.test.ts` — `cmdPullHistory`, `parseAndMergeChildHistory`: child spawn history import and deduplication
+- `pull-history.test.ts` — `cmdPullHistory`, `parseAndMergeChildHistory`: child jelma history import and deduplication
 - `cmd-interactive.test.ts` — Interactive agent/cloud selection flow
 - `cmd-listing-output.test.ts` — `cmdMatrix`, `cmdAgents`, `cmdClouds` output formatting
 - `cmdlast.test.ts` — `cmdLast`: history display and resumption
@@ -32,9 +32,9 @@ bun test src/__tests__/manifest.test.ts
 - `commands-display.test.ts` — `cmdAgentInfo` (happy path), `cmdHelp`
 - `commands-cloud-info.test.ts` — `cmdCloudInfo` display
 - `cmd-update-cov.test.ts` — `cmdUpdate`, script download and execution
-- `cmd-feedback.test.ts` — `spawn feedback` command: empty message rejection, URL construction
-- `cmd-fix.test.ts` — `spawn fix` command: SSH connection repair via DI-injected runScript
-- `cmd-link.test.ts` — `spawn link` command: TCP reachability check, SSH agent detection via DI
+- `cmd-feedback.test.ts` — `jelma feedback` command: empty message rejection, URL construction
+- `cmd-fix.test.ts` — `jelma fix` command: SSH connection repair via DI-injected runScript
+- `cmd-link.test.ts` — `jelma link` command: TCP reachability check, SSH agent detection via DI
 
 ### Commands: coverage tests
 - `cmd-connect-cov.test.ts` — `cmdConnect`, `cmdEnterAgent`, `cmdOpenDashboard` coverage
@@ -143,8 +143,8 @@ bun test src/__tests__/manifest.test.ts
 - `oauth-pkce.test.ts` — `generateCodeVerifier`, `generateCodeChallenge` PKCE S256 flow
 
 ### History (extended)
-- `history-spawn-id.test.ts` — Unique spawn IDs, `saveVmConnection`/`saveLaunchCmd` by spawnId, concurrent spawn isolation
-- `recursive-spawn.test.ts` — `findDescendants`, `cmdTree`, `mergeChildHistory`, `exportHistory`: recursive child spawn tracking and tree output
+- `history-spawn-id.test.ts` — Unique jelma IDs, `saveVmConnection`/`saveLaunchCmd` by spawnId, concurrent jelma isolation
+- `recursive-spawn.test.ts` — `findDescendants`, `cmdTree`, `mergeChildHistory`, `exportHistory`: recursive child jelma tracking and tree output
 
 ### Manifest (extended)
 - `icon-integrity.test.ts` — Icon file existence and format validation

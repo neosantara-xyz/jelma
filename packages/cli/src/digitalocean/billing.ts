@@ -1,6 +1,6 @@
 import type { BillingConfig } from "../shared/billing-guidance.js";
 
-/** Opens add-payment modal and skips billing questionnaire (Spawn / OpenRouter context). */
+/** Opens add-payment modal and skips billing questionnaire (Spawn / Neosantara context). */
 export const DIGITALOCEAN_BILLING_ADD_PAYMENT_URL =
   "https://cloud.digitalocean.com/account/billing?defer-onboarding-for=or&open-add-payment-method=true";
 

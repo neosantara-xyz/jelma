@@ -11,7 +11,7 @@
 import { describe, expect, it } from "bun:test";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { tryCatch } from "@openrouter/spawn-shared";
+import { tryCatch } from "@neosantara/jelma-shared";
 
 // REAL_HOME is the actual home directory captured BEFORE preload runs.
 // We read it from /etc/passwd because process.env.HOME is already sandboxed.

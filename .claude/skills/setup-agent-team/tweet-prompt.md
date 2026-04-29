@@ -32,7 +32,7 @@ GIT_DATA_PLACEHOLDER
    - No corporate speak, no "excited to announce", no "we're thrilled"
    - **NEVER use em dashes (—) or en dashes (–).** Use a period, comma, or rephrase.
    - At most 1 hashtag (only if it fits naturally)
-   - OK to include `https://openrouter.ai/spawn`
+   - OK to include `https://jelma.ai`
 
 3. **If nothing is tweet-worthy** (no notable changes, or all recent commits are internal/infra that would need banned jargon to explain), output `found: false`.
 

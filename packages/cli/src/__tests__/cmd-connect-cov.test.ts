@@ -129,10 +129,10 @@ describe("cmdConnect", () => {
 
   it("handles spawnInteractive throwing an error", async () => {
     spawnInteractiveSpy.mockImplementation(() => {
-      throw new Error("spawn failed");
+      throw new Error("jelma failed");
     });
     const conn = makeConn();
-    await expect(cmdConnect(conn)).rejects.toThrow("spawn failed");
+    await expect(cmdConnect(conn)).rejects.toThrow("jelma failed");
     expect(clack.logError).toHaveBeenCalledWith(expect.stringContaining("Failed to connect"));
   });
 });
@@ -163,7 +163,7 @@ describe("cmdEnterAgent", () => {
       stop: mock(() => {}),
     });
     openBrowserSpy = spyOn(uiModule, "openBrowser").mockImplementation(() => {});
-    // Mock Bun.spawn for checkSecurityAlerts — return empty output (no alerts)
+    // Mock Bun.jelma for checkSecurityAlerts — return empty output (no alerts)
     bunSpawnSpy = spyOn(Bun, "spawn").mockReturnValue({
       stdout: new ReadableStream({
         start(controller) {

@@ -4,12 +4,12 @@
 
 import type { CloudRunner } from "./agent-setup.js";
 
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { asyncTryCatch } from "./result.js";
 import { logDebug, logInfo, logStep, logWarn } from "./ui.js";
 
-const REPO = "OpenRouterTeam/spawn";
+const REPO = "NeosantaraTeam/spawn";
 
 /** Schema for a single GitHub Release asset. */
 const AssetSchema = v.object({

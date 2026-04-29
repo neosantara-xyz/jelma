@@ -391,7 +391,7 @@ async function applySetupStep(runner: CloudRunner, step: SetupStep): Promise<voi
         const escapedName = step.name.replace(/[^A-Za-z0-9_]/g, "");
         const b64Val = Buffer.from(value).toString("base64");
         await runner.runServer(
-          `mkdir -p /etc/spawn && printf 'export %s="%s"\\n' '${escapedName}' "$(echo '${b64Val}' | base64 -d)" >> /etc/spawn/secrets && chmod 600 /etc/spawn/secrets`,
+          `mkdir -p /etc/jelma && printf 'export %s="%s"\\n' '${escapedName}' "$(echo '${b64Val}' | base64 -d)" >> /etc/spawn/secrets && chmod 600 /etc/spawn/secrets`,
         );
         await runner.runServer(
           `grep -q '/etc/spawn/secrets' ~/.bashrc 2>/dev/null || echo 'source /etc/spawn/secrets 2>/dev/null' >> ~/.bashrc`,

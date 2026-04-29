@@ -9,7 +9,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
 const mockManifest = createMockManifest();
@@ -205,7 +205,7 @@ describe("cmdAgentInteractive", () => {
     await cmdAgentInteractive("claude");
 
     expect(clack.logStep).toHaveBeenCalledWith(expect.stringContaining("Launching"));
-    expect(clack.outro).toHaveBeenCalledWith(expect.stringContaining("spawn script"));
+    expect(clack.outro).toHaveBeenCalledWith(expect.stringContaining("jelma script"));
   });
 
   it("cancels when user cancels cloud selection", async () => {

@@ -1,10 +1,10 @@
-# Spawn CLI installer for Windows PowerShell
+# Jelma CLI installer for Windows PowerShell
 #
 # Usage (PowerShell):
-#   irm https://openrouter.ai/labs/spawn/cli/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
 #
 # Or download and run:
-#   Invoke-WebRequest -Uri https://openrouter.ai/labs/spawn/cli/install.ps1 -OutFile install.ps1
+#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 -OutFile install.ps1
 #   .\install.ps1
 #
 # Override install directory:
@@ -12,14 +12,14 @@
 
 $ErrorActionPreference = "Stop"
 
-$SPAWN_REPO    = "OpenRouterTeam/spawn"
+$SPAWN_REPO    = "jelmaai/jelma"
 $SPAWN_RAW_BASE = "https://raw.githubusercontent.com/$SPAWN_REPO/main"
 $MIN_BUN_VERSION = [version]"1.2.0"
 
-function Write-Step  { param($msg) Write-Host "[spawn] $msg" -ForegroundColor Cyan }
-function Write-Info  { param($msg) Write-Host "[spawn] $msg" -ForegroundColor Green }
-function Write-Warn  { param($msg) Write-Host "[spawn] $msg" -ForegroundColor Yellow }
-function Write-Err   { param($msg) Write-Host "[spawn] $msg" -ForegroundColor Red }
+function Write-Step  { param($msg) Write-Host "[jelma] $msg" -ForegroundColor Cyan }
+function Write-Info  { param($msg) Write-Host "[jelma] $msg" -ForegroundColor Green }
+function Write-Warn  { param($msg) Write-Host "[jelma] $msg" -ForegroundColor Yellow }
+function Write-Err   { param($msg) Write-Host "[jelma] $msg" -ForegroundColor Red }
 
 # -- Helpers -------------------------------------------------------------------
 
@@ -74,19 +74,19 @@ function Add-ToUserPath {
         $newPath = ($dirs + $Dir) -join ";"
         [System.Environment]::SetEnvironmentVariable("Path", $newPath, "User")
         $env:Path = "$env:Path;$Dir"
-        Write-Warn "$Dir added to your user PATH. Restart your terminal to use 'spawn'."
+        Write-Warn "$Dir added to your user PATH. Restart your terminal to use 'jelma'."
     }
 }
 
-function Install-SpawnCli {
-    $tmpDir = Join-Path $env:TEMP ("spawn-install-" + [System.IO.Path]::GetRandomFileName())
+function Install-JelmaCli {
+    $tmpDir = Join-Path $env:TEMP ("jelma-install-" + [System.IO.Path]::GetRandomFileName())
     New-Item -ItemType Directory -Path $tmpDir | Out-Null
 
     try {
         $cliDir = Join-Path $tmpDir "cli"
 
         # Download CLI source via git (preferred) or individual files
-        Write-Step "Downloading spawn CLI source..."
+        Write-Step "Downloading jelma CLI source..."
         $gitAvailable = $null -ne (Get-Command git -ErrorAction SilentlyContinue)
         if ($gitAvailable) {
             $repoDir = Join-Path $tmpDir "repo"
@@ -119,7 +119,7 @@ function Install-SpawnCli {
         }
 
         # Build with bun
-        Write-Step "Building spawn CLI..."
+        Write-Step "Building jelma CLI..."
         Push-Location $cliDir
         bun install
         $buildOk = $false
@@ -140,16 +140,16 @@ function Install-SpawnCli {
         $installDir = Find-InstallDir
         New-Item -ItemType Directory -Force -Path $installDir | Out-Null
 
-        # Copy cli.js as the spawn script; create a .cmd wrapper so it's invokable from cmd.exe too
-        $cliJs    = Join-Path $installDir "spawn"
-        $cliCmd   = Join-Path $installDir "spawn.cmd"
+        # Copy cli.js as the jelma script; create a .cmd wrapper so it's invokable from cmd.exe too
+        $cliJs    = Join-Path $installDir "jelma"
+        $cliCmd   = Join-Path $installDir "jelma.cmd"
 
         Copy-Item (Join-Path $cliDir "cli.js") $cliJs -Force
 
-        # spawn.cmd -- lets users run `spawn` from cmd.exe and PowerShell without specifying bun
-        Set-Content $cliCmd "@bun `"%~dp0spawn`" %*"
+        # jelma.cmd -- lets users run `jelma` from cmd.exe and PowerShell without specifying bun
+        Set-Content $cliCmd "@bun `"%~dp0jelma`" %*"
 
-        Write-Info "Installed spawn to $installDir"
+        Write-Info "Installed jelma to $installDir"
         Add-ToUserPath $installDir
 
         # Show version
@@ -157,7 +157,7 @@ function Install-SpawnCli {
             Write-Host ""
             & bun $cliJs version
             Write-Host ""
-            Write-Info "Run 'spawn' to get started"
+            Write-Info "Run 'jelma' to get started"
         } catch { }
     } finally {
         Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
@@ -190,5 +190,5 @@ if ($bunVer -lt $MIN_BUN_VERSION) {
     Write-Info "bun upgraded to $bunVer"
 }
 
-Write-Step "Installing spawn via bun..."
-Install-SpawnCli
+Write-Step "Installing jelma via bun..."
+Install-JelmaCli

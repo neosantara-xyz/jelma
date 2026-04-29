@@ -1,6 +1,6 @@
-# Spawn
+# Jelma
 
-Spawn is a matrix of **agents x clouds**. Every script provisions a cloud server, installs an agent, injects OpenRouter credentials, and drops the user into an interactive session.
+Jelma is a matrix of **agents x clouds**. Every script provisions a cloud server, installs an agent, injects Neosantara credentials, and drops the user into an interactive session.
 
 ## The Matrix
 
@@ -12,14 +12,14 @@ Spawn is a matrix of **agents x clouds**. Every script provisions a cloud server
 ## File Structure
 
 ```
-spawn/
+jelma/
   packages/
     cli/
       src/index.ts               # CLI entry point (bun/TypeScript)
       src/manifest.ts            # Manifest fetch + cache logic
       src/commands/              # Per-command modules (interactive, list, run, etc.)
       src/commands/index.ts       # Barrel re-export of all command modules
-      package.json               # npm package (@openrouter/spawn)
+      package.json               # npm package (@neosantara/jelma)
   sh/
     cli/
       install.sh                 # One-liner installer (bun → npm → auto-install bun)
@@ -57,7 +57,7 @@ All cloud provisioning and agent setup logic lives in TypeScript under `packages
 
 **`sh/shared/github-auth.sh`** — Standalone GitHub CLI installer + OAuth login helper. Used by `packages/cli/src/shared/agent-setup.ts` to set up `gh` on remote VMs.
 
-**`sh/shared/key-request.sh`** — API key provisioning helpers sourced by the QA harness (`qa.sh`) for loading cloud credentials from `~/.config/spawn/{cloud}.json`.
+**`sh/shared/key-request.sh`** — API key provisioning helpers sourced by the QA harness (`qa.sh`) for loading cloud credentials from `~/.config/jelma/{cloud}.json`.
 
 ## After Each Change
 
@@ -72,12 +72,12 @@ All cloud provisioning and agent setup logic lives in TypeScript under `packages
 When you encounter bugs, stale references, broken functionality, or architectural issues that are **outside the scope of your current task**, file a GitHub issue immediately rather than ignoring them or trying to fix everything at once:
 
 ```bash
-gh issue create --repo OpenRouterTeam/spawn --title "bug: <brief description>" --body "<details>"
+gh issue create --repo jelmaai/jelma --title "bug: <brief description>" --body "<details>"
 ```
 
 Examples of when to file:
 - Dead code or stale references to files/functions that no longer exist
-- Broken features (e.g., `spawn delete` references non-existent shell scripts)
+- Broken features (e.g., `jelma delete` references non-existent shell scripts)
 - Security concerns that need separate review
 - Architectural debt that would be too large to fix in the current PR
 

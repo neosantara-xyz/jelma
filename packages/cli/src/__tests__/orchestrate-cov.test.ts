@@ -11,7 +11,7 @@ import type { CloudOrchestrator, OrchestrationOptions } from "../shared/orchestr
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { asyncTryCatch, isNumber, tryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isNumber, tryCatch } from "@neosantara/jelma-shared";
 import { runOrchestration } from "../shared/orchestrate";
 
 const mockGetOrPromptApiKey = mock(() => Promise.resolve("sk-or-v1-test-key"));
@@ -49,7 +49,7 @@ function createMockAgent(overrides: Partial<AgentConfig> = {}): AgentConfig {
     name: "TestAgent",
     install: mock(() => Promise.resolve()),
     envVars: mock((key: string) => [
-      `OPENROUTER_API_KEY=${key}`,
+      `NEOSANTARA_API_KEY=${key}`,
     ]),
     launchCmd: mock(() => "test-agent --start"),
     ...overrides,
@@ -272,7 +272,7 @@ describe("orchestrate modelEnvVar", () => {
   it("injects model env var when modelId and modelEnvVar are set", async () => {
     process.env.MODEL_ID = "anthropic/claude-3";
     const envVarsFn = mock((key: string) => [
-      `OPENROUTER_API_KEY=${key}`,
+      `NEOSANTARA_API_KEY=${key}`,
     ]);
     const cloud = createMockCloud();
     const agent = createMockAgent({
@@ -425,7 +425,7 @@ describe("orchestrate env setup failure", () => {
 // ── SPAWN_NAME_KEBAB recording ────────────────────────────────────────
 
 describe("orchestrate SPAWN_NAME", () => {
-  it("records SPAWN_NAME_KEBAB in spawn record", async () => {
+  it("records SPAWN_NAME_KEBAB in jelma record", async () => {
     process.env.SPAWN_NAME_KEBAB = "my-test-spawn";
     const cloud = createMockCloud();
     const agent = createMockAgent();

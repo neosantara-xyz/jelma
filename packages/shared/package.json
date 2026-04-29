@@ -1,5 +1,5 @@
 {
-  "name": "@openrouter/spawn-shared",
+  "name": "@neosantara/jelma-shared",
   "version": "0.2.0",
   "type": "module",
   "main": "src/index.ts",

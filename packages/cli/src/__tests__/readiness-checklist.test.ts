@@ -14,7 +14,7 @@ describe("checklistLineStatus", () => {
     expect(checklistLineStatus("email_unverified", state)).toBe("ready");
     expect(checklistLineStatus("ssh_missing", state)).toBe("ready");
     expect(checklistLineStatus("payment_required", state)).toBe("ready");
-    expect(checklistLineStatus("openrouter_missing", state)).toBe("ready");
+    expect(checklistLineStatus("neosantara_missing", state)).toBe("ready");
   });
 
   test("do_auth blocks only auth row; other rows pending", () => {
@@ -28,7 +28,7 @@ describe("checklistLineStatus", () => {
     expect(checklistLineStatus("email_unverified", state)).toBe("pending");
     expect(checklistLineStatus("ssh_missing", state)).toBe("pending");
     expect(checklistLineStatus("payment_required", state)).toBe("pending");
-    expect(checklistLineStatus("openrouter_missing", state)).toBe("pending");
+    expect(checklistLineStatus("neosantara_missing", state)).toBe("pending");
     expect(checklistLineStatus("droplet_limit", state)).toBe("pending");
   });
 
@@ -46,16 +46,16 @@ describe("checklistLineStatus", () => {
     expect(checklistLineStatus("ssh_missing", state)).toBe("ready");
   });
 
-  test("openrouter_missing is blocked while other rows remain ready", () => {
+  test("neosantara_missing is blocked while other rows remain ready", () => {
     const state: ReadinessState = {
       status: "BLOCKED",
       blockers: [
-        "openrouter_missing",
+        "neosantara_missing",
       ],
     };
     expect(checklistLineStatus("do_auth", state)).toBe("ready");
     expect(checklistLineStatus("ssh_missing", state)).toBe("ready");
-    expect(checklistLineStatus("openrouter_missing", state)).toBe("blocked");
+    expect(checklistLineStatus("neosantara_missing", state)).toBe("blocked");
     expect(checklistLineStatus("droplet_limit", state)).toBe("ready");
   });
 
@@ -78,7 +78,7 @@ describe("checklistLineStatus", () => {
         "email_unverified",
         "payment_required",
         "ssh_missing",
-        "openrouter_missing",
+        "neosantara_missing",
         "droplet_limit",
       ],
     };
@@ -86,7 +86,7 @@ describe("checklistLineStatus", () => {
     expect(checklistLineStatus("email_unverified", state)).toBe("blocked");
     expect(checklistLineStatus("payment_required", state)).toBe("blocked");
     expect(checklistLineStatus("ssh_missing", state)).toBe("blocked");
-    expect(checklistLineStatus("openrouter_missing", state)).toBe("blocked");
+    expect(checklistLineStatus("neosantara_missing", state)).toBe("blocked");
     expect(checklistLineStatus("droplet_limit", state)).toBe("blocked");
   });
 });
@@ -98,7 +98,7 @@ describe("READINESS_CHECKLIST_ROWS", () => {
     expect(codes).toContain("email_unverified");
     expect(codes).toContain("ssh_missing");
     expect(codes).toContain("payment_required");
-    expect(codes).toContain("openrouter_missing");
+    expect(codes).toContain("neosantara_missing");
     expect(codes).toContain("droplet_limit");
     expect(codes.length).toBe(6);
   });

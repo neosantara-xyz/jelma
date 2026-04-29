@@ -68,7 +68,7 @@ function resolveAndLog(
   };
 }
 
-/** Detect and fix swapped arguments: "spawn <cloud> <agent>" -> "spawn <agent> <cloud>" */
+/** Detect and fix swapped arguments: "jelma <cloud> <agent>" -> "jelma <agent> <cloud>" */
 function detectAndFixSwappedArgs(
   manifest: Manifest,
   agent: string,
@@ -79,7 +79,7 @@ function detectAndFixSwappedArgs(
 } {
   if (!manifest.agents[agent] && manifest.clouds[agent] && manifest.agents[cloud]) {
     p.log.info("It looks like you swapped the agent and cloud arguments.");
-    p.log.info(`Running: ${pc.cyan(`spawn ${cloud} ${agent}`)}`);
+    p.log.info(`Running: ${pc.cyan(`jelma ${cloud} ${agent}`)}`);
     return {
       agent: cloud,
       cloud: agent,
@@ -146,7 +146,7 @@ function buildCredentialStatusLines(manifest: Manifest, cloud: string): string[]
   const cloudUrl = manifest.clouds[cloud].url;
 
   const lines = [
-    formatCredStatusLine("OPENROUTER_API_KEY", "https://openrouter.ai/settings/keys"),
+    formatCredStatusLine("NEOSANTARA_API_KEY", "https://app.neosantara.xyz/api-keys"),
   ];
 
   for (let i = 0; i < authVars.length; i++) {
@@ -162,7 +162,7 @@ function buildEnvironmentLines(manifest: Manifest, agent: string): string[] | nu
     return null;
   }
   return Object.entries(env).map(([k, v]) => {
-    const display = v.includes("OPENROUTER_API_KEY") ? "(from OpenRouter)" : v;
+    const display = v.includes("NEOSANTARA_API_KEY") ? "(from Neosantara)" : v;
     return `  ${k}=${display}`;
   });
 }
@@ -198,7 +198,7 @@ export function showDryRunPreview(manifest: Manifest, agent: string, cloud: stri
   const allSet = credLines.every((l) => l.includes("-- set"));
   if (!allSet) {
     p.log.warn("Some credentials are missing. Set them before launching.");
-    p.log.info(`Run ${pc.cyan(`spawn ${cloud}`)} for setup instructions.`);
+    p.log.info(`Run ${pc.cyan(`jelma ${cloud}`)} for setup instructions.`);
     console.log();
   }
 
@@ -212,7 +212,7 @@ export function showDryRunPreview(manifest: Manifest, agent: string, cloud: stri
 // ── Script download ──────────────────────────────────────────────────────────
 
 async function downloadScriptWithFallback(primaryUrl: string, fallbackUrl: string): Promise<string> {
-  logStep("Downloading spawn script...");
+  logStep("Downloading jelma script...");
 
   const r = await asyncTryCatch(async () => {
     const res = await fetch(primaryUrl, {
@@ -248,13 +248,13 @@ async function downloadScriptWithFallback(primaryUrl: string, fallbackUrl: strin
 // Report 404 errors (script not found)
 function report404Failure(): void {
   p.log.error("Script not found (HTTP 404)");
-  console.error("\nThe spawn script doesn't exist at the expected location.");
+  console.error("\nThe jelma script doesn't exist at the expected location.");
   console.error("\nThis usually means:");
   console.error("  \u2022 The agent + cloud combination hasn't been implemented yet");
   console.error("  \u2022 The script is currently being deployed (rare)");
   console.error("  \u2022 There's a temporary issue with the file server");
   console.error(`\n${pc.bold("Next steps:")}`);
-  console.error(`  1. Verify it's implemented: ${pc.cyan("spawn matrix")}`);
+  console.error(`  1. Verify it's implemented: ${pc.cyan("jelma matrix")}`);
   console.error("  2. If the matrix shows \u2713, wait 1-2 minutes and retry");
   console.error(`  3. Still broken? Report it: ${pc.cyan(`https://github.com/${REPO}/issues`)}`);
 }
@@ -264,7 +264,7 @@ function reportHTTPFailure(primaryStatus: number, fallbackStatus: number): void 
   const hasServerError = primaryStatus >= 500 || fallbackStatus >= 500;
   p.log.error("Script download failed");
   console.error(
-    `\nCouldn't download the spawn script (HTTP ${primaryStatus} from primary, ${fallbackStatus} from fallback).`,
+    `\nCouldn't download the jelma script (HTTP ${primaryStatus} from primary, ${fallbackStatus} from fallback).`,
   );
   if (hasServerError) {
     console.error("\nThe servers are experiencing issues or temporarily unavailable.");
@@ -310,7 +310,7 @@ const NETWORK_ERROR_GUIDANCE: Record<"timeout" | "connection" | "unknown", Error
       "  \u2022 Firewall blocking or slowing the connection",
     ],
     steps: (ghUrl) => [
-      "  2. Verify combination exists: " + pc.cyan("spawn matrix"),
+      "  2. Verify combination exists: " + pc.cyan("jelma matrix"),
       "  3. Wait a moment and retry",
       "  4. Test URL directly: " + pc.dim(ghUrl),
     ],
@@ -333,7 +333,7 @@ const NETWORK_ERROR_GUIDANCE: Record<"timeout" | "connection" | "unknown", Error
       "  \u2022 GitHub's servers temporarily down",
     ],
     steps: (ghUrl) => [
-      "  2. Verify combination exists: " + pc.cyan("spawn matrix"),
+      "  2. Verify combination exists: " + pc.cyan("jelma matrix"),
       "  3. Wait a moment and retry",
       "  4. Test URL directly: " + pc.dim(ghUrl),
     ],
@@ -581,7 +581,7 @@ function runBashScript(
   if (isRetryableExitCode(errMsg)) {
     console.error();
     p.log.warn("SSH connection lost. Your server is likely still running.");
-    p.log.warn("To reconnect, re-run the same spawn command.");
+    p.log.warn("To reconnect, re-run the same jelma command.");
     return undefined; // Don't report as failure — user already has clear guidance
   }
 
@@ -597,7 +597,7 @@ function runBashScript(
  */
 async function downloadBundle(cloud: string): Promise<string> {
   const bundleUrl = `https://github.com/${REPO}/releases/download/${cloud}-latest/${cloud}.js`;
-  logStep("Downloading spawn bundle...");
+  logStep("Downloading jelma bundle...");
 
   const r = await asyncTryCatch(async () => {
     const res = await fetch(bundleUrl, {
@@ -670,7 +670,7 @@ export async function execScript(
   debug?: boolean,
   spawnName?: string,
 ): Promise<boolean> {
-  // Generate a unique spawn ID and record the spawn before execution
+  // Generate a unique jelma ID and record the jelma before execution
   const spawnId = generateSpawnId();
   const parentId = process.env.SPAWN_PARENT_ID || undefined;
   const depth = process.env.SPAWN_DEPTH ? Number(process.env.SPAWN_DEPTH) : undefined;
@@ -703,7 +703,7 @@ export async function execScript(
     }),
   );
   if (!saveResult.ok && debug) {
-    console.error(pc.dim(`Warning: Failed to save spawn record: ${getErrorMessage(saveResult.error)}`));
+    console.error(pc.dim(`Warning: Failed to save jelma record: ${getErrorMessage(saveResult.error)}`));
   }
   process.env.SPAWN_ID = spawnId;
 
@@ -754,7 +754,7 @@ export async function execScript(
       console.error(`[run] Using local script: ${localScriptResolved}`);
     }
   } else {
-    const url = `https://openrouter.ai/labs/spawn/${cloud}/${agent}.sh`;
+    const url = `https://raw.githubusercontent.com/jelmaai/jelma/main/sh/${cloud}/${agent}.sh`;
     const ghUrl = `${RAW_BASE}/sh/${cloud}/${agent}.sh`;
 
     const dlResult = await asyncTryCatch(() => downloadScriptWithFallback(url, ghUrl));
@@ -1131,7 +1131,7 @@ export async function cmdRunHeadless(agent: string, cloud: string, opts: Headles
         console.error(`[headless] Using local script: ${localScriptResolved}`);
       }
     } else {
-      const url = `https://openrouter.ai/labs/spawn/${resolvedCloud}/${resolvedAgent}.sh`;
+      const url = `https://raw.githubusercontent.com/jelmaai/jelma/main/sh/${resolvedCloud}/${resolvedAgent}.sh`;
       const ghUrl = `${RAW_BASE}/sh/${resolvedCloud}/${resolvedAgent}.sh`;
 
       const fetchResult = await asyncTryCatch(async () => {
@@ -1187,7 +1187,7 @@ export async function cmdRunHeadless(agent: string, cloud: string, opts: Headles
     );
   }
 
-  // Read the spawn record saved during orchestration to populate connection fields.
+  // Read the jelma record saved during orchestration to populate connection fields.
   // Validate each field individually — silently omit any that fail validation to avoid
   // surfacing attacker-controlled data from a tampered history file in headless output.
   const history = loadHistory();
@@ -1238,7 +1238,7 @@ export async function cmdRun(
   dryRun?: boolean,
   debug?: boolean,
 ): Promise<void> {
-  // Funnel entry for the non-interactive `spawn <agent> <cloud>` path.
+  // Funnel entry for the non-interactive `jelma <agent> <cloud>` path.
   // mode distinguishes this from the interactive pickers so we can split the
   // funnel by entry point in PostHog.
   captureEvent("spawn_launched", {
@@ -1291,7 +1291,7 @@ export async function cmdRun(
 
   // If a name was given, check whether an active instance with that name already
   // exists for this agent + cloud combination.  When it does, route the user into
-  // the same action picker they get from `spawn ls` instead of blindly creating a
+  // the same action picker they get from `jelma ls` instead of blindly creating a
   // second VM.
   if (spawnName) {
     const activeServers = getActiveServers();

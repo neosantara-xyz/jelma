@@ -11,7 +11,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import { getErrorMessage } from "@openrouter/spawn-shared";
+import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { getHistoryPath, getSpawnDir } from "./shared/paths.js";
 import { isFileError, tryCatch, tryCatchIf } from "./shared/result.js";
@@ -89,7 +89,7 @@ const HistoryFileV1LooseSchema = v.object({
   records: v.array(v.unknown()),
 });
 
-/** Generate a unique spawn ID. */
+/** Generate a unique jelma ID. */
 export function generateSpawnId(): string {
   return randomUUID();
 }
@@ -182,7 +182,7 @@ function withHistoryLock<T>(fn: () => T): T {
 }
 
 /** Atomically write a JSON file: write to a process-unique .tmp, then rename into place.
- * The unique suffix prevents races when multiple concurrent spawn processes write history. */
+ * The unique suffix prevents races when multiple concurrent jelma processes write history. */
 function atomicWriteJson(filePath: string, data: unknown): void {
   const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n", {
@@ -387,7 +387,7 @@ export function loadHistory(): SpawnRecord[] {
   }
   const readResult = tryCatchIf(isFileError, () => readFileSync(path, "utf-8"));
   if (!readResult.ok) {
-    logWarn("Could not read spawn history");
+    logWarn("Could not read jelma history");
     logDebug(getErrorMessage(readResult.error));
     return [];
   }
@@ -554,8 +554,8 @@ export function getActiveServers(): SpawnRecord[] {
   return records.filter((r) => r.connection?.cloud && r.connection.cloud !== "local" && !r.connection.deleted);
 }
 
-/** Merge child spawn records into local history.
- *  Sets parent_id on each child record and deduplicates by spawn ID. */
+/** Merge child jelma records into local history.
+ *  Sets parent_id on each child record and deduplicates by jelma ID. */
 export function mergeChildHistory(parentSpawnId: string, childRecords: SpawnRecord[]): void {
   if (childRecords.length === 0) {
     return;
@@ -585,7 +585,7 @@ export function mergeChildHistory(parentSpawnId: string, childRecords: SpawnReco
   });
 }
 
-/** Export history records as JSON string (for `spawn history export`). */
+/** Export history records as JSON string (for `jelma history export`). */
 export function exportHistory(): string {
   const records = loadHistory();
   return JSON.stringify(records, null, 2);

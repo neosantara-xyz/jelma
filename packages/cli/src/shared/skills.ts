@@ -7,7 +7,7 @@ import type { CloudRunner } from "./agent-setup.js";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as p from "@clack/prompts";
-import { toRecord } from "@openrouter/spawn-shared";
+import { toRecord } from "@neosantara/jelma-shared";
 import { uploadConfigFile } from "./agent-setup.js";
 import { parseJsonObj } from "./parse.js";
 import { getTmpDir } from "./paths.js";

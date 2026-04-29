@@ -11,8 +11,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
-import { asyncTryCatch, isNumber, tryCatch } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isNumber, tryCatch } from "@neosantara/jelma-shared";
 
 const mockGetOrPromptApiKey = mock(() => Promise.resolve("sk-or-v1-test-key"));
 
@@ -61,7 +60,7 @@ function createMockAgent(overrides: Partial<AgentConfig> = {}): AgentConfig {
     name: "TestAgent",
     install: mock(() => Promise.resolve()),
     envVars: mock((key: string) => [
-      `OPENROUTER_API_KEY=${key}`,
+      `NEOSANTARA_API_KEY=${key}`,
     ]),
     launchCmd: mock(() => "test-agent --start"),
     ...overrides,
@@ -102,8 +101,7 @@ describe("runOrchestration", () => {
 
   beforeEach(() => {
     capturedExitCode = undefined;
-    // Isolate history writes to a temp directory so tests never pollute ~/.spawn
-    testDir = join(process.env.HOME ?? "", `.spawn-test-orch-${Date.now()}-${Math.random()}`);
+    // Isolate history writes to a temp directory so tests never pollute ~/.jelma testDir = join(process.env.HOME ?? "", `.spawn-test-orch-${Date.now()}-${Math.random()}`);
     mkdirSync(testDir, {
       recursive: true,
     });
@@ -228,7 +226,7 @@ describe("runOrchestration", () => {
 
   it("passes API key to agent.envVars", async () => {
     const envVarsFn = mock((key: string) => [
-      `OPENROUTER_API_KEY=${key}`,
+      `NEOSANTARA_API_KEY=${key}`,
     ]);
     const cloud = createMockCloud();
     const agent = createMockAgent({
@@ -908,7 +906,7 @@ describe("runOrchestration", () => {
 
       await runOrchestrationSafe(cloud, agent, "testagent");
 
-      // launchCmd should be called (to save it for later `spawn last`)
+      // launchCmd should be called (to save it for later `jelma last`)
       expect(agent.launchCmd).toHaveBeenCalledTimes(1);
       expect(cloud.interactiveSession).toHaveBeenCalledTimes(0);
       expect(capturedExitCode).toBe(0);

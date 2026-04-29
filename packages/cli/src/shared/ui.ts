@@ -5,7 +5,7 @@ import "../unicode-detect.js"; // Must run before @clack/prompts: configures TER
 
 import { readFileSync } from "node:fs";
 import * as p from "@clack/prompts";
-import { isString } from "@openrouter/spawn-shared";
+import { isString } from "@neosantara/jelma-shared";
 import { parseJsonObj } from "./parse.js";
 import { getSpawnCloudConfigPath } from "./paths.js";
 import { asyncTryCatch, tryCatch, unwrapOr } from "./result.js";
@@ -342,7 +342,7 @@ export function toKebabCase(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-/** Generate a default spawn name with random suffix (e.g. "spawn-a1b2"). */
+/** Generate a default jelma name with random suffix (e.g. "spawn-a1b2"). */
 export function defaultSpawnName(): string {
   const suffix = Math.random().toString(36).slice(2, 6);
   return `spawn-${suffix}`;
@@ -368,7 +368,7 @@ export function getServerNameFromEnv(cloudEnvVar: string): string {
 }
 
 /**
- * Prompt user for a spawn name (or derive it non-interactively).
+ * Prompt user for a jelma name (or derive it non-interactively).
  * Every cloud module had an identical copy of this logic — now unified here.
  *
  * @param cloudLabel - Display label for the prompt (e.g. "AWS instance", "Hetzner server")

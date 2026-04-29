@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
-import { asyncTryCatch, isString } from "@openrouter/spawn-shared";
+import { asyncTryCatch, isString } from "@neosantara/jelma-shared";
 import { loadManifest } from "../manifest";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
@@ -77,7 +77,7 @@ describe("Download and Failure Pipeline", () => {
 
       const errorOutput = consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
       expect(errorOutput).toContain("doesn't exist");
-      expect(errorOutput).toContain("spawn matrix");
+      expect(errorOutput).toContain("jelma matrix");
       expect(errorOutput).toContain("Report it");
     });
 
@@ -99,9 +99,9 @@ describe("Download and Failure Pipeline", () => {
       expect(errorOutput).toContain("temporarily unavailable");
     });
 
-    it("should show mixed error for primary 404 and fallback 500", async () => {
+    it("should show not-found guidance when script URL returns 404", async () => {
       await setupFetch(async (url) => {
-        if (url.includes("openrouter.ai")) {
+        if (url.includes("raw.githubusercontent.com/jelmaai/jelma/main/sh")) {
           return new Response("Not Found", {
             status: 404,
           });
@@ -116,11 +116,9 @@ describe("Download and Failure Pipeline", () => {
         throw r.error;
       }
 
-      // Should show HTTP error codes in console output (not the "script not found" path)
       const errorOutput = consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(errorOutput).toContain("HTTP 404");
-      // 500 from fallback should mention server issues
-      expect(errorOutput).toContain("temporarily unavailable");
+      expect(errorOutput).toContain("doesn't exist");
+      expect(errorOutput).toContain("jelma matrix");
     });
   });
 
