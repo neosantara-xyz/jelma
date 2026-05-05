@@ -76,7 +76,7 @@ function mockFetchForDownload(opts: {
     }
 
     // Primary script URL (raw.githubusercontent.com)
-    if (urlStr.includes("raw.githubusercontent.com/neosantara-xyz/jelma/main/sh")) {
+    if (urlStr.includes("raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh")) {
       if (primaryOk) {
         return new Response(scriptContent, {
           status: primaryStatus,
@@ -171,7 +171,7 @@ describe("cmdRun happy-path pipeline", () => {
       await cmdRun("claude", "sprite");
 
       // Should have fetched the manifest + the script URL (plus potential model-list fetch)
-      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/main/sh/"));
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/neosantara/sh/"));
       expect(scriptFetches.length).toBe(1);
       expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
     });
@@ -212,7 +212,7 @@ describe("cmdRun happy-path pipeline", () => {
 
       await cmdRun("claude", "sprite");
 
-      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/main/sh/"));
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/neosantara/sh/"));
       expect(scriptFetches.length).toBe(1);
       expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
     });

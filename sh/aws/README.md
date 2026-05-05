@@ -15,61 +15,61 @@ AWS Lightsail instances via AWS CLI. [AWS Lightsail](https://aws.amazon.com/ligh
 #### Claude Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/claude.sh)
 ```
 
 #### OpenClaw
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/openclaw.sh)
 ```
 
 #### Codex CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/codex.sh)
 ```
 
 #### OpenCode
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/opencode.sh)
 ```
 
 #### Kilo Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/kilocode.sh)
 ```
 
 #### Hermes Agent
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/hermes.sh)
 ```
 
 #### Junie
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/junie.sh)
 ```
 
 #### Cursor CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/cursor.sh)
 ```
 
 #### Pi
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/pi.sh)
 ```
 
 #### T3 Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/t3code.sh)
 ```
 
 ## Non-Interactive Mode
@@ -77,5 +77,5 @@ bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh
 ```bash
 LIGHTSAIL_SERVER_NAME=dev-mk1 \
 NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/aws/claude.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/aws/claude.sh)
 ```

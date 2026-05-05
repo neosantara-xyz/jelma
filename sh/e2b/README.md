@@ -5,7 +5,7 @@ E2B managed sandboxes via the official E2B JavaScript SDK (`e2b`).
 ## Run
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/e2b/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/e2b/claude.sh)
 ```
 
 Swap `claude.sh` with any supported agent script in this directory.

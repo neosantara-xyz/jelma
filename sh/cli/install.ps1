@@ -1,10 +1,10 @@
 # Jelma CLI installer for Windows PowerShell
 #
 # Usage (PowerShell):
-#   irm https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.ps1 | iex
 #
 # Or download and run:
-#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 -OutFile install.ps1
+#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.ps1 -OutFile install.ps1
 #   .\install.ps1
 #
 # Override install directory:
@@ -13,7 +13,8 @@
 $ErrorActionPreference = "Stop"
 
 $SPAWN_REPO    = "neosantara-xyz/jelma"
-$SPAWN_RAW_BASE = "https://raw.githubusercontent.com/$SPAWN_REPO/main"
+$SPAWN_BRANCH = if ($env:SPAWN_BRANCH) { $env:SPAWN_BRANCH } else { "neosantara" }
+$SPAWN_RAW_BASE = "https://raw.githubusercontent.com/$SPAWN_REPO/$SPAWN_BRANCH"
 $MIN_BUN_VERSION = [version]"1.2.0"
 
 function Write-Step  { param($msg) Write-Host "[jelma] $msg" -ForegroundColor Cyan }

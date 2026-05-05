@@ -114,9 +114,10 @@ export interface Manifest {
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const REPO = "neosantara-xyz/jelma";
-const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main` as const;
+const REPO_BRANCH = "neosantara";
+const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${REPO_BRANCH}` as const;
 /** Primary script base for shell launchers hosted from this repository. */
-const SPAWN_CDN = "https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh" as const;
+const SPAWN_CDN = `${RAW_BASE}/sh` as const;
 /** Static URL for version checks — GitHub release artifact, never changes with repo structure */
 const VERSION_URL = `https://github.com/${REPO}/releases/download/cli-latest/version` as const;
 const FETCH_TIMEOUT = 3_000; // 3 seconds — fast fallback on bad wifi

@@ -266,7 +266,7 @@ export async function offerGithubAuth(runner: CloudRunner, explicitlyRequested?:
   }
 
   let ghCmd =
-    "curl --proto '=https' -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/shared/github-auth.sh | bash";
+    "curl --proto '=https' -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/shared/github-auth.sh | bash";
   // Upload the token to a remote temp file so it never appears in `ps auxe`
   // process listings. We use runner.uploadFile() (SCP) — the same proven
   // pattern as uploadConfigFile(). A heredoc won't work here because all

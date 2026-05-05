@@ -398,6 +398,6 @@ export async function cmdCloudInfo(cloud: string, preloadedManifest?: Manifest):
 
   const { REPO } = await import("../manifest.js");
   console.log();
-  console.log(pc.dim(`  Full setup guide: ${pc.cyan(`https://github.com/${REPO}/tree/main/sh/${cloudKey}`)}`));
+  console.log(pc.dim(`  Full setup guide: ${pc.cyan(`https://github.com/${REPO}/tree/neosantara/sh/${cloudKey}`)}`));
   console.log();
 }

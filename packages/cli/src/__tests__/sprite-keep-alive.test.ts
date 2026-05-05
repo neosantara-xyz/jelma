@@ -85,7 +85,7 @@ describe("installSpriteKeepAlive", () => {
 
     expect(
       capturedCmds.some((cmd) =>
-        cmd.includes("raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/shared/sprite-keep-running.sh"),
+        cmd.includes("raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/shared/sprite-keep-running.sh"),
       ),
     ).toBe(true);
     expect(capturedCmds.some((cmd) => cmd.includes("sprite-keep-running"))).toBe(true);

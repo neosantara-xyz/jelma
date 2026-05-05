@@ -101,7 +101,7 @@ describe("Download and Failure Pipeline", () => {
 
     it("should show not-found guidance when script URL returns 404", async () => {
       await setupFetch(async (url) => {
-        if (url.includes("raw.githubusercontent.com/neosantara-xyz/jelma/main/sh")) {
+        if (url.includes("raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh")) {
           return new Response("Not Found", {
             status: 404,
           });

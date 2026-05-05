@@ -57,7 +57,7 @@ The TypeScript CLI (`src/*.ts`) provides:
 ### Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.sh | bash
 ```
 
 The installer will:
@@ -263,7 +263,7 @@ When you run `jelma <agent> <cloud>`:
 
 1. **Load manifest**: Fetch from GitHub or use cached version
 2. **Validate combination**: Check that `matrix["<cloud>/<agent>"]` is `"implemented"`
-3. **Download script**: Fetch `https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/<cloud>/<agent>.sh`
+3. **Download script**: Fetch `https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/<cloud>/<agent>.sh`
    - Fallback to GitHub raw URL if Neosantara CDN fails
 4. **Execute**: Pipe script to `bash -c` with inherited stdio
 5. **Interactive handoff**: User interacts directly with the spawned agent

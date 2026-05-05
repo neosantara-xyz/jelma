@@ -7,61 +7,61 @@ DigitalOcean Droplets via REST API. [DigitalOcean](https://www.digitalocean.com/
 #### Claude Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/claude.sh)
 ```
 
 #### OpenClaw
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/openclaw.sh)
 ```
 
 #### Codex CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/codex.sh)
 ```
 
 #### OpenCode
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/opencode.sh)
 ```
 
 #### Kilo Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/kilocode.sh)
 ```
 
 #### Hermes
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/hermes.sh)
 ```
 
 #### Junie
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/junie.sh)
 ```
 
 #### Cursor CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/cursor.sh)
 ```
 
 #### Pi
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/pi.sh)
 ```
 
 #### T3 Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/t3code.sh)
 ```
 
 ## Environment Variables
@@ -113,7 +113,7 @@ OAuth tokens requested by the CLI include `tag:create` so droplets can be tagged
 DO_DROPLET_NAME=dev-mk1 \
 DIGITALOCEAN_ACCESS_TOKEN=your-token \
 NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/claude.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/claude.sh)
 ```
 
 Override region and droplet size:
@@ -123,7 +123,7 @@ DO_REGION=fra1 \
 DO_DROPLET_SIZE=s-1vcpu-2gb \
 DIGITALOCEAN_ACCESS_TOKEN=your-token \
 NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/claude.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/claude.sh)
 ```
 
 ## Interactive Region and Size Picker
@@ -131,5 +131,5 @@ NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
 Pass `--custom` to select from a menu of regions and droplet sizes interactively:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/digitalocean/claude.sh) --custom
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/digitalocean/claude.sh) --custom
 ```

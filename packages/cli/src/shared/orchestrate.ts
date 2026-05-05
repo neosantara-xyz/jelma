@@ -201,7 +201,7 @@ export async function installSpawnCli(runner: CloudRunner): Promise<void> {
     'export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"',
     'export PATH="$BUN_INSTALL/bin:$HOME/.local/bin:$HOME/.npm-global/bin:/.sprite/languages/bun/bin:/usr/local/bin:$PATH"',
     'if ! bun --version >/dev/null 2>&1; then curl -fsSL https://bun.sh/install | bash && export PATH="$HOME/.bun/bin:$PATH"; fi',
-    "curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.sh | bash",
+    "curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.sh | bash",
   ].join("; ");
   const result = await asyncTryCatch(() =>
     withRetry("jelma CLI install", () => wrapSshCall(runner.runServer(installCmd)), 2, 5),
