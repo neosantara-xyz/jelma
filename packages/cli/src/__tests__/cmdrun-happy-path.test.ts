@@ -76,7 +76,7 @@ function mockFetchForDownload(opts: {
     }
 
     // Primary script URL (raw.githubusercontent.com)
-    if (urlStr.includes("raw.githubusercontent.com/jelmaai/jelma/main/sh")) {
+    if (urlStr.includes("raw.githubusercontent.com/neosantara-xyz/jelma/main/sh")) {
       if (primaryOk) {
         return new Response(scriptContent, {
           status: primaryStatus,

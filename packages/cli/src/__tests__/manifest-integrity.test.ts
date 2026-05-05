@@ -86,6 +86,7 @@ describe("Manifest Integrity", () => {
       const validStatuses = [
         "implemented",
         "missing",
+        "planned",
       ];
       for (const [, status] of matrixEntries) {
         expect(validStatuses).toContain(status);

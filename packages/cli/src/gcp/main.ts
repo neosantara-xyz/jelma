@@ -102,7 +102,7 @@ async function main() {
 
       // Pull and start the agent Docker container after the server is ready
       if (useDocker) {
-        const image = `${DOCKER_REGISTRY}/spawn-${agentName}:latest`;
+        const image = `${DOCKER_REGISTRY}/jelma-${agentName}:latest`;
         logStep(`Pulling Docker image ${image}...`);
         await runServer(`docker pull ${image}`, 300);
         logStep("Starting agent container...");

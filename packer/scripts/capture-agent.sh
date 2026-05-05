@@ -3,7 +3,7 @@ set -eo pipefail
 
 # capture-agent.sh — Capture installed agent files into a tarball.
 # Usage: capture-agent.sh <agent-name>
-# Output: /tmp/spawn-agent-<name>.tar.gz
+# Output: /tmp/jelma-agent-<name>.tar.gz
 
 AGENT_NAME="${1:-}"
 if [ -z "${AGENT_NAME}" ]; then
@@ -89,7 +89,7 @@ if [ "${AGENT_PATHS}" -eq 0 ]; then
 fi
 
 # Create tarball (paths are absolute, extract with tar xz -C /)
-TARBALL="/tmp/spawn-agent-${AGENT_NAME}.tar.gz"
+TARBALL="/tmp/jelma-agent-${AGENT_NAME}.tar.gz"
 tar czf "${TARBALL}" -C / -T "${FILTERED_FILE}"
 
 SIZE=$(du -h "${TARBALL}" | cut -f1)

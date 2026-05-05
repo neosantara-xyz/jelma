@@ -2,7 +2,7 @@
 # Installer for the jelma CLI
 #
 # Usage:
-#   curl -fsSL --proto '=https' https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash
+#   curl -fsSL --proto '=https' https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.sh | bash
 #
 # This installs jelma via bun. If bun is not available, it auto-installs it first.
 #
@@ -11,8 +11,8 @@
 
 set -eo pipefail
 
-SPAWN_REPO="jelmaai/jelma"
-SPAWN_CDN="https://raw.githubusercontent.com/jelmaai/jelma/main/sh"
+SPAWN_REPO="neosantara-xyz/jelma"
+SPAWN_CDN="https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh"
 SPAWN_RAW_BASE="https://raw.githubusercontent.com/${SPAWN_REPO}/main"
 MIN_BUN_VERSION="1.2.0"
 BUN_INSTALL_VERSION="1.3.9"

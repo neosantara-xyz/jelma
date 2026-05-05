@@ -54,7 +54,7 @@ fi
 # ---------------------------------------------------------------------------
 # All supported clouds (excluding local — no infra to provision)
 # ---------------------------------------------------------------------------
-ALL_CLOUDS="aws hetzner digitalocean gcp daytona sprite"
+ALL_CLOUDS="aws hetzner digitalocean gcp daytona e2b sprite"
 
 # ---------------------------------------------------------------------------
 # Parse arguments

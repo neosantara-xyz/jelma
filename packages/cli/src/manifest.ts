@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { getErrorMessage, isPlainObject } from "@neosantara/jelma-shared";
+import bundledManifest from "../../../manifest.json" with { type: "json" };
 import { parseJsonObj } from "./shared/parse.js";
 import { getCacheDir, getCacheFile } from "./shared/paths.js";
 import { asyncTryCatch, isFileError, tryCatch, tryCatchIf, unwrapOr } from "./shared/result.js";
@@ -111,10 +113,10 @@ export interface Manifest {
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const REPO = "jelmaai/jelma";
+const REPO = "neosantara-xyz/jelma";
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main` as const;
 /** Primary script base for shell launchers hosted from this repository. */
-const SPAWN_CDN = "https://raw.githubusercontent.com/jelmaai/jelma/main/sh" as const;
+const SPAWN_CDN = "https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh" as const;
 /** Static URL for version checks — GitHub release artifact, never changes with repo structure */
 const VERSION_URL = `https://github.com/${REPO}/releases/download/cli-latest/version` as const;
 const FETCH_TIMEOUT = 3_000; // 3 seconds — fast fallback on bad wifi
@@ -249,11 +251,20 @@ function tryLoadLocalManifest(): Manifest | null {
   }
 
   const result = tryCatch(() => {
-    const localPath = join(process.cwd(), "manifest.json");
-    if (existsSync(localPath)) {
+    const moduleDir = dirname(fileURLToPath(import.meta.url));
+    const localPaths = [
+      join(process.cwd(), "manifest.json"),
+      join(moduleDir, "manifest.json"),
+      join(moduleDir, "..", "manifest.json"),
+      join(moduleDir, "..", "..", "manifest.json"),
+    ];
+    for (const localPath of localPaths) {
+      if (!existsSync(localPath)) {
+        continue;
+      }
       const raw = parseJsonObj(readFileSync(localPath, "utf-8"));
       if (!raw) {
-        return null;
+        continue;
       }
       const data = stripDangerousKeys(raw);
       if (isValidManifest(data)) {
@@ -262,7 +273,12 @@ function tryLoadLocalManifest(): Manifest | null {
     }
     return null;
   });
-  return result.ok ? result.data : null;
+  if (result.ok && result.data) {
+    return result.data;
+  }
+
+  const data = stripDangerousKeys(bundledManifest);
+  return isValidManifest(data) ? data : null;
 }
 
 export async function loadManifest(forceRefresh = false): Promise<Manifest> {

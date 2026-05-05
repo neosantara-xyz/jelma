@@ -28,9 +28,9 @@ function createMockRunner() {
 const RELEASE_PAYLOAD = {
   assets: [
     {
-      name: "spawn-agent-openclaw-x86_64-20260305.tar.gz",
+      name: "jelma-agent-openclaw-x86_64-20260305.tar.gz",
       browser_download_url:
-        "https://github.com/NeosantaraTeam/spawn/releases/download/agent-openclaw-latest/spawn-agent-openclaw-x86_64-20260305.tar.gz",
+        "https://github.com/neosantara-xyz/jelma/releases/download/agent-openclaw-latest/jelma-agent-openclaw-x86_64-20260305.tar.gz",
     },
   ],
 };
@@ -176,9 +176,9 @@ describe("tryTarballInstall", () => {
       const x86Only = {
         assets: [
           {
-            name: "spawn-agent-claude-x86_64-20260305.tar.gz",
+            name: "jelma-agent-claude-x86_64-20260305.tar.gz",
             browser_download_url:
-              "https://github.com/NeosantaraTeam/spawn/releases/download/agent-claude-latest/spawn-agent-claude-x86_64-20260305.tar.gz",
+              "https://github.com/neosantara-xyz/jelma/releases/download/agent-claude-latest/jelma-agent-claude-x86_64-20260305.tar.gz",
           },
         ],
       };
@@ -197,9 +197,9 @@ describe("tryTarballInstall", () => {
       const armOnly = {
         assets: [
           {
-            name: "spawn-agent-claude-arm64-20260305.tar.gz",
+            name: "jelma-agent-claude-arm64-20260305.tar.gz",
             browser_download_url:
-              "https://github.com/NeosantaraTeam/spawn/releases/download/agent-claude-latest/spawn-agent-claude-arm64-20260305.tar.gz",
+              "https://github.com/neosantara-xyz/jelma/releases/download/agent-claude-latest/jelma-agent-claude-arm64-20260305.tar.gz",
           },
         ],
       };
@@ -218,14 +218,14 @@ describe("tryTarballInstall", () => {
       const bothArch = {
         assets: [
           {
-            name: "spawn-agent-claude-x86_64-20260305.tar.gz",
+            name: "jelma-agent-claude-x86_64-20260305.tar.gz",
             browser_download_url:
-              "https://github.com/NeosantaraTeam/spawn/releases/download/agent-claude-latest/spawn-agent-claude-x86_64-20260305.tar.gz",
+              "https://github.com/neosantara-xyz/jelma/releases/download/agent-claude-latest/jelma-agent-claude-x86_64-20260305.tar.gz",
           },
           {
-            name: "spawn-agent-claude-arm64-20260305.tar.gz",
+            name: "jelma-agent-claude-arm64-20260305.tar.gz",
             browser_download_url:
-              "https://github.com/NeosantaraTeam/spawn/releases/download/agent-claude-latest/spawn-agent-claude-arm64-20260305.tar.gz",
+              "https://github.com/neosantara-xyz/jelma/releases/download/agent-claude-latest/jelma-agent-claude-arm64-20260305.tar.gz",
           },
         ],
       };

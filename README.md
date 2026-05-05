@@ -8,12 +8,12 @@ Launch any AI agent on any cloud with a single command. Coding agents, research 
 
 **macOS / Linux — and Windows users inside a WSL2 terminal (Ubuntu, Debian, etc.):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.sh | bash
 ```
 
 **Windows PowerShell (outside WSL):**
 ```powershell
-irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
+irm https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 | iex
 ```
 
 ## Usage
@@ -197,7 +197,7 @@ jelma claude local --beta sandbox
 ```
 
 What this does:
-- **Pulls the agent's Docker image** from `ghcr.io/jelmaai/jelma-<agent>`
+- **Pulls the agent's Docker image** from `ghcr.io/neosantara-xyz/jelma-<agent>`
 - **Runs the agent in a container** with filesystem, network, and process isolation
 - **Auto-installs Docker** if not present (OrbStack on macOS, docker.io on Linux)
 - **Cleans up the container** automatically when the session ends
@@ -214,7 +214,7 @@ jelma openclaw local --beta sandbox   # Direct launch, sandboxed
 Every combination works as a one-liner — no install required:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/{cloud}/{agent}.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/{cloud}/{agent}.sh)
 ```
 
 ### Non-Interactive Mode
@@ -260,7 +260,7 @@ If jelma fails to install, try these steps:
    ```bash
    curl -fsSL https://bun.sh/install | bash
    source ~/.bashrc  # or ~/.zshrc for zsh
-   curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.sh | bash
    ```
 
 3. **PATH issues**: If `jelma` command not found after install
@@ -273,7 +273,7 @@ If jelma fails to install, try these steps:
 
 1. **Use the PowerShell installer** — not the bash one:
    ```powershell
-   irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
+   irm https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 | iex
    ```
    The `.ps1` extension is required. The default `install.sh` is bash and won't work in PowerShell.
 
@@ -338,21 +338,21 @@ If an agent fails to install or launch on a cloud:
 - **Rerun last session**: `jelma last` or `jelma rerun`
 - **Check version**: `jelma version` shows CLI version and cache status
 - **Update jelma**: `jelma update` checks for the latest version
-- **Report bugs**: Open an issue at https://github.com/jelmaai/jelma/issues
+- **Report bugs**: Open an issue at https://github.com/neosantara-xyz/jelma/issues
 
 ## Matrix
 
-| | [Local Machine](sh/local/) | [Hetzner Cloud](sh/hetzner/) | [AWS Lightsail](sh/aws/) | [DigitalOcean](sh/digitalocean/) | [GCP Compute Engine](sh/gcp/) | [Daytona](sh/daytona/) | [Sprite](sh/sprite/) |
-|---|---|---|---|---|---|---|---|
-| [**Claude Code**](https://claude.ai) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**OpenClaw**](https://github.com/openclaw/openclaw) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Codex CLI**](https://github.com/openai/codex) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**OpenCode**](https://github.com/sst/opencode) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Kilo Code**](https://github.com/Kilo-Org/kilocode) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Hermes Agent**](https://github.com/NousResearch/hermes-agent) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Junie**](https://www.jetbrains.com/junie/) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Cursor CLI**](https://cursor.com/cli) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| [**Pi**](https://pi.dev) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| | [Local Machine](sh/local/) | [Hetzner Cloud](sh/hetzner/) | [AWS Lightsail](sh/aws/) | [DigitalOcean](sh/digitalocean/) | [GCP Compute Engine](sh/gcp/) | [Daytona](sh/daytona/) | [E2B](sh/e2b/) | [Sprite](sh/sprite/) |
+|---|---|---|---|---|---|---|---|---|
+| [**Claude Code**](https://claude.ai) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**OpenClaw**](https://github.com/openclaw/openclaw) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Codex CLI**](https://github.com/openai/codex) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**OpenCode**](https://github.com/sst/opencode) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Kilo Code**](https://github.com/Kilo-Org/kilocode) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Hermes Agent**](https://github.com/NousResearch/hermes-agent) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Junie**](https://www.jetbrains.com/junie/) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Cursor CLI**](https://cursor.com/cli) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [**Pi**](https://pi.dev) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### How it works
 
@@ -368,7 +368,7 @@ Scripts work standalone (`bash <(curl ...)`) or through the CLI.
 ## Development
 
 ```bash
-git clone https://github.com/jelmaai/jelma.git
+git clone https://github.com/neosantara-xyz/jelma.git
 cd jelma git config core.hooksPath .githooks
 ```
 
@@ -405,7 +405,7 @@ Pick any agent + cloud combination from the matrix and try it out:
 jelma claude hetzner      # or any combination
 ```
 
-If something breaks, hangs, or behaves unexpectedly, open an issue using the [bug report template](https://github.com/jelmaai/jelma/issues/new?template=bug_report.yml). Include:
+If something breaks, hangs, or behaves unexpectedly, open an issue using the [bug report template](https://github.com/neosantara-xyz/jelma/issues/new?template=bug_report.yml). Include:
 
 - The exact command you ran
 - The cloud provider and agent
@@ -416,9 +416,9 @@ If something breaks, hangs, or behaves unexpectedly, open an issue using the [bu
 
 Want to see a specific cloud provider or agent supported? Use the dedicated templates:
 
-- [Request a cloud provider](https://github.com/jelmaai/jelma/issues/new?template=cloud_request.yml)
-- [Request an agent](https://github.com/jelmaai/jelma/issues/new?template=agent_request.yml)
-- [Request a CLI feature](https://github.com/jelmaai/jelma/issues/new?template=cli_feature_request.yml)
+- [Request a cloud provider](https://github.com/neosantara-xyz/jelma/issues/new?template=cloud_request.yml)
+- [Request an agent](https://github.com/neosantara-xyz/jelma/issues/new?template=agent_request.yml)
+- [Request a CLI feature](https://github.com/neosantara-xyz/jelma/issues/new?template=cli_feature_request.yml)
 
 Requests with real-world use cases get prioritized.
 

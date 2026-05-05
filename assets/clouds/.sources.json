@@ -22,5 +22,9 @@
   "sprite": {
     "url": "https://sprites.dev/images/favicon/apple-touch-icon.png",
     "ext": "png"
+  },
+  "e2b": {
+    "url": "https://drive.google.com/drive/folders/1g2qqdm65_Dqp-OWF5apKBrCiS__lbtK0?usp=drive_link",
+    "ext": "png"
   }
 }

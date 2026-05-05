@@ -168,7 +168,7 @@ describe("pullAndStartContainer", () => {
     expect(spawnCalls[0][0]).toEqual([
       "docker",
       "pull",
-      "ghcr.io/neosantarateam/spawn-claude:latest",
+      "ghcr.io/neosantara-xyz/jelma-claude:latest",
     ]);
 
     // Run command — passed as array directly, not through a shell
@@ -178,7 +178,7 @@ describe("pullAndStartContainer", () => {
       "-d",
       "--name",
       "spawn-agent",
-      "ghcr.io/neosantarateam/spawn-claude:latest",
+      "ghcr.io/neosantara-xyz/jelma-claude:latest",
     ]);
 
     syncSpy.mockRestore();

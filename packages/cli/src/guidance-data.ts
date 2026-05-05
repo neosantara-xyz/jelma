@@ -65,14 +65,14 @@ export const EXIT_CODE_GUIDANCE: Record<number, ExitCodeEntry> = {
     lines: [
       "  - A downloaded binary may lack execute permissions",
       "  - The script may require root/sudo access",
-      `  - Report it if this persists: ${pc.cyan("https://github.com/jelmaai/jelma/issues")}`,
+      `  - Report it if this persists: ${pc.cyan("https://github.com/neosantara-xyz/jelma/issues")}`,
     ],
     includeDashboard: false,
   },
   2: {
     header: "Shell syntax or argument error. This is likely a bug in the script.",
     lines: [
-      `  Report it at: ${pc.cyan("https://github.com/jelmaai/jelma/issues")}`,
+      `  Report it at: ${pc.cyan("https://github.com/neosantara-xyz/jelma/issues")}`,
     ],
     includeDashboard: false,
   },

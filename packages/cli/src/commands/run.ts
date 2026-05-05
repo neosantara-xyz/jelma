@@ -754,7 +754,7 @@ export async function execScript(
       console.error(`[run] Using local script: ${localScriptResolved}`);
     }
   } else {
-    const url = `https://raw.githubusercontent.com/jelmaai/jelma/main/sh/${cloud}/${agent}.sh`;
+    const url = `https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/${cloud}/${agent}.sh`;
     const ghUrl = `${RAW_BASE}/sh/${cloud}/${agent}.sh`;
 
     const dlResult = await asyncTryCatch(() => downloadScriptWithFallback(url, ghUrl));
@@ -1131,7 +1131,7 @@ export async function cmdRunHeadless(agent: string, cloud: string, opts: Headles
         console.error(`[headless] Using local script: ${localScriptResolved}`);
       }
     } else {
-      const url = `https://raw.githubusercontent.com/jelmaai/jelma/main/sh/${resolvedCloud}/${resolvedAgent}.sh`;
+      const url = `https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/${resolvedCloud}/${resolvedAgent}.sh`;
       const ghUrl = `${RAW_BASE}/sh/${resolvedCloud}/${resolvedAgent}.sh`;
 
       const fetchResult = await asyncTryCatch(async () => {

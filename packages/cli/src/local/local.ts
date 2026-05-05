@@ -342,7 +342,7 @@ export async function pullAndStartContainer(agentName: string): Promise<void> {
     },
   );
 
-  const image = `${DOCKER_REGISTRY}/spawn-${agentName}:latest`;
+  const image = `${DOCKER_REGISTRY}/jelma-${agentName}:latest`;
   logStep(`Pulling Docker image ${image}...`);
   await runLocalArgs([
     "docker",

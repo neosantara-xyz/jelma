@@ -1,10 +1,10 @@
 # Jelma CLI installer for Windows PowerShell
 #
 # Usage (PowerShell):
-#   irm https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 | iex
 #
 # Or download and run:
-#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/jelmaai/jelma/main/sh/cli/install.ps1 -OutFile install.ps1
+#   Invoke-WebRequest -Uri https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/cli/install.ps1 -OutFile install.ps1
 #   .\install.ps1
 #
 # Override install directory:
@@ -12,7 +12,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$SPAWN_REPO    = "jelmaai/jelma"
+$SPAWN_REPO    = "neosantara-xyz/jelma"
 $SPAWN_RAW_BASE = "https://raw.githubusercontent.com/$SPAWN_REPO/main"
 $MIN_BUN_VERSION = [version]"1.2.0"
 

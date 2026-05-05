@@ -6,7 +6,7 @@ Run agents directly on your local machine without any cloud provisioning.
 
 ## Quick Start
 
-If you have the [spawn CLI](https://github.com/NeosantaraTeam/spawn) installed:
+If you have the [spawn CLI](https://github.com/neosantara-xyz/jelma) installed:
 
 ```bash
 spawn claude local
@@ -24,23 +24,23 @@ spawn t3code local
 Or run directly without the CLI:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/claude.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/openclaw.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/codex.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/opencode.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/kilocode.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/hermes.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/junie.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/cursor.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/pi.sh)
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/t3code.sh)
 ```
 
 ## Non-Interactive Mode
 
 ```bash
 NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/local/claude.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/local/claude.sh)
 ```
 
 ## What It Does

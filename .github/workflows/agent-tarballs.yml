@@ -145,10 +145,10 @@ jobs:
           TAG="agent-${AGENT_NAME}-latest"
           DATE=$(date -u +%Y%m%d)
           ARCH="${{ matrix.arch }}"
-          TARBALL="spawn-agent-${AGENT_NAME}-${ARCH}-${DATE}.tar.gz"
+          TARBALL="jelma-agent-${AGENT_NAME}-${ARCH}-${DATE}.tar.gz"
 
           # Move tarball to expected name (tarball is owned by root from sudo capture)
-          sudo mv "/tmp/spawn-agent-${AGENT_NAME}.tar.gz" "${TARBALL}"
+          sudo mv "/tmp/jelma-agent-${AGENT_NAME}.tar.gz" "${TARBALL}"
           sudo chown "$(id -u):$(id -g)" "${TARBALL}"
 
           # Create release if it doesn't exist, then upload the arch-specific tarball.
@@ -165,7 +165,7 @@ jobs:
           # Also clean up any older-dated tarball for this arch
           # grep returns exit 1 when no matches — pipe through cat to avoid pipefail killing the step
           gh release view "${TAG}" --json assets --jq ".assets[].name" 2>/dev/null \
-            | { grep "spawn-agent-${AGENT_NAME}-${ARCH}-" || true; } \
+            | { grep "jelma-agent-${AGENT_NAME}-${ARCH}-" || true; } \
             | while IFS= read -r old; do
                 gh release delete-asset "${TAG}" "${old}" --yes 2>/dev/null || true
               done

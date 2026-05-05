@@ -9,61 +9,61 @@ Daytona managed sandboxes via the Daytona SDK. [Daytona](https://www.daytona.io/
 #### Claude Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/claude.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/claude.sh)
 ```
 
 #### OpenClaw
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/openclaw.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/openclaw.sh)
 ```
 
 #### Codex CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/codex.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/codex.sh)
 ```
 
 #### OpenCode
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/opencode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/opencode.sh)
 ```
 
 #### Kilo Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/kilocode.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/kilocode.sh)
 ```
 
 #### Hermes Agent
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/hermes.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/hermes.sh)
 ```
 
 #### Junie
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/junie.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/junie.sh)
 ```
 
 #### Cursor CLI
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/cursor.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/cursor.sh)
 ```
 
 #### Pi
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/pi.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/pi.sh)
 ```
 
 #### T3 Code
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/t3code.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/t3code.sh)
 ```
 
 ## Non-Interactive Mode
@@ -72,7 +72,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/dayton
 DAYTONA_SANDBOX_NAME=dev-mk1 \
 DAYTONA_API_KEY=your-api-key \
 NEOSANTARA_API_KEY=sk-or-v1-xxxxx \
-  bash <(curl -fsSL https://raw.githubusercontent.com/jelmaai/jelma/main/sh/daytona/claude.sh)
+  bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/daytona/claude.sh)
 ```
 
 ## Environment Variables

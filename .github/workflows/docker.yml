@@ -35,4 +35,4 @@ jobs:
           context: .
           file: sh/docker/${{ matrix.agent }}.Dockerfile
           push: true
-          tags: ghcr.io/openrouterteam/spawn-${{ matrix.agent }}:latest
+          tags: ghcr.io/neosantara-xyz/jelma-${{ matrix.agent }}:latest

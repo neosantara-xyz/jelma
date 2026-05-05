@@ -706,7 +706,7 @@ export async function downloadFileSprite(remotePath: string, localPath: string):
  */
 export async function installSpriteKeepAlive(): Promise<void> {
   logStep("Installing Sprite keep-alive...");
-  const scriptUrl = "https://raw.githubusercontent.com/jelmaai/jelma/main/sh/shared/sprite-keep-running.sh";
+  const scriptUrl = "https://raw.githubusercontent.com/neosantara-xyz/jelma/main/sh/shared/sprite-keep-running.sh";
   const keepAliveResult = await asyncTryCatch(() =>
     runSprite(
       "mkdir -p ~/.local/bin && " +

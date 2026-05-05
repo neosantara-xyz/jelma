@@ -497,7 +497,7 @@ function showVersion(): void {
   );
   const age = getCacheAge();
   console.log(pc.dim(`  manifest cache: ${formatCacheAge(age)}`));
-  console.log(pc.dim("  https://github.com/jelmaai/jelma"));
+  console.log(pc.dim("  https://github.com/neosantara-xyz/jelma"));
   console.log(pc.dim(`  Run ${pc.cyan("jelma feedback")} to tell us what to improve.`));
 }
 
