@@ -328,9 +328,11 @@ export function validateRegionName(region: string): boolean {
   return /^[a-zA-Z0-9_-]{1,63}$/.test(region);
 }
 
-/** Validate model ID: provider/model format, alphanumeric + slash + dash + dot + underscore + colon. */
+/** Validate model ID: either a bare model name or `provider/model` format,
+ *  alphanumeric + slash + dash + dot + underscore + colon. Bare names are
+ *  required for Neosantara model ids like `garda-core`. */
 export function validateModelId(id: string): boolean {
-  return /^[a-zA-Z0-9][a-zA-Z0-9_.:-]*\/[a-zA-Z0-9][a-zA-Z0-9_.:-]*$/.test(id);
+  return /^[a-zA-Z0-9][a-zA-Z0-9_.:-]*(\/[a-zA-Z0-9][a-zA-Z0-9_.:-]*)?$/.test(id);
 }
 
 /** Convert display name to kebab-case. */

@@ -318,9 +318,10 @@ export async function offerGithubAuth(runner: CloudRunner, explicitlyRequested?:
 
 // ─── Codex CLI Config ────────────────────────────────────────────────────────
 
-async function setupCodexConfig(runner: CloudRunner): Promise<void> {
+async function setupCodexConfig(runner: CloudRunner, modelId?: string): Promise<void> {
   logStep("Configuring Codex CLI for Neosantara...");
-  const config = `model = "openai/gpt-5.3-codex"
+  const model = modelId || "garda-core";
+  const config = `model = "${model}"
 model_provider = "neosantara"
 sandbox_mode = "danger-full-access"
 
@@ -331,6 +332,114 @@ env_key = "NEOSANTARA_API_KEY"
 wire_api = "responses"
 `;
   await uploadConfigFile(runner, config, "$HOME/.codex/config.toml");
+}
+
+// ─── OpenCode Config ─────────────────────────────────────────────────────────
+
+async function setupOpenCodeConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+  logStep("Configuring OpenCode for Neosantara...");
+  const model = modelId || "garda-core";
+  const config = JSON.stringify(
+    {
+      provider: {
+        neosantara: {
+          npm: "@ai-sdk/openai-compatible",
+          name: "Neosantara",
+          options: {
+            baseURL: "https://api.neosantara.xyz/v1",
+            apiKey: "{env:NEOSANTARA_API_KEY}",
+          },
+          models: {
+            [model]: {
+              name: model,
+            },
+          },
+        },
+      },
+      model: `neosantara/${model}`,
+    },
+    null,
+    2,
+  );
+  await uploadConfigFile(runner, config, "$HOME/.config/opencode/opencode.json");
+}
+
+// ─── Kilo Code Config ─────────────────────────────────────────────────────────
+
+async function setupKiloCodeConfig(runner: CloudRunner, _apiKey: string, modelId?: string): Promise<void> {
+  logStep("Configuring Kilo Code for Neosantara...");
+  const model = modelId || "garda-core";
+  const config = JSON.stringify(
+    {
+      provider: {
+        neosantara: {
+          npm: "@ai-sdk/openai-compatible",
+          name: "Neosantara",
+          options: {
+            baseURL: "https://api.neosantara.xyz/v1",
+            apiKey: "{env:NEOSANTARA_API_KEY}",
+          },
+          models: {
+            [model]: {
+              name: model,
+            },
+          },
+        },
+      },
+      model: `neosantara/${model}`,
+      permission: "allow",
+    },
+    null,
+    2,
+  );
+  await uploadConfigFile(runner, config, "$HOME/.config/kilo/opencode.json");
+}
+
+// ─── Junie Config ────────────────────────────────────────────────────────────
+
+async function setupJunieConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+  logStep("Configuring Junie for Neosantara...");
+  const model = modelId || "garda-core";
+  const profile = JSON.stringify(
+    {
+      baseUrl: "https://api.neosantara.xyz/v1/chat/completions",
+      id: model,
+      apiType: "OpenAICompletion",
+      apiKey: "{env:NEOSANTARA_API_KEY}",
+    },
+    null,
+    2,
+  );
+  await runner.runServer("mkdir -p ~/.junie/models");
+  await uploadConfigFile(runner, profile, "$HOME/.junie/models/neosantara.json");
+}
+
+// ─── Pi Config ───────────────────────────────────────────────────────────────
+
+async function setupPiConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+  logStep("Configuring Pi for Neosantara...");
+  const model = modelId || "garda-core";
+  const ext = [
+    "export default function (pi) {",
+    '  pi.registerProvider("neosantara", {',
+    '    name: "Neosantara",',
+    '    baseUrl: "https://api.neosantara.xyz/v1",',
+    '    apiKey: "$NEOSANTARA_API_KEY",',
+    '    api: "openai-completions",',
+    "    models: [{",
+    `      id: "${model}",`,
+    `      name: "${model}",`,
+    "      reasoning: false,",
+    '      input: ["text"],',
+    "      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },",
+    "      contextWindow: 128000,",
+    "      maxTokens: 16384",
+    "    }]",
+    "  });",
+    "};",
+  ].join("\n");
+  await runner.runServer("mkdir -p ~/.pi/agent/extensions");
+  await uploadConfigFile(runner, ext, "$HOME/.pi/agent/extensions/neosantara.mjs");
 }
 
 // ─── OpenClaw Config ─────────────────────────────────────────────────────────
@@ -1235,10 +1344,10 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      configure: () => setupCodexConfig(runner),
+      configure: (_apiKey, modelId) => setupCodexConfig(runner, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex --full-auto ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @openai/codex@latest",
     },
 
@@ -1285,9 +1394,10 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
+      configure: (_apiKey, modelId) => setupOpenCodeConfig(runner, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode --prompt ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode run ${shellQuote(prompt)}`,
       updateCmd: openCodeInstallCmd(),
     },
 
@@ -1304,9 +1414,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
-        "KILO_PROVIDER_TYPE=neosantara",
-        `NEOSANTARA_API_KEY=${apiKey}`,
+        "KILO_PROVIDER=neosantara",
       ],
+      configure: (apiKey, modelId) => setupKiloCodeConfig(runner, apiKey, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
       promptCmd: (prompt) =>
         `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode --prompt ${shellQuote(prompt)}`,
@@ -1349,7 +1459,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       launchCmd: () =>
         "source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes --yolo -z ${shellQuote(prompt)}`,
       tunnel: {
         remotePort: 9119,
         browserUrl: (localPort: number) => `http://localhost:${localPort}/`,
@@ -1373,11 +1483,11 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
-        `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie",
+      configure: (_apiKey, modelId) => setupJunieConfig(runner, modelId),
+      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --prompt ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara --task ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @jetbrains/junie-cli@latest",
     },
 
@@ -1389,15 +1499,17 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         installAgent(
           runner,
           "Pi",
-          `cd "$HOME" && ${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @mariozechner/pi-coding-agent && ${NPM_GLOBAL_PATH_PERSIST}`,
+          `cd "$HOME" && ${NPM_PREFIX_SETUP} && npm install -g \${_NPM_G_FLAGS} @earendil-works/pi-coding-agent && ${NPM_GLOBAL_PATH_PERSIST}`,
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi",
+      configure: (_apiKey, modelId) => setupPiConfig(runner, modelId),
+      launchCmd: () =>
+        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi --provider neosantara --model garda-core",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi --prompt ${shellQuote(prompt)}`,
-      updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @mariozechner/pi-coding-agent@latest",
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi --provider neosantara --model garda-core --prompt ${shellQuote(prompt)}`,
+      updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @earendil-works/pi-coding-agent@latest",
     },
 
     t3code: {

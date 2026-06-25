@@ -114,8 +114,11 @@ export interface Manifest {
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const REPO = "neosantara-xyz/jelma";
-const REPO_BRANCH = "neosantara";
-const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${REPO_BRANCH}` as const;
+const _REPO_BRANCH = "neosantara";
+// Self-hosted CDN base for run-scripts, manifest, and assets. Defaults to the
+// Neosantara host so installed CLIs fetch our patched scripts instead of
+// raw.githubusercontent.com. Override with JELMA_CDN_BASE if needed.
+const RAW_BASE = (process.env.JELMA_CDN_BASE || "https://cli.neosantara.xyz").replace(/\/+$/, "");
 /** Primary script base for shell launchers hosted from this repository. */
 const SPAWN_CDN = `${RAW_BASE}/sh` as const;
 /** Static URL for version checks — GitHub release artifact, never changes with repo structure */
