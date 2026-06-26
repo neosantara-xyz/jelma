@@ -578,7 +578,7 @@ async function setupOpenclawConfig(
         agents: {
           defaults: {
             model: {
-              primary: modelId,
+              primary: `neosantara/${modelId}`,
             },
             sandbox: {
               mode: "off",
@@ -604,8 +604,8 @@ async function setupOpenclawConfig(
     // Model — openclaw onboard writes arcee/trinity-large-thinking to the
     // agent-specific config (agents.main.model.primary) which overrides
     // the defaults path. Set BOTH so our model always wins.
-    `openclaw config set agents.defaults.model.primary ${shellQuote(modelId)} >/dev/null`,
-    `openclaw config set agents.main.model.primary ${shellQuote(modelId)} >/dev/null`,
+    `openclaw config set agents.defaults.model.primary neosantara/${shellQuote(modelId)} >/dev/null`,
+    `openclaw config set agents.main.model.primary neosantara/${shellQuote(modelId)} >/dev/null`,
     // Disable Docker sandboxing — auto-detected Docker hangs the session
     "openclaw config set agents.defaults.sandbox.mode off >/dev/null",
     "openclaw config set agents.main.sandbox.mode off >/dev/null",
@@ -1361,7 +1361,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         name: "OpenClaw",
         cloudInitTier: "full" satisfies AgentConfig["cloudInitTier"],
         preProvision: detectGithubAuth,
-        modelDefault: "garda-core",
+        modelDefault: "neosantara/garda-core",
         install: async () => {
           await installAgent(
             runner,
