@@ -550,7 +550,11 @@ async function setupOpenclawConfig(
     "source ~/.spawnrc 2>/dev/null; " +
     "export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; " +
     "openclaw onboard --non-interactive" +
-    ` --neosantara-api-key ${shellQuote(apiKey)}` +
+    " --auth-choice custom-api-key" +
+    " --custom-base-url https://api.neosantara.xyz/v1" +
+    ` --custom-api-key ${shellQuote(apiKey)}` +
+    ` --custom-model-id ${shellQuote(modelId)}` +
+    " --custom-provider-id neosantara" +
     " --gateway-auth token" +
     ` --gateway-token ${shellQuote(gatewayToken)}` +
     " --skip-health" +
