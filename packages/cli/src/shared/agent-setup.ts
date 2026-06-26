@@ -1506,9 +1506,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       ],
       configure: (_apiKey, modelId) => setupPiConfig(runner, modelId),
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi --provider neosantara --model garda-core",
+        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara --model garda-core",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi --provider neosantara --model garda-core --prompt ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara --model garda-core -p ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @earendil-works/pi-coding-agent@latest",
     },
 
