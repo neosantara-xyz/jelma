@@ -114,7 +114,6 @@ export interface Manifest {
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const REPO = "neosantara-xyz/jelma";
-const _REPO_BRANCH = "neosantara";
 // Self-hosted CDN base for run-scripts, manifest, and assets. Defaults to the
 // Neosantara host so installed CLIs fetch our patched scripts instead of
 // raw.githubusercontent.com. Override with JELMA_CDN_BASE if needed.

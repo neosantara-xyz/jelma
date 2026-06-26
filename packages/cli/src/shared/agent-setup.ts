@@ -366,7 +366,7 @@ async function setupOpenCodeConfig(runner: CloudRunner, modelId?: string): Promi
 
 // ─── Kilo Code Config ─────────────────────────────────────────────────────────
 
-async function setupKiloCodeConfig(runner: CloudRunner, _apiKey: string, modelId?: string): Promise<void> {
+async function setupKiloCodeConfig(runner: CloudRunner, modelId?: string): Promise<void> {
   logStep("Configuring Kilo Code for Neosantara...");
   const model = modelId || "garda-core";
   const config = JSON.stringify(
@@ -1416,7 +1416,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         `NEOSANTARA_API_KEY=${apiKey}`,
         "KILO_PROVIDER=neosantara",
       ],
-      configure: (apiKey, modelId) => setupKiloCodeConfig(runner, apiKey, modelId),
+      configure: (_apiKey, modelId) => setupKiloCodeConfig(runner, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
       promptCmd: (prompt) =>
         `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode --prompt ${shellQuote(prompt)}`,
@@ -1506,9 +1506,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       ],
       configure: (_apiKey, modelId) => setupPiConfig(runner, modelId),
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara --model garda-core",
+        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara --model garda-core -p ${shellQuote(prompt)}`,
+        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara -p ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @earendil-works/pi-coding-agent@latest",
     },
 
