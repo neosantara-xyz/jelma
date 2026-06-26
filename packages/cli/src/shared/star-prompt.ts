@@ -42,7 +42,7 @@ export function maybeShowStarPrompt(): void {
     }
 
     // 3. Print the star message
-    p.log.message("⭐ Enjoying Spawn? Star us on GitHub!\n   https://github.com/neosantara-xyz/jelma");
+    p.log.message("⭐ Enjoying Jelma? Star us on GitHub!\n   https://github.com/neosantara-xyz/jelma");
 
     // 4. Save the updated timestamp
     const merged = {
