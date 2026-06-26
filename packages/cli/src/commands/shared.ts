@@ -10,7 +10,7 @@ import { agentKeys, cloudKeys, isStaleCache, loadManifest, matrixStatus } from "
 import { validateIdentifier, validatePrompt } from "../security.js";
 import { hasSavedNeosantaraKey } from "../shared/oauth.js";
 import { PkgVersionSchema, parseJsonObj } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch, tryCatch, unwrapOr } from "../shared/result.js";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -537,7 +537,7 @@ export function formatCredStatusLine(varName: string, urlHint?: string): string 
 function hasCloudConfigCredentials(cloud: string): boolean {
   return unwrapOr(
     tryCatch(() => {
-      const configPath = getSpawnCloudConfigPath(cloud);
+      const configPath = getJelmaCloudConfigPath(cloud);
       if (!fs.existsSync(configPath)) {
         return false;
       }

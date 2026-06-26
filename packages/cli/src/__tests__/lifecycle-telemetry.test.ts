@@ -4,7 +4,7 @@
  * connect_count + last_connected_at metadata.
  */
 
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { isNumber, isString } from "@neosantara/jelma-shared";
@@ -27,7 +27,7 @@ const capturedEvents: Array<{
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 
-function makeRecord(overrides: Partial<SpawnRecord> = {}): SpawnRecord {
+function makeRecord(overrides: Partial<JelmaRecord> = {}): JelmaRecord {
   return {
     id: "spawn-abc123",
     agent: "claude",

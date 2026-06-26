@@ -13,17 +13,17 @@ const FAKE_INSTALL_SCRIPT = "#!/bin/bash\n# fake install script for tests\necho 
 
 /** Remove the .update-failed backoff file so it doesn't interfere with tests */
 function clearUpdateBackoff() {
-  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-failed")));
+  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-failed")));
 }
 
 /** Remove the .update-checked cache file so tests always start fresh */
 function clearUpdateChecked() {
-  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-checked")));
+  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-checked")));
 }
 
 /** Write a timestamp to the .update-checked cache file */
 function writeUpdateChecked(timestamp: number) {
-  const dir = path.join(process.env.HOME || "/tmp", ".config", "spawn");
+  const dir = path.join(process.env.HOME || "/tmp", ".config", "jelma");
   fs.mkdirSync(dir, {
     recursive: true,
   });
@@ -328,7 +328,7 @@ describe("update-check", () => {
       // 3. which jelma for binary lookup
       expect(execFileSyncCalls[2].file).toBe("which");
       expect(execFileSyncCalls[2].args).toEqual([
-        "spawn",
+        "jelma",
       ]);
       // 4. re-exec with original args
       expect(execFileSyncCalls[3].args).toEqual([
@@ -425,7 +425,7 @@ describe("update-check", () => {
       const { checkForUpdates } = await import("../update-check.js");
       await checkForUpdates();
 
-      const checkedPath = path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-checked");
+      const checkedPath = path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-checked");
       const content = fs.readFileSync(checkedPath, "utf8").trim();
       const checkedAt = Number.parseInt(content, 10);
       expect(Date.now() - checkedAt).toBeLessThan(5000);

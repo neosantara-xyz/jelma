@@ -137,7 +137,7 @@ describe("manifest", () => {
     });
 
     it("should always fetch from GitHub even when cache exists", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -154,7 +154,7 @@ describe("manifest", () => {
     });
 
     it("should refresh cache when forceRefresh is true", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -173,7 +173,7 @@ describe("manifest", () => {
     });
 
     it("falls back to stale cache when fetch fails", async () => {
-      const cacheDir = join(env.testDir, "spawn");
+      const cacheDir = join(env.testDir, "jelma");
       mkdirSync(cacheDir, {
         recursive: true,
       });
@@ -201,7 +201,7 @@ describe("manifest", () => {
           }),
       );
 
-      const cacheFile = join(env.testDir, "spawn", "manifest.json");
+      const cacheFile = join(env.testDir, "jelma", "manifest.json");
       if (existsSync(cacheFile)) {
         rmSync(cacheFile);
       }
@@ -270,7 +270,7 @@ describe("manifest", () => {
       it(`rejects invalid manifest (${label})`, async () => {
         const consoleSpy = spyOn(console, "error").mockImplementation(() => {});
         global.fetch = mock(fetchImpl);
-        const cacheFile = join(env.testDir, "spawn", "manifest.json");
+        const cacheFile = join(env.testDir, "jelma", "manifest.json");
         if (existsSync(cacheFile)) {
           rmSync(cacheFile);
         }

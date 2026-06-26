@@ -15,7 +15,7 @@ import {
   validateUsername,
 } from "../security.js";
 import { parseJsonWith } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch } from "../shared/result.js";
 import { SSH_INTERACTIVE_OPTS, validateRemotePath } from "../shared/ssh.js";
 import {
@@ -28,7 +28,7 @@ import {
   openBrowser,
   prepareStdinForHandoff,
   prompt,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
   selectFromList,
   shellQuote,
   validateServerName,
@@ -132,7 +132,7 @@ export function resetDaytonaState(): void {
 }
 
 function getDaytonaConfigPath(): string {
-  return getSpawnCloudConfigPath("daytona");
+  return getJelmaCloudConfigPath("daytona");
 }
 
 async function readSavedDaytonaConfigSafe(): Promise<DaytonaConfigFile | null> {
@@ -169,7 +169,9 @@ function createDaytonaClient(config: ResolvedDaytonaConfig): Daytona {
 }
 
 async function validateClient(client: Daytona): Promise<void> {
-  await client.list(undefined, 1, 1);
+  // list() is now a lazy cursor-based async iterator; pulling one item forces
+  // the first API call, which validates the credentials.
+  await client.list().next();
 }
 
 async function saveDaytonaConfig(config: ResolvedDaytonaConfig): Promise<void> {
@@ -398,8 +400,8 @@ export async function promptSandboxSize(): Promise<SandboxSize> {
 /**
  * Prompt for the jelma name or derive it non-interactively.
  */
-export async function promptSpawnName(): Promise<void> {
-  await promptSpawnNameShared("Daytona sandbox");
+export async function promptJelmaName(): Promise<void> {
+  await promptJelmaNameShared("Daytona sandbox");
 }
 
 /**
@@ -932,7 +934,7 @@ export async function interactiveSession(cmd: string): Promise<number> {
   process.stderr.write("\n");
   logWarn(`Session ended. Your sandbox '${_state.sandboxId}' may still be running.`);
   logWarn(`Manage or delete it in the Daytona dashboard: ${DAYTONA_DASHBOARD_URL}`);
-  logInfo("Delete it from Spawn with: jelma delete");
+  logInfo("Delete it from Jelma with: jelma delete");
   return exitCode;
 }
 
@@ -977,13 +979,17 @@ export async function destroyServer(sandboxId?: string): Promise<void> {
  */
 export async function listServers(): Promise<CloudInstance[]> {
   const client = await getRequiredClient();
-  const sandboxes = await client.list(undefined, 1, 100);
-  return sandboxes.items.map((sandbox) => ({
-    id: sandbox.id,
-    name: sandbox.name,
-    ip: DAYTONA_SSH_HOST,
-    status: mapSandboxState(sandbox.state),
-  }));
+  // list() auto-pages via cursor; iterate it instead of reading `.items`.
+  const instances: CloudInstance[] = [];
+  for await (const sandbox of client.list()) {
+    instances.push({
+      id: sandbox.id,
+      name: sandbox.name,
+      ip: DAYTONA_SSH_HOST,
+      status: mapSandboxState(sandbox.state),
+    });
+  }
+  return instances;
 }
 
 /**

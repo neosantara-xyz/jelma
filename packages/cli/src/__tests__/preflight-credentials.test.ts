@@ -147,7 +147,7 @@ describe("preflightCredentialCheck", () => {
       // Other tests may leave ~/.config/spawn/digitalocean.json in the shared
       // sandbox HOME; its presence causes collectMissingCredentials to return
       // empty and suppresses the warning we're asserting here.
-      const doConfig = path.join(process.env.HOME ?? "", ".config", "spawn", "digitalocean.json");
+      const doConfig = path.join(process.env.HOME ?? "", ".config", "jelma", "digitalocean.json");
       if (fs.existsSync(doConfig)) {
         fs.rmSync(doConfig);
       }

@@ -84,10 +84,12 @@ os.homedir = () => TEST_HOME;
 
 // Set SPAWN_HOME so history/config writes go to the sandbox even if a test
 // forgets to set it. Individual tests can override this, but the default is safe.
-process.env.SPAWN_HOME = join(TEST_HOME, ".spawn");
+// (Env var name stays SPAWN_HOME — the legacy name the code still reads; the
+// path is the rebranded ~/.jelma.)
+process.env.SPAWN_HOME = join(TEST_HOME, ".jelma");
 
 // Pre-create common directories tests might expect
-mkdirSync(join(TEST_HOME, ".spawn"), {
+mkdirSync(join(TEST_HOME, ".jelma"), {
   recursive: true,
 });
 mkdirSync(join(TEST_HOME, ".cache"), {

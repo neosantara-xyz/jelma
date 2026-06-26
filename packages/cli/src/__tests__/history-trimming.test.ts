@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -7,7 +7,7 @@ import { filterHistory } from "../history.js";
 
 /**
  * Tests for filterHistory ordering guarantees.
- * (saveSpawnRecord tests are in history.test.ts)
+ * (saveJelmaRecord tests are in history.test.ts)
  */
 
 describe("History Ordering and Save Behavior", () => {
@@ -39,7 +39,7 @@ describe("History Ordering and Save Behavior", () => {
 
   describe("filterHistory ordering guarantees", () => {
     it("should return records in reverse chronological order (newest first)", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "r1",
           agent: "claude",
@@ -69,7 +69,7 @@ describe("History Ordering and Save Behavior", () => {
     });
 
     it("should maintain reverse order after filtering by agent", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "r1",
           agent: "claude",
@@ -104,7 +104,7 @@ describe("History Ordering and Save Behavior", () => {
     });
 
     it("should maintain reverse order after filtering by cloud", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "r1",
           agent: "claude",
@@ -133,7 +133,7 @@ describe("History Ordering and Save Behavior", () => {
     });
 
     it("should maintain reverse order after filtering by both agent and cloud", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "r1",
           agent: "claude",
@@ -168,7 +168,7 @@ describe("History Ordering and Save Behavior", () => {
     });
 
     it("should return single-element array unchanged for one matching record", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "r1",
           agent: "claude",

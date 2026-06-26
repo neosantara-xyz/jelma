@@ -40,7 +40,7 @@ describe("Filesystem sandbox", () => {
   it("SPAWN_HOME should point to temp sandbox", () => {
     const spawnHome = process.env.SPAWN_HOME ?? "";
     expect(spawnHome).toContain("spawn-test-home-");
-    expect(spawnHome).toEndWith("/.spawn");
+    expect(spawnHome).toEndWith("/.jelma");
   });
 
   it("XDG_CACHE_HOME should point to temp sandbox", () => {
@@ -50,7 +50,7 @@ describe("Filesystem sandbox", () => {
 
   it("sandbox directories should exist", () => {
     const home = process.env.HOME ?? "";
-    expect(existsSync(join(home, ".spawn"))).toBe(true);
+    expect(existsSync(join(home, ".jelma"))).toBe(true);
     expect(existsSync(join(home, ".cache"))).toBe(true);
     expect(existsSync(join(home, ".config"))).toBe(true);
     expect(existsSync(join(home, ".ssh"))).toBe(true);

@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import * as p from "@clack/prompts";
 import { isString } from "@neosantara/jelma-shared";
 import { parseJsonObj } from "./parse.js";
-import { getSpawnCloudConfigPath } from "./paths.js";
+import { getJelmaCloudConfigPath } from "./paths.js";
 import { asyncTryCatch, tryCatch, unwrapOr } from "./result.js";
 import { captureError, captureWarning } from "./telemetry.js";
 
@@ -275,7 +275,7 @@ export async function withRetry<T>(
 export function loadApiToken(cloud: string): string | null {
   return unwrapOr(
     tryCatch(() => {
-      const data = parseJsonObj(readFileSync(getSpawnCloudConfigPath(cloud), "utf-8"));
+      const data = parseJsonObj(readFileSync(getJelmaCloudConfigPath(cloud), "utf-8"));
       if (!data) {
         return null;
       }
@@ -345,13 +345,13 @@ export function toKebabCase(name: string): string {
 }
 
 /** Generate a default jelma name with random suffix (e.g. "spawn-a1b2"). */
-export function defaultSpawnName(): string {
+export function defaultJelmaName(): string {
   const suffix = Math.random().toString(36).slice(2, 6);
   return `spawn-${suffix}`;
 }
 
 /**
- * Get server name from a cloud-specific env var, falling back to SPAWN_NAME_KEBAB / defaultSpawnName.
+ * Get server name from a cloud-specific env var, falling back to SPAWN_NAME_KEBAB / defaultJelmaName.
  * Every cloud module had an identical copy of this logic — now unified here.
  */
 export function getServerNameFromEnv(cloudEnvVar: string): string {
@@ -366,7 +366,7 @@ export function getServerNameFromEnv(cloudEnvVar: string): string {
   }
 
   const kebab = process.env.SPAWN_NAME_KEBAB || (process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "");
-  return kebab || defaultSpawnName();
+  return kebab || defaultJelmaName();
 }
 
 /**
@@ -375,20 +375,20 @@ export function getServerNameFromEnv(cloudEnvVar: string): string {
  *
  * @param cloudLabel - Display label for the prompt (e.g. "AWS instance", "Hetzner server")
  */
-export async function promptSpawnNameShared(cloudLabel: string): Promise<void> {
+export async function promptJelmaNameShared(cloudLabel: string): Promise<void> {
   if (process.env.SPAWN_NAME_KEBAB) {
     return;
   }
 
   let kebab: string;
   if (process.env.SPAWN_NON_INTERACTIVE === "1") {
-    kebab = (process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "") || defaultSpawnName();
+    kebab = (process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "") || defaultJelmaName();
   } else {
     const derived = process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "";
-    const fallback = derived || defaultSpawnName();
+    const fallback = derived || defaultJelmaName();
     process.stderr.write("\n");
     const answer = await prompt(`${cloudLabel} name [${fallback}]: `);
-    kebab = toKebabCase(answer || fallback) || defaultSpawnName();
+    kebab = toKebabCase(answer || fallback) || defaultJelmaName();
   }
 
   process.env.SPAWN_NAME_DISPLAY = kebab;

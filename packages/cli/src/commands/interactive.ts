@@ -137,7 +137,7 @@ async function selectCloud(
 // Prompt user to enter a display name for the jelma instance.
 // Any string is allowed (spaces, uppercase, etc.) — the shell scripts
 // derive a kebab-case slug for the actual cloud resource name.
-async function promptSpawnName(): Promise<string | undefined> {
+async function promptJelmaName(): Promise<string | undefined> {
   // If SPAWN_NAME is set (e.g. via --name flag), use it without prompting
   if (process.env.SPAWN_NAME) {
     return process.env.SPAWN_NAME;
@@ -274,7 +274,7 @@ async function maybePromptSkills(manifest: Manifest, agentName: string): Promise
   }
 }
 
-export { getAndValidateCloudChoices, promptSetupOptions, promptSpawnName, selectCloud };
+export { getAndValidateCloudChoices, promptSetupOptions, promptJelmaName, selectCloud };
 
 export async function cmdInteractive(): Promise<void> {
   p.intro(pc.inverse(` jelma v${VERSION} `));
@@ -368,8 +368,8 @@ export async function cmdInteractive(): Promise<void> {
   await maybePromptSkills(manifest, agentChoice);
 
   captureEvent("name_prompt_shown");
-  const spawnName = await promptSpawnName();
-  // promptSpawnName cancels via handleCancel() on its own path if the user
+  const spawnName = await promptJelmaName();
+  // promptJelmaName cancels via handleCancel() on its own path if the user
   // bails; if we reach this line the name was entered successfully.
   captureEvent("name_entered");
 
@@ -468,7 +468,7 @@ export async function cmdAgentInteractive(agent: string, prompt?: string, dryRun
   }
 
   captureEvent("name_prompt_shown");
-  const spawnName = await promptSpawnName();
+  const spawnName = await promptJelmaName();
   captureEvent("name_entered");
 
   const agentName = manifest.agents[resolvedAgent].name;

@@ -20,11 +20,11 @@ import { dirname, join } from "node:path";
 import * as v from "valibot";
 import { getInstallId } from "./install-id.js";
 import { parseJsonWith } from "./parse.js";
-import { getSpawnDir } from "./paths.js";
+import { getJelmaDir } from "./paths.js";
 import { asyncTryCatch, tryCatch } from "./result.js";
 import { captureEvent } from "./telemetry.js";
 
-const POSTHOG_TOKEN = "phc_7ToS2jDeWBlMu4n2JoNzoA1FnArdKwFMFoHVnAqQ6O1";
+const POSTHOG_TOKEN = "phc_Csp84jDmusyT6lsRumU8WaKnntkwMuyNmRuwrBG8iOW";
 const DECIDE_URL = "https://us.i.posthog.com/decide/?v=3";
 const FETCH_TIMEOUT_MS = 1500;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -55,7 +55,7 @@ let _backgroundRefresh: Promise<void> | null = null;
 const _exposed = new Set<string>();
 
 function getCachePath(): string {
-  return join(getSpawnDir(), "feature-flags-cache.json");
+  return join(getJelmaDir(), "feature-flags-cache.json");
 }
 
 function isDisabled(): boolean {

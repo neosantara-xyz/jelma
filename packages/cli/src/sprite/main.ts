@@ -18,7 +18,7 @@ import {
   getVmConnection,
   installSpriteKeepAlive,
   interactiveSession,
-  promptSpawnName,
+  promptJelmaName,
   runSprite,
   setupShellEnvironment,
   startLocalKeepAlive,
@@ -46,7 +46,7 @@ async function main() {
       downloadFile: downloadFileSprite,
     },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
       await ensureSpriteCli();
       await ensureSpriteAuthenticated();
     },

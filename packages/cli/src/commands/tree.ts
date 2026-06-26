@@ -1,6 +1,6 @@
 // commands/tree.ts — `jelma tree` command: shows the full recursive jelma tree
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
@@ -12,12 +12,12 @@ import { formatRelativeTime } from "./list.js";
 import { resolveDisplayName } from "./shared.js";
 
 interface TreeNode {
-  record: SpawnRecord;
+  record: JelmaRecord;
   children: TreeNode[];
 }
 
 /** Build a tree from all history records using parent_id. */
-function buildFullTree(records: SpawnRecord[]): TreeNode[] {
+function buildFullTree(records: JelmaRecord[]): TreeNode[] {
   const nodeMap = new Map<string, TreeNode>();
   const roots: TreeNode[] = [];
 

@@ -41,7 +41,7 @@ describe("cmdUninstall", () => {
     processExitSpy.mockRestore();
     // Re-create sandbox directories that uninstall tests may have deleted
     for (const dir of [
-      ".spawn",
+      ".jelma",
       ".cache",
       ".config",
       ".ssh",
@@ -55,9 +55,9 @@ describe("cmdUninstall", () => {
 
   it("shows nothing to uninstall when nothing exists", async () => {
     // Ensure jelma dirs and binary don't exist
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
-    const cacheDir = join(home, ".cache", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
+    const cacheDir = join(home, ".cache", "jelma");
     const binaryDir = join(home, ".local", "bin");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
@@ -77,8 +77,8 @@ describe("cmdUninstall", () => {
         force: true,
       });
     }
-    if (fs.existsSync(join(binaryDir, "spawn"))) {
-      fs.unlinkSync(join(binaryDir, "spawn"));
+    if (fs.existsSync(join(binaryDir, "jelma"))) {
+      fs.unlinkSync(join(binaryDir, "jelma"));
     }
 
     await cmdUninstall();
@@ -87,15 +87,15 @@ describe("cmdUninstall", () => {
   });
 
   it("removes binary when it exists and user confirms", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs so multiselect is not shown
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -118,15 +118,15 @@ describe("cmdUninstall", () => {
   });
 
   it("cancels when user rejects confirmation", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -148,21 +148,21 @@ describe("cmdUninstall", () => {
   });
 
   it("removes cache dir when it exists", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
-    const cacheDir = join(home, ".cache", "spawn");
+    const cacheDir = join(home, ".cache", "jelma");
     fs.mkdirSync(cacheDir, {
       recursive: true,
     });
     fs.writeFileSync(join(cacheDir, "manifest.json"), "{}");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -184,8 +184,8 @@ describe("cmdUninstall", () => {
   });
 
   it("removes history when user selects it in multiselect", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
-    const spawnDir = join(home, ".spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
+    const spawnDir = join(home, ".jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
@@ -196,7 +196,7 @@ describe("cmdUninstall", () => {
     fs.writeFileSync(join(spawnDir, "history.json"), "[]");
 
     // Remove config dir
-    const configDir = join(home, ".config", "spawn");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(configDir)) {
       fs.rmSync(configDir, {
         recursive: true,
@@ -215,8 +215,8 @@ describe("cmdUninstall", () => {
   });
 
   it("removes config when user selects it in multiselect", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
-    const configDir = join(home, ".config", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
+    const configDir = join(home, ".config", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
@@ -227,7 +227,7 @@ describe("cmdUninstall", () => {
     fs.writeFileSync(join(configDir, "hetzner.json"), "{}");
 
     // Remove jelma dir
-    const spawnDir = join(home, ".spawn");
+    const spawnDir = join(home, ".jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -246,9 +246,9 @@ describe("cmdUninstall", () => {
   });
 
   it("removes both history and config when user selects both", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
@@ -273,15 +273,15 @@ describe("cmdUninstall", () => {
   });
 
   it("cleans RC files with new-format markers", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -318,15 +318,15 @@ describe("cmdUninstall", () => {
   });
 
   it("cleans RC files with legacy marker format", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -362,14 +362,14 @@ describe("cmdUninstall", () => {
   });
 
   it("does not show multiselect when no optional dirs exist", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -392,15 +392,15 @@ describe("cmdUninstall", () => {
   });
 
   it("preserves RC file when end marker is missing (unclosed block)", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,
@@ -444,15 +444,15 @@ describe("cmdUninstall", () => {
   });
 
   it("shows shell RC hint when RC files were cleaned", async () => {
-    const binaryPath = join(home, ".local", "bin", "spawn");
+    const binaryPath = join(home, ".local", "bin", "jelma");
     fs.mkdirSync(join(home, ".local", "bin"), {
       recursive: true,
     });
     fs.writeFileSync(binaryPath, "#!/bin/bash\necho spawn");
 
     // Remove optional dirs
-    const spawnDir = join(home, ".spawn");
-    const configDir = join(home, ".config", "spawn");
+    const spawnDir = join(home, ".jelma");
+    const configDir = join(home, ".config", "jelma");
     if (fs.existsSync(spawnDir)) {
       fs.rmSync(spawnDir, {
         recursive: true,

@@ -11,7 +11,7 @@ import * as v from "valibot";
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
 import { parseJsonWith } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch, isFileError, tryCatch, tryCatchIf, unwrapOr } from "../shared/result.js";
 import {
   killWithTimeout,
@@ -33,7 +33,7 @@ import {
   logStepInline,
   logWarn,
   prompt,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
   retryOrQuit,
   sanitizeTermValue,
   selectFromList,
@@ -47,7 +47,7 @@ const DASHBOARD_URL = "https://lightsail.aws.amazon.com/";
 // ─── Credential Cache ────────────────────────────────────────────────────────
 
 export function getAwsConfigPath(): string {
-  return getSpawnCloudConfigPath("aws");
+  return getJelmaCloudConfigPath("aws");
 }
 
 const AwsCredsSchema = v.object({
@@ -609,7 +609,7 @@ export async function authenticate(): Promise<void> {
         ]);
         if (result.exitCode === 0) {
           _state.lightsailMode = "cli";
-          logInfo(`AWS CLI ready with credentials cached by spawn. Using region: ${cachedRegion}`);
+          logInfo(`AWS CLI ready with credentials cached by jelma. Using region: ${cachedRegion}`);
           return;
         }
         logWarn("Credentials cached by jelma are invalid or expired");
@@ -1247,8 +1247,8 @@ export async function getServerName(): Promise<string> {
   return getServerNameFromEnv("LIGHTSAIL_SERVER_NAME");
 }
 
-export async function promptSpawnName(): Promise<void> {
-  return promptSpawnNameShared("AWS instance");
+export async function promptJelmaName(): Promise<void> {
+  return promptJelmaNameShared("AWS instance");
 }
 
 // ─── Lifecycle ──────────────────────────────────────────────────────────────

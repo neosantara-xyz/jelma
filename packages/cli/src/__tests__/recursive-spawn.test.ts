@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -6,7 +6,7 @@ import { join } from "node:path";
 import * as p from "@clack/prompts";
 import { findDescendants, pullChildHistory } from "../commands/delete.js";
 import { cmdTree } from "../commands/tree.js";
-import { exportHistory, HISTORY_SCHEMA_VERSION, loadHistory, mergeChildHistory, saveSpawnRecord } from "../history.js";
+import { exportHistory, HISTORY_SCHEMA_VERSION, loadHistory, mergeChildHistory, saveJelmaRecord } from "../history.js";
 
 describe("recursive spawn", () => {
   let testDir: string;
@@ -33,11 +33,11 @@ describe("recursive spawn", () => {
     }
   });
 
-  // ── SpawnRecord parent_id and depth ─────────────────────────────────────
+  // ── JelmaRecord parent_id and depth ─────────────────────────────────────
 
   describe("parent tracking", () => {
     it("saves and loads records with parent_id and depth", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "child-1",
         agent: "claude",
         cloud: "hetzner",
@@ -45,7 +45,7 @@ describe("recursive spawn", () => {
         parent_id: "parent-1",
         depth: 1,
       };
-      saveSpawnRecord(record);
+      saveJelmaRecord(record);
       const loaded = loadHistory();
       expect(loaded).toHaveLength(1);
       expect(loaded[0].parent_id).toBe("parent-1");
@@ -77,14 +77,14 @@ describe("recursive spawn", () => {
   describe("mergeChildHistory", () => {
     it("merges child records into local history", () => {
       // Save a parent record first
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "parent-1",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
 
-      const childRecords: SpawnRecord[] = [
+      const childRecords: JelmaRecord[] = [
         {
           id: "child-1",
           agent: "codex",
@@ -115,14 +115,14 @@ describe("recursive spawn", () => {
     });
 
     it("deduplicates by jelma ID", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "parent-1",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
 
-      const childRecords: SpawnRecord[] = [
+      const childRecords: JelmaRecord[] = [
         {
           id: "child-1",
           agent: "codex",
@@ -140,14 +140,14 @@ describe("recursive spawn", () => {
     });
 
     it("preserves existing parent_id on child records", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "grandparent",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
 
-      const childRecords: SpawnRecord[] = [
+      const childRecords: JelmaRecord[] = [
         {
           id: "child-1",
           agent: "codex",
@@ -166,7 +166,7 @@ describe("recursive spawn", () => {
     });
 
     it("does nothing with empty child records", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "parent-1",
         agent: "claude",
         cloud: "hetzner",
@@ -184,7 +184,7 @@ describe("recursive spawn", () => {
 
   describe("exportHistory", () => {
     it("exports history as JSON string", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "record-1",
         agent: "claude",
         cloud: "hetzner",
@@ -249,7 +249,7 @@ describe("recursive spawn", () => {
   describe("delegateCloudCredentials", () => {
     beforeEach(() => {
       // Remove credential files that other test files may have written to the shared sandbox HOME
-      const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+      const configDir = join(process.env.HOME ?? "", ".config", "jelma");
       if (existsSync(configDir)) {
         rmSync(configDir, {
           recursive: true,
@@ -279,7 +279,7 @@ describe("recursive spawn", () => {
     it("delegates credentials when files exist", async () => {
       const { delegateCloudCredentials } = await import("../shared/orchestrate.js");
       const home = process.env.HOME ?? "";
-      const configDir = join(home, ".config", "spawn");
+      const configDir = join(home, ".config", "jelma");
       mkdirSync(configDir, {
         recursive: true,
       });
@@ -297,17 +297,24 @@ describe("recursive spawn", () => {
 
       await delegateCloudCredentials(mockRunner);
 
-      // Should have run mkdir + 2 file writes
-      expect(commands.length).toBe(3);
-      expect(commands[0]).toContain("mkdir -p ~/.config/spawn");
-      expect(commands[1]).toContain("hetzner.json");
-      expect(commands[2]).toContain("neosantara.json");
+      // mkdir (both roots) + each of 2 creds written to BOTH ~/.config/jelma
+      // (child Jelma CLI) and ~/.config/spawn (sh/ agent scripts) = 1 + 4.
+      expect(commands.length).toBe(5);
+      expect(commands[0]).toContain("mkdir -p ~/.config/jelma ~/.config/spawn");
+      const writes = commands.slice(1);
+      for (const file of [
+        "hetzner.json",
+        "neosantara.json",
+      ]) {
+        expect(writes.some((c) => c.includes(`~/.config/jelma/${file}`))).toBe(true);
+        expect(writes.some((c) => c.includes(`~/.config/spawn/${file}`))).toBe(true);
+      }
     });
 
     it("handles file write failure gracefully", async () => {
       const { delegateCloudCredentials } = await import("../shared/orchestrate.js");
       const home = process.env.HOME ?? "";
-      const configDir = join(home, ".config", "spawn");
+      const configDir = join(home, ".config", "jelma");
       mkdirSync(configDir, {
         recursive: true,
       });
@@ -335,7 +342,7 @@ describe("recursive spawn", () => {
     it("handles mkdir failure gracefully", async () => {
       const { delegateCloudCredentials } = await import("../shared/orchestrate.js");
       const home = process.env.HOME ?? "";
-      const configDir = join(home, ".config", "spawn");
+      const configDir = join(home, ".config", "jelma");
       mkdirSync(configDir, {
         recursive: true,
       });
@@ -407,14 +414,14 @@ describe("recursive spawn", () => {
     });
 
     it("renders tree with parent-child relationships", async () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "root-1",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
         name: "my-root",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-1",
         agent: "codex",
         cloud: "hetzner",
@@ -423,7 +430,7 @@ describe("recursive spawn", () => {
         depth: 1,
         name: "my-child",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-2",
         agent: "openclaw",
         cloud: "hetzner",
@@ -431,7 +438,7 @@ describe("recursive spawn", () => {
         parent_id: "root-1",
         depth: 1,
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "grandchild-1",
         agent: "claude",
         cloud: "hetzner",
@@ -465,13 +472,13 @@ describe("recursive spawn", () => {
     });
 
     it("outputs JSON when --json flag is set", async () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "root-1",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-1",
         agent: "codex",
         cloud: "hetzner",
@@ -502,13 +509,13 @@ describe("recursive spawn", () => {
     });
 
     it("shows flat message when no parent-child relationships", async () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "a",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "b",
         agent: "codex",
         cloud: "hetzner",
@@ -529,7 +536,7 @@ describe("recursive spawn", () => {
     });
 
     it("renders deleted and depth labels", async () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "root-1",
         agent: "claude",
         cloud: "hetzner",
@@ -541,7 +548,7 @@ describe("recursive spawn", () => {
           deleted_at: "2026-03-24T05:00:00.000Z",
         },
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-1",
         agent: "codex",
         cloud: "hetzner",
@@ -574,20 +581,20 @@ describe("recursive spawn", () => {
 
   describe("findDescendants", () => {
     it("finds direct children", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "parent-1",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-1",
         agent: "codex",
         cloud: "hetzner",
         timestamp: "2026-03-24T01:00:00.000Z",
         parent_id: "parent-1",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child-2",
         agent: "openclaw",
         cloud: "hetzner",
@@ -604,20 +611,20 @@ describe("recursive spawn", () => {
     });
 
     it("finds transitive descendants", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "root",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "child",
         agent: "codex",
         cloud: "hetzner",
         timestamp: "2026-03-24T01:00:00.000Z",
         parent_id: "root",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "grandchild",
         agent: "openclaw",
         cloud: "hetzner",
@@ -632,7 +639,7 @@ describe("recursive spawn", () => {
     });
 
     it("returns empty array when no children", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "lonely",
         agent: "claude",
         cloud: "hetzner",
@@ -644,13 +651,13 @@ describe("recursive spawn", () => {
     });
 
     it("excludes deleted descendants", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "parent",
         agent: "claude",
         cloud: "hetzner",
         timestamp: "2026-03-24T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "deleted-child",
         agent: "codex",
         cloud: "hetzner",
@@ -673,7 +680,7 @@ describe("recursive spawn", () => {
 
   describe("pullChildHistory", () => {
     it("skips records without connection", async () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "no-conn",
         agent: "claude",
         cloud: "hetzner",
@@ -684,7 +691,7 @@ describe("recursive spawn", () => {
     });
 
     it("skips local cloud records", async () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "local-1",
         agent: "claude",
         cloud: "local",
@@ -699,7 +706,7 @@ describe("recursive spawn", () => {
     });
 
     it("skips sprite-console records", async () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "sprite-1",
         agent: "claude",
         cloud: "sprite",
@@ -714,7 +721,7 @@ describe("recursive spawn", () => {
     });
 
     it("skips records without IP", async () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "no-ip",
         agent: "claude",
         cloud: "hetzner",

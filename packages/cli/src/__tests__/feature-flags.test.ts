@@ -10,9 +10,9 @@ import {
   initFeatureFlags,
 } from "../shared/feature-flags.js";
 import { _resetInstallIdCache } from "../shared/install-id.js";
-import { getSpawnDir } from "../shared/paths.js";
+import { getJelmaDir } from "../shared/paths.js";
 
-const cachePath = (): string => join(getSpawnDir(), "feature-flags-cache.json");
+const cachePath = (): string => join(getJelmaDir(), "feature-flags-cache.json");
 
 function writeCache(flags: Record<string, string | boolean>, ageMs = 0): void {
   const path = cachePath();

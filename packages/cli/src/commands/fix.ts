@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 import type { CloudRunner } from "../shared/agent-setup.js";
 
@@ -48,7 +48,7 @@ export interface FixOptions {
  * 5. Start daemons (OpenClaw gateway, Cursor proxy, etc.)
  * 6. Verify agent binary is in PATH
  */
-export async function fixSpawn(record: SpawnRecord, manifest: Manifest | null, options?: FixOptions): Promise<void> {
+export async function fixSpawn(record: JelmaRecord, manifest: Manifest | null, options?: FixOptions): Promise<void> {
   const conn = record.connection;
   if (!conn) {
     p.log.error("Cannot fix: jelma has no connection information.");

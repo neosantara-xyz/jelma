@@ -2,7 +2,7 @@
  * cmd-interactive-cov.test.ts — Additional coverage for commands/interactive.ts
  *
  * Covers paths not exercised in cmd-interactive.test.ts:
- * - promptSpawnName (SPAWN_NAME env, cancel, validation)
+ * - promptJelmaName (SPAWN_NAME env, cancel, validation)
  * - cmdAgentInteractive (unknown agent, dry-run, cancel on cloud)
  * - getAndValidateCloudChoices
  * - promptSetupOptions (custom-model step)
@@ -33,10 +33,10 @@ const clack = mockClackPrompts({
 });
 
 // ── Import modules under test ───────────────────────────────────────────────
-const { cmdAgentInteractive, promptSpawnName, getAndValidateCloudChoices } = await import("../commands/interactive.js");
+const { cmdAgentInteractive, promptJelmaName, getAndValidateCloudChoices } = await import("../commands/interactive.js");
 const { loadManifest, _resetCacheForTesting } = await import("../manifest.js");
 
-describe("promptSpawnName", () => {
+describe("promptJelmaName", () => {
   let savedSpawnName: string | undefined;
 
   beforeEach(() => {
@@ -56,7 +56,7 @@ describe("promptSpawnName", () => {
 
   it("returns SPAWN_NAME env var when set", async () => {
     process.env.SPAWN_NAME = "my-custom-name";
-    const result = await promptSpawnName();
+    const result = await promptJelmaName();
     expect(result).toBe("my-custom-name");
     expect(clack.text).not.toHaveBeenCalled();
   });
@@ -64,14 +64,14 @@ describe("promptSpawnName", () => {
   it("returns undefined when user enters empty string", async () => {
     delete process.env.SPAWN_NAME;
     textReturnValue = "";
-    const result = await promptSpawnName();
+    const result = await promptJelmaName();
     expect(result).toBeUndefined();
   });
 
   it("returns user input when provided", async () => {
     delete process.env.SPAWN_NAME;
     textReturnValue = "my-spawn-name";
-    const result = await promptSpawnName();
+    const result = await promptJelmaName();
     expect(result).toBe("my-spawn-name");
   });
 });

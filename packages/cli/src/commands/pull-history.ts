@@ -3,10 +3,10 @@
 // SSHes into each active child, tells it to pull from ITS children first,
 // then downloads its history.json and merges into local history.
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import * as v from "valibot";
-import { getActiveServers, mergeChildHistory, SpawnRecordSchema } from "../history.js";
+import { getActiveServers, JelmaRecordSchema, mergeChildHistory } from "../history.js";
 import { validateConnectionIP, validateUsername } from "../security.js";
 import { parseJsonWith } from "../shared/parse.js";
 import { asyncTryCatch, tryCatch } from "../shared/result.js";
@@ -15,7 +15,7 @@ import { logDebug, logInfo } from "../shared/ui.js";
 
 const ChildHistorySchema = v.object({
   version: v.optional(v.number()),
-  records: v.array(SpawnRecordSchema),
+  records: v.array(JelmaRecordSchema),
 });
 
 /**
@@ -32,7 +32,7 @@ export function parseAndMergeChildHistory(json: string, parentSpawnId: string): 
     return 0;
   }
 
-  const validRecords: SpawnRecord[] = [];
+  const validRecords: JelmaRecord[] = [];
   for (const r of parsed.records) {
     if (r.id) {
       validRecords.push({

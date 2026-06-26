@@ -16,8 +16,8 @@ import {
   getServerName,
   getSignedPreviewBrowserUrl,
   interactiveSession,
+  promptJelmaName,
   promptSandboxSize,
-  promptSpawnName,
   runServer,
   setupAutoUpdateSession,
   uploadFile,
@@ -43,7 +43,7 @@ async function main() {
       downloadFile,
     },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
       await ensureDaytonaAuthenticated();
     },
     async promptSize() {

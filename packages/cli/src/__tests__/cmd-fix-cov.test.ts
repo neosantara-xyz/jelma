@@ -8,7 +8,7 @@
  * - fixSpawn success message
  */
 
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { tryCatch } from "@neosantara/jelma-shared";
@@ -30,7 +30,7 @@ const { _resetCacheForTesting } = await import("../manifest.js");
 
 const mockManifest = createMockManifest();
 
-function makeRecord(overrides: Partial<SpawnRecord> = {}): SpawnRecord {
+function makeRecord(overrides: Partial<JelmaRecord> = {}): JelmaRecord {
   return {
     id: "test-id-1",
     agent: "claude",

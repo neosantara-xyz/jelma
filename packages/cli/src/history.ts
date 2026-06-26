@@ -13,7 +13,7 @@ import {
 import { join } from "node:path";
 import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
-import { getHistoryPath, getSpawnDir } from "./shared/paths.js";
+import { getHistoryPath, getJelmaDir } from "./shared/paths.js";
 import { isFileError, tryCatch, tryCatchIf } from "./shared/result.js";
 import { logDebug, logWarn } from "./shared/ui.js";
 
@@ -29,7 +29,7 @@ export interface VMConnection {
   metadata?: Record<string, string>;
 }
 
-export interface SpawnRecord {
+export interface JelmaRecord {
   id: string;
   agent: string;
   cloud: string;
@@ -65,7 +65,7 @@ const VMConnectionSchema = v.object({
   metadata: v.optional(v.record(v.string(), v.string())),
 });
 
-export const SpawnRecordSchema = v.object({
+export const JelmaRecordSchema = v.object({
   id: v.optional(v.string()), // optional for backwards compat with pre-migration records on disk
   agent: v.string(),
   cloud: v.string(),
@@ -77,10 +77,10 @@ export const SpawnRecordSchema = v.object({
   depth: v.optional(v.number()),
 });
 
-/** v1 history file format: { version: 1, records: SpawnRecord[] } */
+/** v1 history file format: { version: 1, records: JelmaRecord[] } */
 const HistoryFileV1Schema = v.object({
   version: v.literal(1),
-  records: v.array(SpawnRecordSchema),
+  records: v.array(JelmaRecordSchema),
 });
 
 /** Loose v1 schema — validates shape but not individual records */
@@ -90,7 +90,7 @@ const HistoryFileV1LooseSchema = v.object({
 });
 
 /** Generate a unique jelma ID. */
-export function generateSpawnId(): string {
+export function generateJelmaId(): string {
   return randomUUID();
 }
 
@@ -192,7 +192,7 @@ function atomicWriteJson(filePath: string, data: unknown): void {
 }
 
 /** Write history records to disk in v1 format: { version: 1, records: [...] } */
-function writeHistory(records: SpawnRecord[]): void {
+function writeHistory(records: JelmaRecord[]): void {
   atomicWriteJson(getHistoryPath(), {
     version: HISTORY_SCHEMA_VERSION,
     records,
@@ -292,12 +292,12 @@ function backupCorruptedFile(filePath: string): void {
 
 /** Try to parse valid records from a single archive file.
  *  Uses tryCatch (catch-all) because corrupted JSON is expected — SyntaxError is not a file error. */
-function parseArchiveFile(dir: string, file: string): SpawnRecord[] | null {
+function parseArchiveFile(dir: string, file: string): JelmaRecord[] | null {
   const result = tryCatch(() => {
     const text = readFileSync(join(dir, file), "utf-8");
     const data: unknown = JSON.parse(text);
     if (Array.isArray(data)) {
-      return data.filter((el) => v.safeParse(SpawnRecordSchema, el).success);
+      return data.filter((el) => v.safeParse(JelmaRecordSchema, el).success);
     }
     return [];
   });
@@ -310,9 +310,9 @@ function parseArchiveFile(dir: string, file: string): SpawnRecord[] | null {
 /** Attempt to recover records from archive files (history-*.json).
  *  Uses tryCatch (catch-all) because archive recovery is best-effort — any failure returns [].
  *  Only checks the 30 most recent archives to avoid startup slowdowns. */
-function recoverFromArchives(): SpawnRecord[] {
+function recoverFromArchives(): JelmaRecord[] {
   const result = tryCatch(() => {
-    const dir = getSpawnDir();
+    const dir = getJelmaDir();
     const files = readdirSync(dir)
       .filter((f) => /^history-\d{4}-\d{2}-\d{2}\.json$/.test(f))
       .sort()
@@ -331,15 +331,15 @@ function recoverFromArchives(): SpawnRecord[] {
 }
 
 /** Backfill missing `id` field on parsed records (pre-migration records lack it). */
-function backfillRecordIds(records: v.InferOutput<typeof SpawnRecordSchema>[]): SpawnRecord[] {
+function backfillRecordIds(records: v.InferOutput<typeof JelmaRecordSchema>[]): JelmaRecord[] {
   return records.map((r) => ({
     ...r,
-    id: r.id ?? generateSpawnId(),
+    id: r.id ?? generateJelmaId(),
   }));
 }
 
-/** Parse raw JSON into SpawnRecord[], handling all format versions. */
-function parseHistoryData(raw: unknown): SpawnRecord[] | null {
+/** Parse raw JSON into JelmaRecord[], handling all format versions. */
+function parseHistoryData(raw: unknown): JelmaRecord[] | null {
   // v1 format: { version: 1, records: [...] } — strict check
   const v1 = v.safeParse(HistoryFileV1Schema, raw);
   if (v1.success) {
@@ -350,9 +350,9 @@ function parseHistoryData(raw: unknown): SpawnRecord[] | null {
   const v1Loose = v.safeParse(HistoryFileV1LooseSchema, raw);
   if (v1Loose.success) {
     const allRecords = v1Loose.output.records;
-    const valid: v.InferOutput<typeof SpawnRecordSchema>[] = [];
+    const valid: v.InferOutput<typeof JelmaRecordSchema>[] = [];
     for (const el of allRecords) {
-      const result = v.safeParse(SpawnRecordSchema, el);
+      const result = v.safeParse(JelmaRecordSchema, el);
       if (result.success) {
         valid.push(result.output);
       }
@@ -366,9 +366,9 @@ function parseHistoryData(raw: unknown): SpawnRecord[] | null {
 
   // v0 format: bare array (pre-versioning; migrated to v1 on next write)
   if (Array.isArray(raw)) {
-    const valid: v.InferOutput<typeof SpawnRecordSchema>[] = [];
+    const valid: v.InferOutput<typeof JelmaRecordSchema>[] = [];
     for (const el of raw) {
-      const result = v.safeParse(SpawnRecordSchema, el);
+      const result = v.safeParse(JelmaRecordSchema, el);
       if (result.success) {
         valid.push(result.output);
       }
@@ -380,7 +380,7 @@ function parseHistoryData(raw: unknown): SpawnRecord[] | null {
   return null;
 }
 
-export function loadHistory(): SpawnRecord[] {
+export function loadHistory(): JelmaRecord[] {
   const path = getHistoryPath();
   if (!existsSync(path)) {
     return [];
@@ -408,7 +408,7 @@ export function loadHistory(): SpawnRecord[] {
     // Backfill IDs on legacy records that don't have one
     for (const r of records) {
       if (!r.id) {
-        r.id = generateSpawnId();
+        r.id = generateJelmaId();
       }
     }
     return records;
@@ -419,8 +419,8 @@ export function loadHistory(): SpawnRecord[] {
   return recoverFromArchives();
 }
 
-export function saveSpawnRecord(record: SpawnRecord): void {
-  const dir = getSpawnDir();
+export function saveJelmaRecord(record: JelmaRecord): void {
+  const dir = getJelmaDir();
   if (!existsSync(dir)) {
     mkdirSync(dir, {
       recursive: true,
@@ -429,7 +429,7 @@ export function saveSpawnRecord(record: SpawnRecord): void {
   }
   // Every record must have an id
   if (!record.id) {
-    record.id = generateSpawnId();
+    record.id = generateJelmaId();
   }
 
   withHistoryLock(() => {
@@ -453,7 +453,7 @@ export function clearHistory(): number {
 }
 
 /** Find a record's index by id, falling back to timestamp+agent+cloud for old records. */
-function findRecordIndex(history: SpawnRecord[], record: SpawnRecord): number {
+function findRecordIndex(history: JelmaRecord[], record: JelmaRecord): number {
   if (record.id) {
     const idx = history.findIndex((r) => r.id === record.id);
     if (idx >= 0) {
@@ -467,7 +467,7 @@ function findRecordIndex(history: SpawnRecord[], record: SpawnRecord): number {
 }
 
 /** Remove a record from history entirely (soft delete — no cloud API call). */
-export function removeRecord(record: SpawnRecord): boolean {
+export function removeRecord(record: JelmaRecord): boolean {
   return withHistoryLock(() => {
     const history = loadHistory();
     const index = findRecordIndex(history, record);
@@ -480,7 +480,7 @@ export function removeRecord(record: SpawnRecord): boolean {
   });
 }
 
-export function markRecordDeleted(record: SpawnRecord): boolean {
+export function markRecordDeleted(record: JelmaRecord): boolean {
   return withHistoryLock(() => {
     const history = loadHistory();
     const index = findRecordIndex(history, record);
@@ -499,7 +499,7 @@ export function markRecordDeleted(record: SpawnRecord): boolean {
 }
 
 /** Update the IP address on a history record's connection. Returns true if the record was found and updated. */
-export function updateRecordIp(record: SpawnRecord, newIp: string): boolean {
+export function updateRecordIp(record: JelmaRecord, newIp: string): boolean {
   return withHistoryLock(() => {
     const history = loadHistory();
     const index = findRecordIndex(history, record);
@@ -518,7 +518,7 @@ export function updateRecordIp(record: SpawnRecord, newIp: string): boolean {
 
 /** Update connection fields (ip, server_id, server_name) on a history record. Used for remapping to a different instance. */
 export function updateRecordConnection(
-  record: SpawnRecord,
+  record: JelmaRecord,
   updates: {
     ip?: string;
     server_id?: string;
@@ -549,14 +549,14 @@ export function updateRecordConnection(
   });
 }
 
-export function getActiveServers(): SpawnRecord[] {
+export function getActiveServers(): JelmaRecord[] {
   const records = loadHistory();
   return records.filter((r) => r.connection?.cloud && r.connection.cloud !== "local" && !r.connection.deleted);
 }
 
 /** Merge child jelma records into local history.
  *  Sets parent_id on each child record and deduplicates by jelma ID. */
-export function mergeChildHistory(parentSpawnId: string, childRecords: SpawnRecord[]): void {
+export function mergeChildHistory(parentSpawnId: string, childRecords: JelmaRecord[]): void {
   if (childRecords.length === 0) {
     return;
   }
@@ -567,7 +567,7 @@ export function mergeChildHistory(parentSpawnId: string, childRecords: SpawnReco
 
     for (const child of childRecords) {
       if (!child.id) {
-        child.id = generateSpawnId();
+        child.id = generateJelmaId();
       }
       // Skip duplicates
       if (existingIds.has(child.id)) {
@@ -591,7 +591,7 @@ export function exportHistory(): string {
   return JSON.stringify(records, null, 2);
 }
 
-export function filterHistory(agentFilter?: string, cloudFilter?: string): SpawnRecord[] {
+export function filterHistory(agentFilter?: string, cloudFilter?: string): JelmaRecord[] {
   let records = loadHistory();
   if (agentFilter) {
     const lower = agentFilter.toLowerCase();

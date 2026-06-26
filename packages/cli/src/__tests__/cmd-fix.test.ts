@@ -5,7 +5,7 @@
  * to avoid process-global mock pollution (pattern from delete-spinner.test.ts).
  */
 
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 import type { CloudRunner } from "../shared/agent-setup";
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
@@ -22,7 +22,7 @@ const { loadManifest, _resetCacheForTesting } = await import("../manifest.js");
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function makeRecord(overrides: Partial<SpawnRecord> = {}): SpawnRecord {
+function makeRecord(overrides: Partial<JelmaRecord> = {}): JelmaRecord {
   return {
     id: "test-id-123",
     agent: "claude",
@@ -232,7 +232,7 @@ describe("cmdFix", () => {
   let savedApiKey: string | undefined;
   let processExitSpy: ReturnType<typeof spyOn>;
 
-  function writeHistory(records: SpawnRecord[]) {
+  function writeHistory(records: JelmaRecord[]) {
     writeFileSync(
       join(testDir, "history.json"),
       JSON.stringify({

@@ -9,7 +9,7 @@
  * (formatRelativeTime covered in commands-exported-utils.test.ts)
  */
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -112,7 +112,7 @@ describe("commands/list.ts coverage", () => {
     });
 
     it("shows history table in non-interactive mode", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -137,7 +137,7 @@ describe("commands/list.ts coverage", () => {
     });
 
     it("shows filtered results with agent filter", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -170,7 +170,7 @@ describe("commands/list.ts coverage", () => {
 
   describe("cmdList with cloud filter", () => {
     it("shows filtered results with cloud filter in non-interactive mode", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -209,7 +209,7 @@ describe("commands/list.ts coverage", () => {
     });
 
     it("shows empty message with cloud filter and history exists", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -260,7 +260,7 @@ describe("commands/list.ts coverage", () => {
   describe("handleRecordAction testable branches", () => {
     it("handles remove action", async () => {
       clack.select.mockResolvedValueOnce("remove");
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "rm-test",
         agent: "claude",
         cloud: "sprite",
@@ -289,7 +289,7 @@ describe("commands/list.ts coverage", () => {
 
     it("handles remove when record not found in history", async () => {
       clack.select.mockResolvedValueOnce("remove");
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "not-in-file",
         agent: "claude",
         cloud: "sprite",
@@ -318,7 +318,7 @@ describe("commands/list.ts coverage", () => {
 
   describe("buildListFooterLines via non-interactive cmdList", () => {
     it("shows footer with no filter", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -343,7 +343,7 @@ describe("commands/list.ts coverage", () => {
     });
 
     it("shows filtered footer with agent filter", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -397,7 +397,7 @@ describe("commands/list.ts coverage", () => {
     });
 
     it("shows total count when records exist but filter matches nothing", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -425,7 +425,7 @@ describe("commands/list.ts coverage", () => {
 
   describe("renderListTable edge cases", () => {
     it("renders table with multiple records", async () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",

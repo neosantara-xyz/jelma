@@ -1,9 +1,9 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { clearHistory, filterHistory, loadHistory, saveSpawnRecord } from "../history.js";
+import { clearHistory, filterHistory, loadHistory, saveJelmaRecord } from "../history.js";
 import { getHistoryPath } from "../shared/paths.js";
 import { asyncTryCatch } from "../shared/result.js";
 import { mockClackPrompts } from "./test-helpers";
@@ -57,7 +57,7 @@ describe("clearHistory", () => {
     });
 
     it("should return 1 and delete file when history has one record", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",
@@ -71,7 +71,7 @@ describe("clearHistory", () => {
     });
 
     it("should return count and delete file when history has multiple records", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",
@@ -95,7 +95,7 @@ describe("clearHistory", () => {
     });
 
     it("should delete the file completely, not just empty it", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",
@@ -109,7 +109,7 @@ describe("clearHistory", () => {
     });
 
     it("should not delete the SPAWN_HOME directory itself", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",
@@ -159,7 +159,7 @@ describe("clearHistory", () => {
     });
 
     it("should handle records with prompt field in count", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",
@@ -183,7 +183,7 @@ describe("clearHistory", () => {
   describe("interaction with save and load", () => {
     it("should allow saving after clearing", () => {
       // Save initial records
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00.000Z",
@@ -195,7 +195,7 @@ describe("clearHistory", () => {
       expect(loadHistory()).toHaveLength(0);
 
       // Save new records after clearing
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "codex",
         cloud: "hetzner",
         timestamp: "2026-01-02T00:00:00.000Z",
@@ -206,12 +206,12 @@ describe("clearHistory", () => {
     });
 
     it("should result in empty filterHistory after clearing", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "codex",
         cloud: "hetzner",
         timestamp: "2026-01-02T00:00:00.000Z",
@@ -228,7 +228,7 @@ describe("clearHistory", () => {
     });
 
     it("should return correct count for 100 records", () => {
-      const records: SpawnRecord[] = [];
+      const records: JelmaRecord[] = [];
       for (let i = 0; i < 100; i++) {
         records.push({
           agent: `agent-${i}`,
@@ -243,7 +243,7 @@ describe("clearHistory", () => {
     });
 
     it("should be idempotent -- calling clear twice returns 0 on second call", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00.000Z",
@@ -255,7 +255,7 @@ describe("clearHistory", () => {
 
     it("should clear records that were saved across multiple sequential saves", () => {
       for (let i = 0; i < 10; i++) {
-        saveSpawnRecord({
+        saveJelmaRecord({
           agent: `agent-${i}`,
           cloud: `cloud-${i}`,
           timestamp: `2026-01-01T00:${String(i).padStart(2, "0")}:00.000Z`,
@@ -268,7 +268,7 @@ describe("clearHistory", () => {
     });
 
     it("should not affect getHistoryPath after clearing", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00.000Z",
@@ -326,7 +326,7 @@ describe("cmdListClear", () => {
   });
 
   it("should call log.success with count when clearing records", async () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -347,7 +347,7 @@ describe("cmdListClear", () => {
   });
 
   it("should use singular 'record' for a single entry", async () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -365,7 +365,7 @@ describe("cmdListClear", () => {
   });
 
   it("should actually delete the history file", async () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -399,7 +399,7 @@ describe("cmdListClear", () => {
   });
 
   it("should display correct count for large history", async () => {
-    const records: SpawnRecord[] = [];
+    const records: JelmaRecord[] = [];
     for (let i = 0; i < 50; i++) {
       records.push({
         agent: `agent-${i}`,
@@ -416,7 +416,7 @@ describe("cmdListClear", () => {
   });
 
   it("should allow saving new records after clearing via cmdListClear", async () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -428,7 +428,7 @@ describe("cmdListClear", () => {
     await cmdListClear(true);
 
     // Save new record after clearing
-    saveSpawnRecord({
+    saveJelmaRecord({
       agent: "codex",
       cloud: "hetzner",
       timestamp: "2026-01-02T00:00:00.000Z",
@@ -449,7 +449,7 @@ describe("cmdListClear", () => {
     mockLogSuccess.mockClear();
 
     // Test with records
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -463,7 +463,7 @@ describe("cmdListClear", () => {
   });
 
   it("should require --yes in non-interactive mode when history exists", async () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",

@@ -30,7 +30,7 @@ import {
   logWarn,
   openBrowser,
   prompt,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
   retryOrQuit,
   sanitizeTermValue,
   selectFromList,
@@ -680,8 +680,8 @@ export async function getServerName(): Promise<string> {
   return getServerNameFromEnv("GCP_INSTANCE_NAME");
 }
 
-export async function promptSpawnName(): Promise<void> {
-  return promptSpawnNameShared("GCP instance");
+export async function promptJelmaName(): Promise<void> {
+  return promptJelmaNameShared("GCP instance");
 }
 
 // ─── Cloud Init Startup Script ──────────────────────────────────────────────

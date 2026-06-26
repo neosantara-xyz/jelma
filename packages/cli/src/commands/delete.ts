@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
@@ -14,7 +14,7 @@ import {
   resolveProject as gcpResolveProject,
 } from "../gcp/gcp.js";
 import { ensureHcloudToken, destroyServer as hetznerDestroyServer } from "../hetzner/hetzner.js";
-import { getActiveServers, loadHistory, markRecordDeleted, mergeChildHistory, SpawnRecordSchema } from "../history.js";
+import { getActiveServers, JelmaRecordSchema, loadHistory, markRecordDeleted, mergeChildHistory } from "../history.js";
 import { loadManifest } from "../manifest.js";
 import {
   validateConnectionIP,
@@ -34,7 +34,7 @@ import { getErrorMessage, isInteractiveTTY } from "./shared.js";
  * This may prompt the user interactively and must be called BEFORE
  * starting any spinner to avoid overlapping UI elements.
  */
-async function ensureDeleteCredentials(record: SpawnRecord): Promise<void> {
+async function ensureDeleteCredentials(record: JelmaRecord): Promise<void> {
   const conn = record.connection;
   if (!conn?.cloud || conn.cloud === "local") {
     return;
@@ -87,7 +87,7 @@ async function ensureDeleteCredentials(record: SpawnRecord): Promise<void> {
 }
 
 /** Execute server deletion for a given record using TypeScript cloud modules */
-async function execDeleteServer(record: SpawnRecord): Promise<boolean> {
+async function execDeleteServer(record: JelmaRecord): Promise<boolean> {
   const conn = record.connection;
   if (!conn?.cloud || conn.cloud === "local") {
     return false;
@@ -203,9 +203,9 @@ async function execDeleteServer(record: SpawnRecord): Promise<boolean> {
 
 /** Prompt for delete confirmation and execute. Returns true if deleted. */
 export async function confirmAndDelete(
-  record: SpawnRecord,
+  record: JelmaRecord,
   manifest: Manifest | null,
-  deleteHandler?: (record: SpawnRecord) => Promise<boolean>,
+  deleteHandler?: (record: JelmaRecord) => Promise<boolean>,
 ): Promise<boolean> {
   const conn = record.connection!;
   const label = conn.server_name || conn.server_id || conn.ip;
@@ -270,7 +270,7 @@ export async function confirmAndDelete(
 }
 
 /** Pull child history from a remote VM via SSH before deleting it. */
-export async function pullChildHistory(record: SpawnRecord): Promise<void> {
+export async function pullChildHistory(record: JelmaRecord): Promise<void> {
   const conn = record.connection;
   if (!conn?.ip || !conn.user || conn.cloud === "local" || conn.ip === "sprite-console") {
     return;
@@ -319,9 +319,9 @@ export async function pullChildHistory(record: SpawnRecord): Promise<void> {
     if (!Array.isArray(parsed)) {
       return;
     }
-    const childRecords: SpawnRecord[] = [];
+    const childRecords: JelmaRecord[] = [];
     for (const el of parsed) {
-      const result = v.safeParse(SpawnRecordSchema, el);
+      const result = v.safeParse(JelmaRecordSchema, el);
       if (result.success && result.output.id) {
         childRecords.push({
           ...result.output,
@@ -337,9 +337,9 @@ export async function pullChildHistory(record: SpawnRecord): Promise<void> {
 }
 
 /** Find all children of a given jelma record (direct and transitive). */
-export function findDescendants(parentId: string): SpawnRecord[] {
+export function findDescendants(parentId: string): JelmaRecord[] {
   const history = loadHistory();
-  const descendants: SpawnRecord[] = [];
+  const descendants: JelmaRecord[] = [];
   const queue = [
     parentId,
   ];
@@ -358,7 +358,7 @@ export function findDescendants(parentId: string): SpawnRecord[] {
 }
 
 /** Delete a jelma and all its descendants (depth-first). */
-export async function cascadeDelete(record: SpawnRecord, manifest: Manifest | null): Promise<boolean> {
+export async function cascadeDelete(record: JelmaRecord, manifest: Manifest | null): Promise<boolean> {
   const descendants = findDescendants(record.id);
 
   if (descendants.length > 0) {

@@ -113,7 +113,7 @@ afterEach(() => {
     }),
   );
   // Clean up preferences file so it doesn't leak to other tests
-  const prefsPath = join(process.env.HOME ?? "", ".config", "spawn", "preferences.json");
+  const prefsPath = join(process.env.HOME ?? "", ".config", "jelma", "preferences.json");
   if (existsSync(prefsPath)) {
     tryCatch(() => unlinkSync(prefsPath));
   }
@@ -215,7 +215,7 @@ describe("orchestrate preLaunchMsg", () => {
 
 describe("orchestrate model preferences", () => {
   it("loads model from preferences file", async () => {
-    const prefsDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const prefsDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(prefsDir, {
       recursive: true,
     });
@@ -241,7 +241,7 @@ describe("orchestrate model preferences", () => {
 
   it("MODEL_ID env var takes priority over preferences file", async () => {
     process.env.MODEL_ID = "anthropic/claude-3";
-    const prefsDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const prefsDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(prefsDir, {
       recursive: true,
     });
@@ -353,7 +353,7 @@ describe("orchestrate invalid MODEL_ID", () => {
 
 describe("orchestrate preferences invalid schema", () => {
   it("ignores preferences file with non-object models field", async () => {
-    const prefsDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const prefsDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(prefsDir, {
       recursive: true,
     });

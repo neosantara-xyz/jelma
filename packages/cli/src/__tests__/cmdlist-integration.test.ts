@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -9,7 +9,7 @@ import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks 
  * Integration tests for cmdList through the real exported function.
  *
  * Existing tests cover:
- * - history.test.ts: data layer (loadHistory, saveSpawnRecord, filterHistory)
+ * - history.test.ts: data layer (loadHistory, saveJelmaRecord, filterHistory)
  *
  * This file covers the UNTESTED integration path: calling the real cmdList
  * exported function with mock.module for @clack/prompts and a controlled
@@ -49,7 +49,7 @@ describe("cmdList integration", () => {
   let originalFetch: typeof global.fetch;
   let processExitSpy: ReturnType<typeof spyOn>;
 
-  function writeHistory(records: SpawnRecord[]) {
+  function writeHistory(records: JelmaRecord[]) {
     writeFileSync(join(testDir, "history.json"), JSON.stringify(records));
   }
 
@@ -175,7 +175,7 @@ describe("cmdList integration", () => {
   // ── History with records ────────────────────────────────────────────────────
 
   describe("history with records (table rendering)", () => {
-    const sampleRecords: SpawnRecord[] = [
+    const sampleRecords: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -344,7 +344,7 @@ describe("cmdList integration", () => {
   // ── Filtering ─────────────────────────────────────────────────────────────
 
   describe("filtering by agent and cloud", () => {
-    const records: SpawnRecord[] = [
+    const records: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -467,7 +467,7 @@ describe("cmdList integration", () => {
     });
 
     it("should handle many records without issue", async () => {
-      const manyRecords: SpawnRecord[] = [];
+      const manyRecords: JelmaRecord[] = [];
       for (let i = 0; i < 100; i++) {
         manyRecords.push({
           agent: i % 2 === 0 ? "claude" : "codex",

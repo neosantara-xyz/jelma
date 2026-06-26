@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
@@ -19,7 +19,7 @@ import { resolveDisplayName } from "./shared.js";
 type LiveState = "running" | "stopped" | "gone" | "unknown";
 
 interface ServerStatusResult {
-  record: SpawnRecord;
+  record: JelmaRecord;
   liveState: LiveState;
   agentAlive: boolean | null;
   /** Security alerts from the VM (null = not checked, empty = clean). */
@@ -110,7 +110,7 @@ async function fetchDoStatus(dropletId: string, token: string): Promise<LiveStat
   );
 }
 
-async function checkServerStatus(record: SpawnRecord): Promise<LiveState> {
+async function checkServerStatus(record: JelmaRecord): Promise<LiveState> {
   const conn = record.connection;
   if (!conn) {
     return "unknown";
@@ -169,7 +169,7 @@ async function checkServerStatus(record: SpawnRecord): Promise<LiveState> {
  * Resolve the agent binary name from the manifest or the stored launch command.
  * Returns the first word of the launch string (e.g. "openclaw tui" → "openclaw").
  */
-function resolveAgentBinary(record: SpawnRecord, manifest: Manifest | null): string | null {
+function resolveAgentBinary(record: JelmaRecord, manifest: Manifest | null): string | null {
   const fromManifest = manifest?.agents[record.agent]?.launch;
   if (fromManifest) {
     return fromManifest.split(/\s+/)[0] || null;
@@ -188,7 +188,7 @@ function resolveAgentBinary(record: SpawnRecord, manifest: Manifest | null): str
  * Probe a running server by SSHing in and running `{binary} --version`.
  * Returns true if the agent binary is installed and executable, false otherwise.
  */
-async function probeAgentAlive(record: SpawnRecord, manifest: Manifest | null): Promise<boolean> {
+async function probeAgentAlive(record: JelmaRecord, manifest: Manifest | null): Promise<boolean> {
   const conn = record.connection;
   if (!conn) {
     return false;
@@ -279,7 +279,7 @@ async function probeAgentAlive(record: SpawnRecord, manifest: Manifest | null): 
  * Fetch the security alerts log from a running VM.
  * Returns the raw alert text, empty string if clean, or null if not reachable.
  */
-async function fetchSecurityAlerts(record: SpawnRecord): Promise<string | null> {
+async function fetchSecurityAlerts(record: JelmaRecord): Promise<string | null> {
   const conn = record.connection;
   if (!conn) {
     return null;
@@ -385,7 +385,7 @@ function fmtSecurity(alerts: string | null): string {
   return pc.red(`${count} alert${count !== 1 ? "s" : ""}`);
 }
 
-function fmtIp(conn: SpawnRecord["connection"]): string {
+function fmtIp(conn: JelmaRecord["connection"]): string {
   if (!conn) {
     return "—";
   }
@@ -499,7 +499,7 @@ export interface StatusOpts {
   agentFilter?: string;
   cloudFilter?: string;
   /** Override the agent probe for testing. Called only for "running" servers. */
-  probe?: (record: SpawnRecord, manifest: Manifest | null) => Promise<boolean>;
+  probe?: (record: JelmaRecord, manifest: Manifest | null) => Promise<boolean>;
 }
 
 export async function cmdStatus(opts: StatusOpts = {}): Promise<void> {

@@ -203,7 +203,7 @@ function findUpdatedBinary(): string {
     executor.execFileSync(
       whichCmd,
       [
-        "spawn",
+        "jelma",
       ],
       {
         encoding: "utf8",
@@ -220,7 +220,7 @@ function findUpdatedBinary(): string {
   if (found) {
     return found;
   }
-  return process.argv[1] || "spawn";
+  return process.argv[1] || "jelma";
 }
 
 /** Re-exec the updated binary with the original CLI arguments, forwarding the exit code */

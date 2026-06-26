@@ -7,7 +7,7 @@
  * to avoid process-global mock pollution.
  */
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { mkdirSync, rmSync } from "node:fs";
@@ -25,7 +25,7 @@ import { confirmAndDelete } from "../commands/delete.js";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
-function makeRecord(cloud: string, serverName: string): SpawnRecord {
+function makeRecord(cloud: string, serverName: string): JelmaRecord {
   return {
     id: "test-id",
     agent: "claude",
@@ -42,7 +42,7 @@ function makeRecord(cloud: string, serverName: string): SpawnRecord {
 
 /** Create a mock deleteHandler that writes to stderr (simulating cloud output). */
 function createMockDeleteHandler(stderrLines: string[], shouldSucceed = true) {
-  return mock(async (record: SpawnRecord): Promise<boolean> => {
+  return mock(async (record: JelmaRecord): Promise<boolean> => {
     for (const line of stderrLines) {
       process.stderr.write(line);
     }

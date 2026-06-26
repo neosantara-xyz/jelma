@@ -256,7 +256,7 @@ export function setupTestEnvironment(): TestEnvironment {
     recursive: true,
   });
 
-  const cacheDir = join(testDir, "spawn");
+  const cacheDir = join(testDir, "jelma");
   const cacheFile = join(cacheDir, "manifest.json");
 
   const originalEnv = {

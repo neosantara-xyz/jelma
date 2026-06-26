@@ -1,9 +1,9 @@
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadHistory, saveSpawnRecord } from "../history.js";
+import { loadHistory, saveJelmaRecord } from "../history.js";
 
 describe("history corruption recovery", () => {
   let testDir: string;
@@ -37,7 +37,7 @@ describe("history corruption recovery", () => {
 
   describe("atomic writes", () => {
     it("does not leave .tmp file behind after save", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00.000Z",
@@ -103,7 +103,7 @@ describe("history corruption recovery", () => {
 
   describe("archive recovery", () => {
     it("recovers from most recent valid archive", () => {
-      const archiveRecords: SpawnRecord[] = [
+      const archiveRecords: JelmaRecord[] = [
         {
           id: "archived-1",
           agent: "claude",
@@ -120,7 +120,7 @@ describe("history corruption recovery", () => {
     });
 
     it("picks most recent archive when multiple exist", () => {
-      const oldRecords: SpawnRecord[] = [
+      const oldRecords: JelmaRecord[] = [
         {
           id: "old-1",
           agent: "codex",
@@ -128,7 +128,7 @@ describe("history corruption recovery", () => {
           timestamp: "2026-01-01T00:00:00.000Z",
         },
       ];
-      const newRecords: SpawnRecord[] = [
+      const newRecords: JelmaRecord[] = [
         {
           id: "new-1",
           agent: "claude",
@@ -146,7 +146,7 @@ describe("history corruption recovery", () => {
     });
 
     it("skips corrupted archives and falls back to older ones", () => {
-      const goodRecords: SpawnRecord[] = [
+      const goodRecords: JelmaRecord[] = [
         {
           id: "good-1",
           agent: "codex",
@@ -266,7 +266,7 @@ describe("history corruption recovery", () => {
 
   describe("save after corruption", () => {
     it("preserves recovered records alongside new record", () => {
-      const archiveRecords: SpawnRecord[] = [
+      const archiveRecords: JelmaRecord[] = [
         {
           id: "archived-1",
           agent: "claude",
@@ -277,7 +277,7 @@ describe("history corruption recovery", () => {
       writeFileSync(join(testDir, "history-2026-01-15.json"), JSON.stringify(archiveRecords));
       writeFileSync(join(testDir, "history.json"), "corrupted{{{");
 
-      saveSpawnRecord({
+      saveJelmaRecord({
         agent: "codex",
         cloud: "hetzner",
         timestamp: "2026-01-20T00:00:00.000Z",
@@ -301,7 +301,7 @@ describe("history corruption recovery", () => {
     });
 
     it("warns on archive recovery", () => {
-      const archiveRecords: SpawnRecord[] = [
+      const archiveRecords: JelmaRecord[] = [
         {
           id: "a1",
           agent: "claude",

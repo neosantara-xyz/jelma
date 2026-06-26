@@ -4,7 +4,7 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 import {
   getCacheDir,
-  getSpawnDir,
+  getJelmaDir,
   getUserHome,
   RC_MARKER_END,
   RC_MARKER_LEGACY,
@@ -86,7 +86,7 @@ function cleanRcFile(rcPath: string): boolean {
 }
 
 /** Check if a path is a symlink pointing to the jelma binary. */
-function isSpawnSymlink(linkPath: string, binaryPath: string): boolean {
+function isJelmaSymlink(linkPath: string, binaryPath: string): boolean {
   const result = tryCatch(() => fs.readlinkSync(linkPath));
   if (!result.ok) {
     return false;
@@ -95,18 +95,18 @@ function isSpawnSymlink(linkPath: string, binaryPath: string): boolean {
 }
 
 export async function cmdUninstall(): Promise<void> {
-  p.intro(pc.bold("Uninstall spawn"));
+  p.intro(pc.bold("Uninstall jelma"));
 
   const home = getUserHome();
-  const binaryPath = path.join(home, ".local", "bin", "spawn");
-  const symlinkPath = "/usr/local/bin/spawn";
+  const binaryPath = path.join(home, ".local", "bin", "jelma");
+  const symlinkPath = "/usr/local/bin/jelma";
   const cacheDir = getCacheDir();
-  const spawnDir = getSpawnDir();
-  const configDir = path.join(home, ".config", "spawn");
+  const spawnDir = getJelmaDir();
+  const configDir = path.join(home, ".config", "jelma");
 
   // Show what exists
   const binaryExists = fs.existsSync(binaryPath);
-  const symlinkExists = isSpawnSymlink(symlinkPath, binaryPath);
+  const symlinkExists = isJelmaSymlink(symlinkPath, binaryPath);
   const cacheExists = fs.existsSync(cacheDir);
   const spawnDirExists = fs.existsSync(spawnDir);
   const configDirExists = fs.existsSync(configDir);
@@ -176,7 +176,7 @@ export async function cmdUninstall(): Promise<void> {
   }
 
   const confirmed = await p.confirm({
-    message: "Are you sure you want to uninstall spawn?",
+    message: "Are you sure you want to uninstall jelma?",
     initialValue: false,
   });
   if (p.isCancel(confirmed) || !confirmed) {

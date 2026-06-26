@@ -19,7 +19,7 @@ import {
   interactiveSession,
   promptDoRegion,
   promptDropletSize,
-  promptSpawnName,
+  promptJelmaName,
   runServer,
   slugRamGb,
   uploadFile,
@@ -63,7 +63,7 @@ async function main() {
       downloadFile,
     },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
     },
     async ensureReadyBeforeSizing() {
       await runDigitalOceanReadinessGate({

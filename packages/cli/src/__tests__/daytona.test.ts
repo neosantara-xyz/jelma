@@ -135,10 +135,7 @@ const mockState: {
   clientConfigs: Array<Record<string, string | undefined>>;
   createArgs: Array<Record<string, unknown>>;
   deleteIds: string[];
-  listCalls: Array<{
-    page: number;
-    limit: number;
-  }>;
+  listCalls: Array<Record<string, unknown>>;
   sandboxes: Map<string, MockSandbox>;
 } = {
   clientConfigs: [],
@@ -161,20 +158,14 @@ class MockDaytona {
     mockState.clientConfigs.push(config);
   }
 
-  async list(
-    _target?: string,
-    page = 1,
-    limit = 100,
-  ): Promise<{
-    items: MockSandbox[];
-  }> {
-    mockState.listCalls.push({
-      page,
-      limit,
-    });
-    return {
-      items: Array.from(mockState.sandboxes.values()),
-    };
+  list(): AsyncIterableIterator<MockSandbox> {
+    mockState.listCalls.push({});
+    const sandboxes = Array.from(mockState.sandboxes.values());
+    return (async function* () {
+      for (const sandbox of sandboxes) {
+        yield sandbox;
+      }
+    })();
   }
 
   async create(params: Record<string, unknown>): Promise<MockSandbox> {

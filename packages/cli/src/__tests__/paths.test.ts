@@ -5,8 +5,8 @@ import {
   getCacheDir,
   getCacheFile,
   getHistoryPath,
-  getSpawnCloudConfigPath,
-  getSpawnDir,
+  getJelmaCloudConfigPath,
+  getJelmaDir,
   getSshDir,
   getTmpDir,
   getUpdateFailedPath,
@@ -40,89 +40,89 @@ describe("paths", () => {
     });
   });
 
-  describe("getSpawnDir", () => {
+  describe("getJelmaDir", () => {
     it("returns ~/.jelma by default", () => {
       delete process.env.SPAWN_HOME;
-      expect(getSpawnDir()).toBe(join(getUserHome(), ".spawn"));
+      expect(getJelmaDir()).toBe(join(getUserHome(), ".jelma"));
     });
 
     it("uses SPAWN_HOME when set to valid absolute path", () => {
       const testPath = join(getUserHome(), ".custom-spawn");
       process.env.SPAWN_HOME = testPath;
-      expect(getSpawnDir()).toBe(testPath);
+      expect(getJelmaDir()).toBe(testPath);
     });
 
     it("rejects relative SPAWN_HOME", () => {
       process.env.SPAWN_HOME = "relative/path";
-      expect(() => getSpawnDir()).toThrow("must be an absolute path");
+      expect(() => getJelmaDir()).toThrow("must be an absolute path");
     });
 
     it("rejects dot-relative SPAWN_HOME", () => {
       process.env.SPAWN_HOME = "./local/dir";
-      expect(() => getSpawnDir()).toThrow("must be an absolute path");
+      expect(() => getJelmaDir()).toThrow("must be an absolute path");
     });
 
     it("resolves .. segments in absolute SPAWN_HOME within home", () => {
       const pathWithDots = join(getUserHome(), "foo", "..", "bar");
       process.env.SPAWN_HOME = pathWithDots;
-      expect(getSpawnDir()).toBe(join(getUserHome(), "bar"));
+      expect(getJelmaDir()).toBe(join(getUserHome(), "bar"));
     });
 
     it("rejects SPAWN_HOME outside home directory", () => {
       process.env.SPAWN_HOME = "/tmp/spawn";
-      expect(() => getSpawnDir()).toThrow("must be within your home directory");
+      expect(() => getJelmaDir()).toThrow("must be within your home directory");
     });
 
     it("rejects path traversal outside home directory", () => {
       process.env.SPAWN_HOME = "/tmp/../../root/.spawn";
-      expect(() => getSpawnDir()).toThrow("must be within your home directory");
+      expect(() => getJelmaDir()).toThrow("must be within your home directory");
     });
 
     it("accepts home directory itself as SPAWN_HOME", () => {
       process.env.SPAWN_HOME = getUserHome();
-      expect(getSpawnDir()).toBe(getUserHome());
+      expect(getJelmaDir()).toBe(getUserHome());
     });
   });
 
   describe("getHistoryPath", () => {
     it("returns history.json inside jelma dir", () => {
       delete process.env.SPAWN_HOME;
-      expect(getHistoryPath()).toBe(join(getUserHome(), ".spawn", "history.json"));
+      expect(getHistoryPath()).toBe(join(getUserHome(), ".jelma", "history.json"));
     });
   });
 
-  describe("getSpawnCloudConfigPath", () => {
+  describe("getJelmaCloudConfigPath", () => {
     it("returns ~/.config/spawn/{cloud}.json", () => {
-      expect(getSpawnCloudConfigPath("aws")).toBe(join(getUserHome(), ".config", "spawn", "aws.json"));
+      expect(getJelmaCloudConfigPath("aws")).toBe(join(getUserHome(), ".config", "jelma", "aws.json"));
     });
 
     it("works for different cloud names", () => {
-      expect(getSpawnCloudConfigPath("hetzner")).toBe(join(getUserHome(), ".config", "spawn", "hetzner.json"));
+      expect(getJelmaCloudConfigPath("hetzner")).toBe(join(getUserHome(), ".config", "jelma", "hetzner.json"));
     });
   });
 
   describe("getCacheDir", () => {
     it("returns XDG_CACHE_HOME/jelma when XDG_CACHE_HOME is set", () => {
       process.env.XDG_CACHE_HOME = "/custom/cache";
-      expect(getCacheDir()).toBe("/custom/cache/spawn");
+      expect(getCacheDir()).toBe("/custom/cache/jelma");
     });
 
     it("falls back to ~/.cache/spawn", () => {
       delete process.env.XDG_CACHE_HOME;
-      expect(getCacheDir()).toBe(join(getUserHome(), ".cache", "spawn"));
+      expect(getCacheDir()).toBe(join(getUserHome(), ".cache", "jelma"));
     });
   });
 
   describe("getCacheFile", () => {
     it("returns manifest.json inside cache dir", () => {
       delete process.env.XDG_CACHE_HOME;
-      expect(getCacheFile()).toBe(join(getUserHome(), ".cache", "spawn", "manifest.json"));
+      expect(getCacheFile()).toBe(join(getUserHome(), ".cache", "jelma", "manifest.json"));
     });
   });
 
   describe("getUpdateFailedPath", () => {
     it("returns ~/.config/spawn/.update-failed", () => {
-      expect(getUpdateFailedPath()).toBe(join(getUserHome(), ".config", "spawn", ".update-failed"));
+      expect(getUpdateFailedPath()).toBe(join(getUserHome(), ".config", "jelma", ".update-failed"));
     });
   });
 

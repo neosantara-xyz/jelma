@@ -1,4 +1,4 @@
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -41,7 +41,7 @@ describe("cmdLast", () => {
   let originalFetch: typeof global.fetch;
   let processExitSpy: ReturnType<typeof spyOn>;
 
-  function writeHistory(records: SpawnRecord[]) {
+  function writeHistory(records: JelmaRecord[]) {
     writeFileSync(join(testDir, "history.json"), JSON.stringify(records));
   }
 
@@ -141,7 +141,7 @@ describe("cmdLast", () => {
   // ── History with records ────────────────────────────────────────────────────
 
   describe("history with records (rerunning latest)", () => {
-    const sampleRecords: SpawnRecord[] = [
+    const sampleRecords: JelmaRecord[] = [
       {
         agent: "claude",
         cloud: "sprite",
@@ -276,7 +276,7 @@ describe("cmdLast", () => {
 
   describe("buildRecordLabel helper", () => {
     it("should return jelma name when present", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00Z",
@@ -287,7 +287,7 @@ describe("cmdLast", () => {
     });
 
     it("should fall back to server_name when no name", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00Z",
@@ -302,7 +302,7 @@ describe("cmdLast", () => {
     });
 
     it("should fall back to 'unnamed' when no name or server_name", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00Z",
@@ -315,7 +315,7 @@ describe("cmdLast", () => {
   describe("buildRecordSubtitle helper", () => {
     it("should include agent, cloud, and relative timestamp", () => {
       const now = new Date().toISOString();
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: now,
@@ -328,7 +328,7 @@ describe("cmdLast", () => {
     });
 
     it("should use raw keys when manifest is null", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00Z",
@@ -340,7 +340,7 @@ describe("cmdLast", () => {
     });
 
     it("should include [deleted] when connection is deleted", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         agent: "claude",
         cloud: "sprite",
         timestamp: "2026-01-01T00:00:00Z",

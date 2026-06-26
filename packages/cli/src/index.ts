@@ -40,12 +40,29 @@ import {
 import { expandEqualsFlags, findUnknownFlag } from "./flags.js";
 import { agentKeys, cloudKeys, getCacheAge, loadManifest } from "./manifest.js";
 import { getFeatureFlag, initFeatureFlags } from "./shared/feature-flags.js";
-import { getInstallRefPath } from "./shared/paths.js";
+import { getInstallRefPath, migrateLegacyPaths } from "./shared/paths.js";
 import { asyncTryCatch, asyncTryCatchIf, isFileError, isNetworkError, tryCatch, tryCatchIf } from "./shared/result.js";
 import { captureError, initTelemetry, setTelemetryContext } from "./shared/telemetry.js";
 import { checkForUpdates } from "./update-check.js";
 
 const VERSION = pkg.version;
+
+// Back-compat shim for the Spawn → Jelma rebrand. JELMA_* env vars are the
+// canonical names going forward; mirror each onto its legacy SPAWN_* equivalent
+// (only when the legacy var isn't already set) so existing wrapper scripts and
+// back ends that still emit SPAWN_* keep working without any code reading both.
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith("JELMA_") && value !== undefined) {
+    const legacy = `SPAWN_${key.slice("JELMA_".length)}`;
+    if (process.env[legacy] === undefined) {
+      process.env[legacy] = value;
+    }
+  }
+}
+
+// Migrate legacy ~/.spawn, ~/.config/spawn, ~/.cache/spawn → jelma so existing
+// users keep credentials/history/identity. Runs before anything reads a path.
+migrateLegacyPaths();
 
 // Initialize telemetry early — captures uncaught errors and exit flush.
 // Disabled with SPAWN_TELEMETRY=0.

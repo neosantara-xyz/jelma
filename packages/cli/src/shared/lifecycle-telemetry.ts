@@ -3,7 +3,7 @@
 //
 // Why it's here and not in telemetry.ts:
 //   telemetry.ts is a low-level primitive (PostHog batching, scrubbing,
-//   session context). It deliberately has no knowledge of SpawnRecord,
+//   session context). It deliberately has no knowledge of JelmaRecord,
 //   history, or any product concepts. Lifecycle helpers need both, so
 //   they live one layer up.
 //
@@ -14,17 +14,17 @@
 //
 // Persistence model:
 //   connect_count + last_connected_at are stored inside
-//   SpawnRecord.connection.metadata as strings (the existing schema is
+//   JelmaRecord.connection.metadata as strings (the existing schema is
 //   Record<string, string>, so we serialize numbers as strings and parse
 //   on read). saveMetadata merges — no risk of clobbering other keys.
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { saveMetadata } from "../history.js";
 import { captureEvent } from "./telemetry.js";
 
 /** Read the stored connect count for a spawn, defaulting to 0. */
-function readConnectCount(record: SpawnRecord): number {
+function readConnectCount(record: JelmaRecord): number {
   const raw = record.connection?.metadata?.connect_count;
   if (!raw) {
     return 0;
@@ -34,7 +34,7 @@ function readConnectCount(record: SpawnRecord): number {
 }
 
 /** Compute lifetime hours between jelma creation and now (or delete time). */
-function computeLifetimeHours(record: SpawnRecord, endIso?: string): number {
+function computeLifetimeHours(record: JelmaRecord, endIso?: string): number {
   const start = Date.parse(record.timestamp);
   const end = endIso ? Date.parse(endIso) : Date.now();
   if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) {
@@ -50,7 +50,7 @@ function computeLifetimeHours(record: SpawnRecord, endIso?: string): number {
  * a spawn_connected telemetry event. Returns the new count so callers can
  * also display it if they want.
  */
-export function trackSpawnConnected(record: SpawnRecord): number {
+export function trackSpawnConnected(record: JelmaRecord): number {
   if (!record.id || !record.connection) {
     return 0;
   }
@@ -84,7 +84,7 @@ export function trackSpawnConnected(record: SpawnRecord): number {
  * picture in aggregate. Call AFTER the cloud destroy succeeds — failed
  * deletes should not fire this event.
  */
-export function trackSpawnDeleted(record: SpawnRecord): void {
+export function trackSpawnDeleted(record: JelmaRecord): void {
   if (!record.id) {
     return;
   }

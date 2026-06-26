@@ -19,8 +19,8 @@ import {
   getServerName,
   interactiveSession,
   promptBundle,
+  promptJelmaName,
   promptRegion,
-  promptSpawnName,
   runServer,
   uploadFile,
   waitForCloudInit,
@@ -46,7 +46,7 @@ async function main() {
       downloadFile,
     },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
       await ensureAwsCli();
       await authenticate();
       await promptRegion();

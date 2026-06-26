@@ -19,11 +19,11 @@ import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks 
  * This file covers the UNTESTED integration paths:
  * - Primary URL download succeeds (no fallback needed)
  * - Primary URL fails, fallback URL succeeds
- * - saveSpawnRecord is called before script execution (history recording)
+ * - saveJelmaRecord is called before script execution (history recording)
  * - History record includes agent, cloud, timestamp, and optional prompt
  * - SPAWN_PROMPT and SPAWN_MODE env vars passed to bash when prompt is set
  * - SPAWN_PROMPT and SPAWN_MODE are NOT set when no prompt is provided
- * - saveSpawnRecord failure is non-fatal (script still runs)
+ * - saveJelmaRecord failure is non-fatal (script still runs)
  * - Dry-run mode skips script download entirely
  */
 
@@ -327,7 +327,7 @@ describe("cmdRun happy-path pipeline", () => {
     });
 
     it("should still execute script when history save fails", async () => {
-      // Make history dir read-only to force saveSpawnRecord failure
+      // Make history dir read-only to force saveJelmaRecord failure
       const readOnlyDir = join(process.env.HOME ?? "", `spawn-test-readonly-${Date.now()}`);
       mkdirSync(readOnlyDir, {
         recursive: true,

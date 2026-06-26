@@ -2,6 +2,8 @@
 
 // daytona/e2e.ts — QA helper for Daytona E2E shell drivers
 
+import type { Sandbox } from "@daytonaio/sdk";
+
 import { getErrorMessage } from "@neosantara/jelma-shared";
 import { destroyServer, getDaytonaClient, runDaytonaCommand } from "./daytona.js";
 
@@ -15,22 +17,17 @@ async function getRequiredClient() {
 
 async function listAllSandboxes() {
   const client = await getRequiredClient();
-  const sandboxes: Awaited<ReturnType<typeof client.list>>["items"] = [];
-  let page = 1;
-
-  for (;;) {
-    const response = await client.list(undefined, page, 100);
-    sandboxes.push(...response.items);
-    if (response.items.length < 100) {
-      return sandboxes;
-    }
-    page += 1;
+  // list() is a cursor-based async iterator that auto-pages.
+  const sandboxes: Sandbox[] = [];
+  for await (const sandbox of client.list()) {
+    sandboxes.push(sandbox);
   }
+  return sandboxes;
 }
 
 async function validateCredentials(): Promise<void> {
   const client = await getRequiredClient();
-  await client.list(undefined, 1, 1);
+  await client.list().next();
 }
 
 async function findByName(name: string): Promise<void> {

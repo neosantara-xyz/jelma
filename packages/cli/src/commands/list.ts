@@ -1,5 +1,5 @@
 import type { ValueOf } from "@neosantara/jelma-shared";
-import type { CloudInstance, SpawnRecord } from "../history.js";
+import type { CloudInstance, JelmaRecord } from "../history.js";
 import type { Manifest } from "../manifest.js";
 
 import * as p from "@clack/prompts";
@@ -77,12 +77,12 @@ export function formatRelativeTime(iso: string): string {
 }
 
 /** Build a display label (line 1: name) for a jelma record in the interactive picker */
-export function buildRecordLabel(r: SpawnRecord): string {
+export function buildRecordLabel(r: JelmaRecord): string {
   return r.name || r.connection?.server_name || "unnamed";
 }
 
 /** Build a subtitle (line 2: agent + cloud + time) for the interactive picker */
-export function buildRecordSubtitle(r: SpawnRecord, manifest: Manifest | null): string {
+export function buildRecordSubtitle(r: JelmaRecord, manifest: Manifest | null): string {
   const agentDisplay = resolveDisplayName(manifest, r.agent, "agent");
   const cloudDisplay = resolveDisplayName(manifest, r.cloud, "cloud");
   const relative = formatRelativeTime(r.timestamp);
@@ -97,7 +97,7 @@ export function buildRecordSubtitle(r: SpawnRecord, manifest: Manifest | null): 
   return parts.join(" \u00b7 ");
 }
 
-async function assertValidDaytonaRecords(records: SpawnRecord[]): Promise<void> {
+async function assertValidDaytonaRecords(records: JelmaRecord[]): Promise<void> {
   const daytonaRecords = records.filter((record) => record.connection?.cloud === "daytona");
   if (daytonaRecords.length === 0) {
     return;
@@ -183,7 +183,7 @@ async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string):
 
 // ── List display ─────────────────────────────────────────────────────────────
 
-function buildListFooterLines(records: SpawnRecord[], agentFilter?: string, cloudFilter?: string): string[] {
+function buildListFooterLines(records: JelmaRecord[], agentFilter?: string, cloudFilter?: string): string[] {
   const lines: string[] = [];
   const latest = records[0];
   lines.push(`Rerun last: ${pc.cyan(buildRetryCommand(latest.agent, latest.cloud, latest.prompt, latest.name))}`);
@@ -205,7 +205,7 @@ function buildListFooterLines(records: SpawnRecord[], agentFilter?: string, clou
   return lines;
 }
 
-function showListFooter(records: SpawnRecord[], agentFilter?: string, cloudFilter?: string): void {
+function showListFooter(records: JelmaRecord[], agentFilter?: string, cloudFilter?: string): void {
   for (const line of buildListFooterLines(records, agentFilter, cloudFilter)) {
     console.log(line);
   }
@@ -215,12 +215,12 @@ function showListFooter(records: SpawnRecord[], agentFilter?: string, cloudFilte
 // ── Tree rendering ──────────────────────────────────────────────────────────
 
 interface TreeNode {
-  record: SpawnRecord;
+  record: JelmaRecord;
   children: TreeNode[];
 }
 
 /** Build a tree structure from records that have parent_id. */
-function buildTree(records: SpawnRecord[]): TreeNode[] {
+function buildTree(records: JelmaRecord[]): TreeNode[] {
   const nodeMap = new Map<string, TreeNode>();
   const roots: TreeNode[] = [];
 
@@ -270,7 +270,7 @@ function renderTreeNode(
 }
 
 /** Render records as a tree when parent_id relationships exist. */
-function renderTreeTable(records: SpawnRecord[], manifest: Manifest | null): void {
+function renderTreeTable(records: JelmaRecord[], manifest: Manifest | null): void {
   console.log();
   const roots = buildTree(records);
   for (let i = 0; i < roots.length; i++) {
@@ -283,11 +283,11 @@ function renderTreeTable(records: SpawnRecord[], manifest: Manifest | null): voi
 }
 
 /** Check if any records have parent_id (indicating a tree structure). */
-function hasTreeStructure(records: SpawnRecord[]): boolean {
+function hasTreeStructure(records: JelmaRecord[]): boolean {
   return records.some((r) => r.parent_id);
 }
 
-function renderListTable(records: SpawnRecord[], manifest: Manifest | null): void {
+function renderListTable(records: JelmaRecord[], manifest: Manifest | null): void {
   console.log();
   for (let i = 0; i < records.length; i++) {
     const r = records[i];
@@ -344,7 +344,7 @@ export async function resolveListFilters(
 // ── Gone server handling ────────────────────────────────────────────────────
 
 /** Fetch live instances from a cloud provider. */
-async function fetchCloudInstances(cloud: string, record: SpawnRecord): Promise<CloudInstance[]> {
+async function fetchCloudInstances(cloud: string, record: JelmaRecord): Promise<CloudInstance[]> {
   switch (cloud) {
     case "hetzner": {
       const { listServers } = await import("../hetzner/hetzner.js");
@@ -381,7 +381,7 @@ async function fetchCloudInstances(cloud: string, record: SpawnRecord): Promise<
  * Offers the user a choice: remap to an existing instance, delete from history, or cancel.
  * In non-interactive mode, falls back to silent deletion (previous behavior).
  */
-async function handleGoneServer(record: SpawnRecord, cloud: string): Promise<"deleted" | "remapped" | "cancelled"> {
+async function handleGoneServer(record: JelmaRecord, cloud: string): Promise<"deleted" | "remapped" | "cancelled"> {
   p.log.warn("Server no longer exists on the cloud provider.");
 
   // Non-interactive: fall back to silent deletion
@@ -478,7 +478,7 @@ async function handleGoneServer(record: SpawnRecord, cloud: string): Promise<"de
  * Returns "ok" if the IP was refreshed (or unchanged), "gone" if the server
  * no longer exists, or "skip" if refresh is not applicable (local, sprite, etc.).
  */
-async function refreshConnectionIp(record: SpawnRecord): Promise<"ok" | "gone" | "skip"> {
+async function refreshConnectionIp(record: JelmaRecord): Promise<"ok" | "gone" | "skip"> {
   const conn = record.connection;
   if (!conn?.cloud || conn.cloud === "local" || conn.cloud === "sprite" || conn.cloud === "daytona" || conn.deleted) {
     // Daytona reconnects are keyed by sandbox id. There is no stable public VM IP
@@ -579,7 +579,7 @@ export type RecordActionOutcome = ValueOf<typeof RecordActionOutcome>;
  * or Exit for terminal actions (enter/reconnect/rerun) that exit the picker.
  */
 export async function handleRecordAction(
-  selected: SpawnRecord,
+  selected: JelmaRecord,
   manifest: Manifest | null,
 ): Promise<RecordActionOutcome> {
   if (!selected.connection) {
@@ -756,7 +756,7 @@ export async function handleRecordAction(
 
 /** Interactive picker with inline delete support.
  *  Pressing 'd' triggers delete; Enter triggers handleRecordAction. */
-export async function activeServerPicker(records: SpawnRecord[], manifest: Manifest | null): Promise<void> {
+export async function activeServerPicker(records: JelmaRecord[], manifest: Manifest | null): Promise<void> {
   const { pickToTTYWithActions } = await import("../picker.js");
 
   const remaining = [

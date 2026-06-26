@@ -12,7 +12,7 @@ import { handleBillingError, isBillingError, showNonBillingError } from "../shar
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
 import { generateCsrfState, OAUTH_CSS } from "../shared/oauth.js";
 import { parseJsonObj } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import {
   asyncTryCatch,
   asyncTryCatchIf,
@@ -34,7 +34,7 @@ import {
 } from "../shared/ssh.js";
 import { ensureSshKeys, getSshFingerprint, getSshKeyOpts } from "../shared/ssh-keys.js";
 import {
-  defaultSpawnName,
+  defaultJelmaName,
   getServerNameFromEnv,
   loadApiToken,
   logError,
@@ -260,13 +260,13 @@ async function doGetAll(endpoint: string, key: string): Promise<Record<string, u
 
 function loadConfig(): Record<string, unknown> | null {
   return unwrapOr(
-    tryCatchIf(isFileError, () => parseJsonObj(readFileSync(getSpawnCloudConfigPath("digitalocean"), "utf-8"))),
+    tryCatchIf(isFileError, () => parseJsonObj(readFileSync(getJelmaCloudConfigPath("digitalocean"), "utf-8"))),
     null,
   );
 }
 
 async function saveConfig(values: Record<string, unknown>): Promise<void> {
-  const configPath = getSpawnCloudConfigPath("digitalocean");
+  const configPath = getJelmaCloudConfigPath("digitalocean");
   const dir = dirname(configPath);
   mkdirSync(dir, {
     recursive: true,
@@ -1679,7 +1679,7 @@ export async function getServerName(): Promise<string> {
   return getServerNameFromEnv("DO_DROPLET_NAME");
 }
 
-export async function promptSpawnName(): Promise<void> {
+export async function promptJelmaName(): Promise<void> {
   if (process.env.SPAWN_NAME_KEBAB) {
     return;
   }
@@ -1698,13 +1698,13 @@ export async function promptSpawnName(): Promise<void> {
 
   let kebab: string;
   if (process.env.SPAWN_NON_INTERACTIVE === "1") {
-    kebab = (process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "") || defaultSpawnName();
+    kebab = (process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "") || defaultJelmaName();
   } else {
     const derived = process.env.SPAWN_NAME ? toKebabCase(process.env.SPAWN_NAME) : "";
-    const fallback = derived || defaultSpawnName();
+    const fallback = derived || defaultJelmaName();
     process.stderr.write("\n");
     const answer = await prompt(`DigitalOcean droplet name [${fallback}]: `);
-    kebab = toKebabCase(answer || fallback) || defaultSpawnName();
+    kebab = toKebabCase(answer || fallback) || defaultJelmaName();
   }
 
   process.env.SPAWN_NAME_DISPLAY = kebab;

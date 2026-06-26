@@ -53,7 +53,7 @@ function mockFetchOk(scriptContent = VALID_SCRIPT) {
   });
 }
 
-/** Build a SpawnRecord that passes the getActiveServers() filter. */
+/** Build a JelmaRecord that passes the getActiveServers() filter. */
 function activeRecord(name: string, agent: string, cloud: string) {
   return {
     agent,
@@ -192,7 +192,7 @@ describe("cmdRun --name duplicate detection", () => {
   });
 
   it("proceeds normally when no name is set and history has an active instance", async () => {
-    // No SPAWN_NAME — promptSpawnName returns undefined from text prompt
+    // No SPAWN_NAME — promptJelmaName returns undefined from text prompt
     writeFileSync(
       join(historyDir, "history.json"),
       JSON.stringify([

@@ -1,7 +1,7 @@
 // shared/orchestrate.ts — Shared orchestration pipeline for deploying agents
 // Each cloud implements CloudOrchestrator and calls runOrchestration().
 
-import type { SpawnRecord, VMConnection } from "../history.js";
+import type { JelmaRecord, VMConnection } from "../history.js";
 import type { CloudRunner } from "./agent-setup.js";
 import type { AgentConfig } from "./agents.js";
 import type { SshTunnelHandle } from "./ssh.js";
@@ -10,19 +10,19 @@ import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { getErrorMessage } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import {
-  generateSpawnId,
+  generateJelmaId,
+  JelmaRecordSchema,
   mergeChildHistory,
-  SpawnRecordSchema,
+  saveJelmaRecord,
   saveLaunchCmd,
   saveMetadata,
-  saveSpawnRecord,
 } from "../history.js";
 import { offerGithubAuth, setupAutoUpdate, setupSecurityScan, wrapSshCall } from "./agent-setup.js";
 import { tryTarballInstall } from "./agent-tarball.js";
 import { generateEnvConfig } from "./agents.js";
 import { getOrPromptApiKey } from "./oauth.js";
 import { parseJsonWith } from "./parse.js";
-import { getSpawnCloudConfigPath, getSpawnPreferencesPath, getTmpDir } from "./paths.js";
+import { getJelmaCloudConfigPath, getJelmaPreferencesPath, getTmpDir } from "./paths.js";
 import { asyncTryCatch, asyncTryCatchIf, isOperationalError, tryCatch } from "./result.js";
 import { isWindows } from "./shell.js";
 import { injectSpawnSkill } from "./spawn-skill.js";
@@ -207,9 +207,9 @@ export async function installSpawnCli(runner: CloudRunner): Promise<void> {
     withRetry("jelma CLI install", () => wrapSshCall(runner.runServer(installCmd)), 2, 5),
   );
   if (!result.ok) {
-    logWarn("Spawn CLI install failed — recursive spawning will not be available on this VM");
+    logWarn("Jelma CLI install failed — recursive spawning will not be available on this VM");
   } else {
-    logInfo("Spawn CLI installed on VM");
+    logInfo("Jelma CLI installed on VM");
   }
 }
 
@@ -219,7 +219,7 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
 
   const filesToDelegate: {
     localPath: string;
-    remotePath: string;
+    fileName: string;
   }[] = [];
 
   // Delegate ALL cloud credentials so the child VM can jelma on any cloud,
@@ -232,21 +232,21 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
     "sprite",
   ];
   for (const cloud of cloudNames) {
-    const cloudConfigPath = getSpawnCloudConfigPath(cloud);
+    const cloudConfigPath = getJelmaCloudConfigPath(cloud);
     if (existsSync(cloudConfigPath)) {
       filesToDelegate.push({
         localPath: cloudConfigPath,
-        remotePath: `~/.config/spawn/${cloud}.json`,
+        fileName: `${cloud}.json`,
       });
     }
   }
 
   // Neosantara credentials (always needed for child spawns)
-  const orConfigPath = getSpawnCloudConfigPath("neosantara");
+  const orConfigPath = getJelmaCloudConfigPath("neosantara");
   if (existsSync(orConfigPath)) {
     filesToDelegate.push({
       localPath: orConfigPath,
-      remotePath: "~/.config/spawn/neosantara.json",
+      fileName: "neosantara.json",
     });
   }
 
@@ -255,9 +255,14 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
     return;
   }
 
-  // Ensure config dir exists on VM
+  // Ensure config dirs exist on VM. The creds have two consumers on the VM with
+  // different roots: the child Jelma CLI reads ~/.config/jelma (getJelmaCloudConfigPath),
+  // while the sh/ agent scripts (sh/shared/key-request.sh) still read ~/.config/spawn.
+  // er: write to BOTH until the sh/ layer is migrated in lockstep. We must NOT rely on
+  // migrateLegacyPaths to bridge them on the VM — it skips when ~/.config/jelma already
+  // exists (telemetry/ref init creates it), which would strand creds at one path.
   const mkdirResult = await asyncTryCatch(() =>
-    runner.runServer("mkdir -p ~/.config/jelma && chmod 700 ~/.config/spawn"),
+    runner.runServer("mkdir -p ~/.config/jelma ~/.config/spawn && chmod 700 ~/.config/jelma ~/.config/spawn"),
   );
   if (!mkdirResult.ok) {
     logWarn("Could not create config directory on VM");
@@ -270,11 +275,17 @@ export async function delegateCloudCredentials(runner: CloudRunner): Promise<voi
     if (!/^[A-Za-z0-9+/=]+$/.test(b64)) {
       throw new Error("Unexpected characters in base64 output");
     }
-    const writeResult = await asyncTryCatch(() =>
-      runner.runServer(`printf '%s' '${b64}' | base64 -d > ${file.remotePath} && chmod 600 ${file.remotePath}`),
-    );
-    if (!writeResult.ok) {
-      logWarn(`Could not delegate ${file.remotePath}`);
+    for (const dir of [
+      "~/.config/jelma",
+      "~/.config/spawn",
+    ]) {
+      const remotePath = `${dir}/${file.fileName}`;
+      const writeResult = await asyncTryCatch(() =>
+        runner.runServer(`printf '%s' '${b64}' | base64 -d > ${remotePath} && chmod 600 ${remotePath}`),
+      );
+      if (!writeResult.ok) {
+        logWarn(`Could not delegate ${remotePath}`);
+      }
     }
   }
 
@@ -300,10 +311,10 @@ function getParentFields(): {
       : {};
 }
 
-/** Build and persist a SpawnRecord for a newly-created server. */
+/** Build and persist a JelmaRecord for a newly-created server. */
 function recordSpawn(spawnId: string, agentName: string, cloudName: string, connection: VMConnection): void {
   const spawnName = process.env.SPAWN_NAME_KEBAB || process.env.SPAWN_NAME || undefined;
-  saveSpawnRecord({
+  saveJelmaRecord({
     id: spawnId,
     agent: agentName,
     cloud: cloudName,
@@ -344,7 +355,7 @@ const PreferencesSchema = v.object({
 
 function loadPreferredModel(agentName: string): string | null {
   const result = tryCatch(() => {
-    const raw = JSON.parse(readFileSync(getSpawnPreferencesPath(), "utf-8"));
+    const raw = JSON.parse(readFileSync(getJelmaPreferencesPath(), "utf-8"));
     const parsed = v.safeParse(PreferencesSchema, raw);
     if (!parsed.success) {
       return null;
@@ -403,7 +414,7 @@ export async function runOrchestration(
     await cloud.promptSize();
 
     // 2. Provision server
-    const spawnId = generateSpawnId();
+    const spawnId = generateJelmaId();
     const serverName = await cloud.getServerName();
 
     if (fastMode && cloud.cloudName !== "local") {
@@ -1073,14 +1084,14 @@ async function pullChildHistory(runner: CloudRunner, parentSpawnId: string): Pro
     const json = readFileSync(tmpPath, "utf-8");
     const ChildHistorySchema = v.object({
       version: v.optional(v.number()),
-      records: v.array(SpawnRecordSchema),
+      records: v.array(JelmaRecordSchema),
     });
     const parsed = parseJsonWith(json, ChildHistorySchema);
     if (!parsed || parsed.records.length === 0) {
       return;
     }
 
-    const validRecords: SpawnRecord[] = [];
+    const validRecords: JelmaRecord[] = [];
     for (const r of parsed.records) {
       if (r.id) {
         validRecords.push({

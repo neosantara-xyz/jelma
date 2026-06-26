@@ -101,13 +101,13 @@ describe("digitalocean/getServerName", () => {
   });
 });
 
-// ─── promptSpawnName ─────────────────────────────────────────────────────────
+// ─── promptJelmaName ─────────────────────────────────────────────────────────
 
-describe("digitalocean/promptSpawnName", () => {
+describe("digitalocean/promptJelmaName", () => {
   it("returns early when SPAWN_NAME_KEBAB already set", async () => {
     process.env.SPAWN_NAME_KEBAB = "existing-name";
-    const { promptSpawnName } = await import("../digitalocean/digitalocean");
-    await promptSpawnName();
+    const { promptJelmaName } = await import("../digitalocean/digitalocean");
+    await promptJelmaName();
     // Existing value preserved — early return did not overwrite it
     expect(process.env.SPAWN_NAME_KEBAB).toBe("existing-name");
   });
@@ -115,8 +115,8 @@ describe("digitalocean/promptSpawnName", () => {
   it("uses DO_DROPLET_NAME when valid", async () => {
     delete process.env.SPAWN_NAME_KEBAB;
     process.env.DO_DROPLET_NAME = "my-valid-droplet";
-    const { promptSpawnName } = await import("../digitalocean/digitalocean");
-    await promptSpawnName();
+    const { promptJelmaName } = await import("../digitalocean/digitalocean");
+    await promptJelmaName();
     expect(process.env.SPAWN_NAME_KEBAB).toBe("my-valid-droplet");
   });
 
@@ -124,8 +124,8 @@ describe("digitalocean/promptSpawnName", () => {
     delete process.env.SPAWN_NAME_KEBAB;
     delete process.env.DO_DROPLET_NAME;
     process.env.SPAWN_NON_INTERACTIVE = "1";
-    const { promptSpawnName } = await import("../digitalocean/digitalocean");
-    await promptSpawnName();
+    const { promptJelmaName } = await import("../digitalocean/digitalocean");
+    await promptJelmaName();
     expect(process.env.SPAWN_NAME_KEBAB).toBeTruthy();
   });
 });

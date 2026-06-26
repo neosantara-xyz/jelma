@@ -217,7 +217,7 @@ describe("aws/promptBundle", () => {
   });
 });
 
-// ─── getServerName / promptSpawnName ─────────────────────────────────────────
+// ─── getServerName / promptJelmaName ─────────────────────────────────────────
 
 describe("aws/serverName", () => {
   it("getServerName reads from env", async () => {

@@ -20,7 +20,7 @@ const clackMocks = mockClackPrompts({
 
 // Static imports capture the REAL functions before mock.module can interfere.
 import {
-  defaultSpawnName,
+  defaultJelmaName,
   getServerNameFromEnv,
   loadApiToken,
   logDebug,
@@ -33,7 +33,7 @@ import {
   openBrowser,
   prepareStdinForHandoff,
   prompt,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
   selectFromList,
 } from "../shared/ui";
 
@@ -208,7 +208,7 @@ describe("openBrowser", () => {
 
 describe("loadApiToken", () => {
   it("returns token from api_key field", () => {
-    const configPath = join(process.env.HOME ?? "/tmp", ".config", "spawn");
+    const configPath = join(process.env.HOME ?? "/tmp", ".config", "jelma");
     mkdirSync(configPath, {
       recursive: true,
     });
@@ -223,7 +223,7 @@ describe("loadApiToken", () => {
   });
 
   it("returns token from token field when api_key is missing", () => {
-    const configPath = join(process.env.HOME ?? "/tmp", ".config", "spawn");
+    const configPath = join(process.env.HOME ?? "/tmp", ".config", "jelma");
     mkdirSync(configPath, {
       recursive: true,
     });
@@ -243,7 +243,7 @@ describe("loadApiToken", () => {
   });
 
   it("returns null when config is malformed", () => {
-    const configPath = join(process.env.HOME ?? "/tmp", ".config", "spawn");
+    const configPath = join(process.env.HOME ?? "/tmp", ".config", "jelma");
     mkdirSync(configPath, {
       recursive: true,
     });
@@ -253,11 +253,11 @@ describe("loadApiToken", () => {
   });
 });
 
-// ── defaultSpawnName ───────────────────────────────────────────────
+// ── defaultJelmaName ───────────────────────────────────────────────
 
-describe("defaultSpawnName", () => {
+describe("defaultJelmaName", () => {
   it("generates a name with spawn- prefix", () => {
-    const name = defaultSpawnName();
+    const name = defaultJelmaName();
     expect(name).toMatch(/^spawn-[a-z0-9]+$/);
   });
 });
@@ -281,12 +281,12 @@ describe("getServerNameFromEnv", () => {
   });
 });
 
-// ── promptSpawnNameShared ──────────────────────────────────────────
+// ── promptJelmaNameShared ──────────────────────────────────────────
 
-describe("promptSpawnNameShared", () => {
+describe("promptJelmaNameShared", () => {
   it("skips when SPAWN_NAME_KEBAB already set", async () => {
     process.env.SPAWN_NAME_KEBAB = "already-set";
-    await promptSpawnNameShared("Test Cloud");
+    await promptJelmaNameShared("Test Cloud");
     // Should return immediately without prompting
     expect(process.env.SPAWN_NAME_KEBAB).toBe("already-set");
   });
@@ -296,7 +296,7 @@ describe("promptSpawnNameShared", () => {
     delete process.env.SPAWN_NAME_KEBAB;
     delete process.env.SPAWN_NAME_DISPLAY;
     delete process.env.SPAWN_NON_INTERACTIVE;
-    await promptSpawnNameShared("Test Cloud");
+    await promptJelmaNameShared("Test Cloud");
     // Should have set SPAWN_NAME_KEBAB via prompt
     expect(process.env.SPAWN_NAME_KEBAB).toBeTruthy();
   });
@@ -305,7 +305,7 @@ describe("promptSpawnNameShared", () => {
     delete process.env.SPAWN_NAME;
     delete process.env.SPAWN_NAME_KEBAB;
     process.env.SPAWN_NON_INTERACTIVE = "1";
-    await promptSpawnNameShared("Test Cloud");
+    await promptJelmaNameShared("Test Cloud");
     expect(process.env.SPAWN_NAME_KEBAB).toMatch(/^spawn-/);
   });
 });

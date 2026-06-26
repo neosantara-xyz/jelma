@@ -20,8 +20,8 @@ import {
   getConnectionInfo,
   getServerName,
   interactiveSession,
+  promptJelmaName,
   promptMachineType,
-  promptSpawnName,
   promptZone,
   resolveProject,
   runServer,
@@ -65,7 +65,7 @@ async function main() {
           downloadFile,
         },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
       await ensureGcloudCli();
       await authenticate();
       await resolveProject();

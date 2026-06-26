@@ -4,7 +4,7 @@ import * as p from "@clack/prompts";
 import * as v from "valibot";
 import { loadHistory } from "../history.js";
 import { parseJsonObj } from "./parse.js";
-import { getSpawnPreferencesPath } from "./paths.js";
+import { getJelmaPreferencesPath } from "./paths.js";
 import { tryCatch } from "./result.js";
 
 const StarPreferencesSchema = v.object({
@@ -29,7 +29,7 @@ export function maybeShowStarPrompt(): void {
     }
 
     // 2. Read preferences and check if shown within 30 days
-    const prefsPath = getSpawnPreferencesPath();
+    const prefsPath = getJelmaPreferencesPath();
     const rawPrefs: Record<string, unknown> = existsSync(prefsPath)
       ? (parseJsonObj(readFileSync(prefsPath, "utf-8")) ?? {})
       : {};

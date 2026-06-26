@@ -35,7 +35,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should recover from corrupted JSON in cache file", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, "{ invalid json content !!!");
@@ -49,7 +49,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should recover from empty cache file", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, "");
@@ -61,7 +61,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should recover from cache containing a JSON array", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, "[1, 2, 3]");
@@ -73,7 +73,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should recover from cache containing a JSON string", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, '"just a string"');
@@ -85,7 +85,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should recover from cache containing partial manifest JSON", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       // Valid JSON but missing required fields
@@ -125,7 +125,7 @@ describe("Manifest Cache Lifecycle", () => {
         ),
       );
 
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -147,7 +147,7 @@ describe("Manifest Cache Lifecycle", () => {
         ),
       );
 
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -167,7 +167,7 @@ describe("Manifest Cache Lifecycle", () => {
         ),
       );
 
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -181,7 +181,7 @@ describe("Manifest Cache Lifecycle", () => {
     it("should fall back to stale cache on TypeError (network down)", async () => {
       global.fetch = mock(() => Promise.reject(new TypeError("Failed to fetch")));
 
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -205,7 +205,7 @@ describe("Manifest Cache Lifecycle", () => {
         ),
       ); // missing clouds and matrix
 
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -218,7 +218,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should throw when fetch fails with no cache at all", async () => {
-      const cacheDir = join(env.testDir, "spawn");
+      const cacheDir = join(env.testDir, "jelma");
       if (existsSync(cacheDir)) {
         rmSync(cacheDir, {
           recursive: true,
@@ -271,7 +271,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should fall back to stale cache when fetch returns non-manifest data", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));
@@ -297,7 +297,7 @@ describe("Manifest Cache Lifecycle", () => {
     });
 
     it("should return cached instance without calling fetch again", async () => {
-      mkdirSync(join(env.testDir, "spawn"), {
+      mkdirSync(join(env.testDir, "jelma"), {
         recursive: true,
       });
       writeFileSync(env.cacheFile, JSON.stringify(mockManifest));

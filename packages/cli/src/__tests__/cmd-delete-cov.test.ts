@@ -4,7 +4,7 @@
  * Tests: confirmAndDelete, cmdDelete
  */
 
-import type { SpawnRecord } from "../history";
+import type { JelmaRecord } from "../history";
 
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
@@ -22,7 +22,7 @@ const { _resetCacheForTesting } = await import("../manifest.js");
 
 const mockManifest = createMockManifest();
 
-function makeRecord(overrides: Partial<SpawnRecord> = {}): SpawnRecord {
+function makeRecord(overrides: Partial<JelmaRecord> = {}): JelmaRecord {
   return {
     id: "del-test-123",
     agent: "claude",
@@ -168,7 +168,7 @@ describe("cmdDelete", () => {
   let processExitSpy: ReturnType<typeof spyOn>;
   let originalFetch: typeof global.fetch;
 
-  function writeHistory(records: SpawnRecord[]) {
+  function writeHistory(records: JelmaRecord[]) {
     writeFileSync(
       join(testDir, "history.json"),
       JSON.stringify({

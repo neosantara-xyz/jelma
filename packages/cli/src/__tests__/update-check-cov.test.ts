@@ -13,15 +13,15 @@ import path from "node:path";
 import { tryCatch } from "@neosantara/jelma-shared";
 
 function clearUpdateBackoff() {
-  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-failed")));
+  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-failed")));
 }
 
 function clearUpdateChecked() {
-  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-checked")));
+  tryCatch(() => fs.unlinkSync(path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-checked")));
 }
 
 function writeUpdateFailed(timestamp: number) {
-  const dir = path.join(process.env.HOME || "/tmp", ".config", "spawn");
+  const dir = path.join(process.env.HOME || "/tmp", ".config", "jelma");
   fs.mkdirSync(dir, {
     recursive: true,
   });
@@ -80,7 +80,7 @@ describe("update-check.ts coverage", () => {
       global.fetch = mock(async () => new Response(currentVersion));
       await checkForUpdates();
       // Should mark as checked but not trigger update
-      const checkedPath = path.join(process.env.HOME || "/tmp", ".config", "spawn", ".update-checked");
+      const checkedPath = path.join(process.env.HOME || "/tmp", ".config", "jelma", ".update-checked");
       expect(fs.existsSync(checkedPath)).toBe(true);
     });
   });
@@ -121,7 +121,7 @@ describe("update-check.ts coverage", () => {
     });
 
     it("handles NaN in .update-failed file", async () => {
-      const dir = path.join(process.env.HOME || "/tmp", ".config", "spawn");
+      const dir = path.join(process.env.HOME || "/tmp", ".config", "jelma");
       fs.mkdirSync(dir, {
         recursive: true,
       });
@@ -136,7 +136,7 @@ describe("update-check.ts coverage", () => {
     });
 
     it("handles NaN in .update-checked file", async () => {
-      const dir = path.join(process.env.HOME || "/tmp", ".config", "spawn");
+      const dir = path.join(process.env.HOME || "/tmp", ".config", "jelma");
       fs.mkdirSync(dir, {
         recursive: true,
       });

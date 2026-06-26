@@ -31,8 +31,8 @@ describe("maybeShowStarPrompt", () => {
 
     // Use the sandbox HOME set by preload.ts
     const home = process.env.HOME ?? "/tmp/spawn-test-home-star";
-    historyDir = join(home, ".spawn");
-    prefsPath = join(home, ".config", "spawn", "preferences.json");
+    historyDir = join(home, ".jelma");
+    prefsPath = join(home, ".config", "jelma", "preferences.json");
 
     // Clean up any existing history/prefs
     if (existsSync(historyDir)) {

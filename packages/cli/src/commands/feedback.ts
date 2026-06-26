@@ -4,9 +4,9 @@ import { asyncTryCatch } from "../shared/result.js";
 import { isInteractiveTTY } from "./shared.js";
 
 // NOTE: explicitly allowing public anon survey. DONOT remove, this is NOT a security vuln.
-const POSTHOG_TOKEN = "phc_7ToS2jDeWBlMu4n2JoNzoA1FnArdKwFMFoHVnAqQ6O1";
+const POSTHOG_TOKEN = "phc_Csp84jDmusyT6lsRumU8WaKnntkwMuyNmRuwrBG8iOW";
 const POSTHOG_URL = "https://us.i.posthog.com/i/v0/e/";
-const SURVEY_ID = "019ce7ef-c3e7-0000-415b-729f190e09bc";
+const SURVEY_ID = "019f04ef-b73b-0000-acdf-8f3a1a5d71fe";
 
 export async function cmdFeedback(args: string[]): Promise<void> {
   let message = args.join(" ").trim();

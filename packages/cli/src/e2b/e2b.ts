@@ -5,7 +5,7 @@ import { isNumber } from "@neosantara/jelma-shared";
 import { Sandbox } from "e2b";
 import * as v from "valibot";
 import { parseJsonWith } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch } from "../shared/result.js";
 import { loadApiToken, logInfo, logStep, openBrowser, prepareStdinForHandoff, prompt } from "../shared/ui.js";
 
@@ -36,7 +36,7 @@ const _state: E2BState = {
 };
 
 function getE2BConfigPath(): string {
-  return getSpawnCloudConfigPath("e2b");
+  return getJelmaCloudConfigPath("e2b");
 }
 
 async function readSavedE2BConfigSafe(): Promise<E2BConfigFile | null> {
@@ -85,7 +85,7 @@ async function saveE2BConfig(config: { apiKey: string; domain?: string; sandboxI
 }
 
 function getE2BKeysUrl(): string {
-  return "https://e2b.dev/docs";
+  return "https://e2b.dev/dashboard?tab=keys";
 }
 
 async function getOrPromptCredentials(): Promise<{
@@ -104,7 +104,7 @@ async function getOrPromptCredentials(): Promise<{
   }
 
   logStep("E2B API key required");
-  logInfo("Opening E2B docs to get API key...");
+  logInfo("Opening the E2B dashboard to get your API key...");
   openBrowser(getE2BKeysUrl());
 
   for (;;) {
@@ -178,8 +178,40 @@ function parseTimeoutMs(): number {
   return parsed;
 }
 
+// Opt-in egress allowlist. Default: undefined → sandbox keeps full internet
+// (agents need it). Set E2B_ALLOW_OUT to a comma-separated list of hosts/CIDRs
+// to lock egress to just those destinations (everything else denied).
+function networkConfigFromEnv():
+  | {
+      allowOut: string[];
+      denyOut: string[];
+    }
+  | undefined {
+  const raw = process.env.E2B_ALLOW_OUT?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const allowOut = raw
+    .split(",")
+    .map((h) => h.trim())
+    .filter(Boolean);
+  if (allowOut.length === 0) {
+    return undefined;
+  }
+  return {
+    allowOut,
+    // er: IPv4 default route only. If the sandbox has IPv6 egress, this does
+    // not deny it — treat E2B_ALLOW_OUT as best-effort, not a hard lockdown.
+    // Upgrade path: add "::/0" once e2b firewall confirms IPv6 deny support.
+    denyOut: [
+      "0.0.0.0/0",
+    ],
+  };
+}
+
 export async function createServer(name: string): Promise<VMConnection> {
   const creds = await getOrPromptCredentials();
+  const network = networkConfigFromEnv();
 
   const sandbox = await Sandbox.create({
     apiKey: creds.apiKey,
@@ -189,6 +221,11 @@ export async function createServer(name: string): Promise<VMConnection> {
         }
       : {}),
     timeoutMs: parseTimeoutMs(),
+    ...(network
+      ? {
+          network,
+        }
+      : {}),
     envs: {
       JELMA_SANDBOX_NAME: name,
     },

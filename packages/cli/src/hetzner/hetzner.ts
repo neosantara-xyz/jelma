@@ -9,7 +9,7 @@ import { getErrorMessage, isNumber, isString, toObjectArray, toRecord } from "@n
 import { handleBillingError, isBillingError, showNonBillingError } from "../shared/billing-guidance.js";
 import { getPackagesForTier, NODE_INSTALL_CMD, needsBun, needsNode } from "../shared/cloud-init.js";
 import { parseJsonObj } from "../shared/parse.js";
-import { getSpawnCloudConfigPath } from "../shared/paths.js";
+import { getJelmaCloudConfigPath } from "../shared/paths.js";
 import { asyncTryCatch, asyncTryCatchIf, isNetworkError, unwrapOr } from "../shared/result.js";
 import {
   killWithTimeout,
@@ -34,7 +34,7 @@ import {
   logStepInline,
   logWarn,
   prompt,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
   retryOrQuit,
   sanitizeTermValue,
   selectFromList,
@@ -154,7 +154,7 @@ async function hetznerGetAll(endpoint: string, key: string): Promise<Record<stri
 // ─── Token Persistence ───────────────────────────────────────────────────────
 
 async function saveTokenToConfig(token: string): Promise<void> {
-  const configPath = getSpawnCloudConfigPath("hetzner");
+  const configPath = getJelmaCloudConfigPath("hetzner");
   const dir = dirname(configPath);
   mkdirSync(dir, {
     recursive: true,
@@ -950,8 +950,8 @@ export async function getServerName(): Promise<string> {
   return getServerNameFromEnv("HETZNER_SERVER_NAME");
 }
 
-export async function promptSpawnName(): Promise<void> {
-  return promptSpawnNameShared("Hetzner server");
+export async function promptJelmaName(): Promise<void> {
+  return promptJelmaNameShared("Hetzner server");
 }
 
 // ─── Lifecycle ───────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ const clack = mockClackPrompts();
 
 const { cmdStatus } = await import("../commands/status.js");
 const { _resetCacheForTesting } = await import("../manifest.js");
-const { getSpawnCloudConfigPath } = await import("../shared/paths.js");
+const { getJelmaCloudConfigPath } = await import("../shared/paths.js");
 
 const mockManifest = createMockManifest();
 
@@ -28,7 +28,7 @@ function writeHistory(testDir: string, records: unknown[]) {
 }
 
 function writeCloudConfig(cloud: string, data: Record<string, string>) {
-  const configPath = getSpawnCloudConfigPath(cloud);
+  const configPath = getJelmaCloudConfigPath(cloud);
   const dir = configPath.substring(0, configPath.lastIndexOf("/"));
   mkdirSync(dir, {
     recursive: true,

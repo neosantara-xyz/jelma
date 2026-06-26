@@ -4,12 +4,12 @@
  * Focuses on uncovered paths: saveLaunchCmd, saveMetadata,
  * markRecordDeleted, updateRecordIp, updateRecordConnection, getActiveServers,
  * removeRecord, and v1 loose schema handling.
- * (generateSpawnId is covered in history-spawn-id.test.ts)
+ * (generateJelmaId is covered in history-spawn-id.test.ts)
  * (clearHistory is covered in clear-history.test.ts)
  * (filterHistory ordering and no-cap behavior covered in history-trimming.test.ts)
  */
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -54,7 +54,7 @@ describe("history.ts coverage", () => {
 
   describe("saveLaunchCmd", () => {
     it("saves launch cmd by spawnId", () => {
-      const record: SpawnRecord = {
+      const record: JelmaRecord = {
         id: "test-id-1",
         agent: "claude",
         cloud: "sprite",
@@ -81,7 +81,7 @@ describe("history.ts coverage", () => {
     });
 
     it("falls back to most recent record with connection when no spawnId", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -114,7 +114,7 @@ describe("history.ts coverage", () => {
     });
 
     it("does nothing when no record matches spawnId", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -145,7 +145,7 @@ describe("history.ts coverage", () => {
 
   describe("saveMetadata", () => {
     it("saves metadata by spawnId", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "meta-1",
           agent: "claude",
@@ -179,7 +179,7 @@ describe("history.ts coverage", () => {
     });
 
     it("merges metadata with existing", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "meta-2",
           agent: "claude",
@@ -215,7 +215,7 @@ describe("history.ts coverage", () => {
     });
 
     it("falls back to most recent record without spawnId", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -248,7 +248,7 @@ describe("history.ts coverage", () => {
 
   describe("markRecordDeleted", () => {
     it("marks a record as deleted", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "del-1",
           agent: "claude",
@@ -294,7 +294,7 @@ describe("history.ts coverage", () => {
     });
 
     it("returns false for record without connection", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "no-conn",
           agent: "claude",
@@ -319,7 +319,7 @@ describe("history.ts coverage", () => {
 
   describe("updateRecordIp", () => {
     it("updates IP address", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "ip-1",
           agent: "claude",
@@ -367,7 +367,7 @@ describe("history.ts coverage", () => {
     });
 
     it("returns false for record without connection", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "no-conn",
           agent: "claude",
@@ -392,7 +392,7 @@ describe("history.ts coverage", () => {
 
   describe("updateRecordConnection", () => {
     it("updates ip, server_id, and server_name", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "conn-1",
           agent: "claude",
@@ -453,7 +453,7 @@ describe("history.ts coverage", () => {
 
   describe("getActiveServers", () => {
     it("returns records with non-local, non-deleted connections", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "1",
           agent: "claude",
@@ -517,7 +517,7 @@ describe("history.ts coverage", () => {
 
   describe("removeRecord", () => {
     it("removes record by id", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           id: "rm-1",
           agent: "claude",
@@ -548,7 +548,7 @@ describe("history.ts coverage", () => {
     });
 
     it("finds record by timestamp+agent+cloud fallback when no id", () => {
-      const records: SpawnRecord[] = [
+      const records: JelmaRecord[] = [
         {
           agent: "claude",
           cloud: "sprite",

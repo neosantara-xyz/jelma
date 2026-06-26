@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import { connect } from "node:net";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import { generateSpawnId, saveSpawnRecord } from "../history.js";
+import { generateJelmaId, saveJelmaRecord } from "../history.js";
 import { agentKeys, cloudKeys, loadManifest } from "../manifest.js";
 import { validateConnectionIP, validateUsername } from "../security.js";
 import { asyncTryCatch, tryCatch } from "../shared/result.js";
@@ -411,7 +411,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
 
   // ── Save to history ────────────────────────────────────────────────────────
   const record = {
-    id: generateSpawnId(),
+    id: generateJelmaId(),
     agent: detectedAgent,
     cloud: detectedCloud,
     timestamp: new Date().toISOString(),
@@ -423,7 +423,7 @@ export async function cmdLink(args: string[], options?: LinkOptions): Promise<vo
     },
   };
 
-  const saveResult = tryCatch(() => saveSpawnRecord(record));
+  const saveResult = tryCatch(() => saveJelmaRecord(record));
   if (!saveResult.ok) {
     p.log.error(`Failed to save deployment: ${getErrorMessage(saveResult.error)}`);
     process.exit(1);

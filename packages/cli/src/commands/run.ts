@@ -7,7 +7,7 @@ import * as path from "node:path";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { buildDashboardHint, EXIT_CODE_GUIDANCE, SIGNAL_GUIDANCE } from "../guidance-data.js";
-import { generateSpawnId, getActiveServers, loadHistory, saveSpawnRecord } from "../history.js";
+import { generateJelmaId, getActiveServers, loadHistory, saveJelmaRecord } from "../history.js";
 import { loadManifest, RAW_BASE, REPO, SPAWN_CDN } from "../manifest.js";
 import {
   validateConnectionIP,
@@ -22,7 +22,7 @@ import { getLocalShell, isWindows } from "../shared/shell.js";
 import { maybeShowStarPrompt } from "../shared/star-prompt.js";
 import { captureEvent, setTelemetryContext } from "../shared/telemetry.js";
 import { logError, logInfo, logStep, prepareStdinForHandoff, toKebabCase } from "../shared/ui.js";
-import { promptSetupOptions, promptSpawnName } from "./interactive.js";
+import { promptJelmaName, promptSetupOptions } from "./interactive.js";
 import { handleRecordAction } from "./list.js";
 import {
   buildRetryCommand,
@@ -671,11 +671,11 @@ export async function execScript(
   spawnName?: string,
 ): Promise<boolean> {
   // Generate a unique jelma ID and record the jelma before execution
-  const spawnId = generateSpawnId();
+  const spawnId = generateJelmaId();
   const parentId = process.env.SPAWN_PARENT_ID || undefined;
   const depth = process.env.SPAWN_DEPTH ? Number(process.env.SPAWN_DEPTH) : undefined;
   const saveResult = tryCatchIf(isFileError, () =>
-    saveSpawnRecord({
+    saveJelmaRecord({
       id: spawnId,
       agent,
       cloud,
@@ -1286,7 +1286,7 @@ export async function cmdRun(
   }
 
   captureEvent("name_prompt_shown");
-  const spawnName = await promptSpawnName();
+  const spawnName = await promptJelmaName();
   captureEvent("name_entered");
 
   // If a name was given, check whether an active instance with that name already

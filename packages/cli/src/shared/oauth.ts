@@ -6,7 +6,7 @@ import { getErrorMessage, isString } from "@neosantara/jelma-shared";
 import * as v from "valibot";
 import { OAUTH_CODE_REGEX } from "./oauth-constants.js";
 import { parseJsonObj, parseJsonWith } from "./parse.js";
-import { getSpawnCloudConfigPath } from "./paths.js";
+import { getJelmaCloudConfigPath } from "./paths.js";
 import { asyncTryCatchIf, isFileError, isNetworkError, tryCatch } from "./result.js";
 import { logDebug, logError, logInfo, logStep, logWarn, openBrowser, prompt, retryOrQuit } from "./ui.js";
 
@@ -255,7 +255,7 @@ async function tryOauthFlow(callbackPort = 5180, agentSlug?: string, cloudSlug?:
 /** Save Neosantara API key to ~/.config/spawn/neosantara.json so it persists across runs. */
 async function saveNeosantaraKey(key: string): Promise<void> {
   const result = await asyncTryCatchIf(isFileError, async () => {
-    const configPath = getSpawnCloudConfigPath("neosantara");
+    const configPath = getJelmaCloudConfigPath("neosantara");
     mkdirSync(dirname(configPath), {
       recursive: true,
       mode: 0o700,
@@ -288,7 +288,7 @@ export function hasSavedNeosantaraKey(): boolean {
 /** Load a previously saved Neosantara API key from ~/.config/spawn/neosantara.json. */
 export function loadSavedNeosantaraKey(): string | null {
   const result = tryCatch(() => {
-    const configPath = getSpawnCloudConfigPath("neosantara");
+    const configPath = getJelmaCloudConfigPath("neosantara");
     const data = parseJsonObj(readFileSync(configPath, "utf-8"));
     if (!data) {
       return null;

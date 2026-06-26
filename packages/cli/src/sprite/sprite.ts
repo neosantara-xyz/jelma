@@ -17,7 +17,7 @@ import {
   logStepDone,
   logStepInline,
   logWarn,
-  promptSpawnNameShared,
+  promptJelmaNameShared,
 } from "../shared/ui.js";
 
 // ─── Configurable Constants ──────────────────────────────────────────────────
@@ -270,8 +270,8 @@ function orgFlags(): string[] {
 
 // ─── Server Name ─────────────────────────────────────────────────────────────
 
-export async function promptSpawnName(): Promise<void> {
-  return promptSpawnNameShared("Sprite");
+export async function promptJelmaName(): Promise<void> {
+  return promptJelmaNameShared("Sprite");
 }
 
 export async function getServerName(): Promise<string> {

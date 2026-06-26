@@ -9,18 +9,18 @@
  * - Backward compat: records without id still work via heuristic
  */
 
-import type { SpawnRecord } from "../history.js";
+import type { JelmaRecord } from "../history.js";
 
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  generateSpawnId,
+  generateJelmaId,
   loadHistory,
   markRecordDeleted,
   removeRecord,
+  saveJelmaRecord,
   saveLaunchCmd,
-  saveSpawnRecord,
 } from "../history.js";
 import { getHistoryPath } from "../shared/paths.js";
 
@@ -49,28 +49,28 @@ describe("history jelma IDs", () => {
     }
   });
 
-  // ── generateSpawnId ──────────────────────────────────────────────────
+  // ── generateJelmaId ──────────────────────────────────────────────────
 
-  describe("generateSpawnId", () => {
+  describe("generateJelmaId", () => {
     it("returns a valid UUID string", () => {
-      const id = generateSpawnId();
+      const id = generateJelmaId();
       expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it("returns unique values on each call", () => {
       const ids = new Set<string>();
       for (let i = 0; i < 100; i++) {
-        ids.add(generateSpawnId());
+        ids.add(generateJelmaId());
       }
       expect(ids.size).toBe(100);
     });
   });
 
-  // ── saveSpawnRecord auto-generates id ────────────────────────────────
+  // ── saveJelmaRecord auto-generates id ────────────────────────────────
 
-  describe("saveSpawnRecord id generation", () => {
+  describe("saveJelmaRecord id generation", () => {
     it("auto-generates id when not provided", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "",
         agent: "claude",
         cloud: "gcp",
@@ -86,7 +86,7 @@ describe("history jelma IDs", () => {
 
     it("preserves id when explicitly provided", () => {
       const customId = "custom-id-123";
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: customId,
         agent: "claude",
         cloud: "gcp",
@@ -98,13 +98,13 @@ describe("history jelma IDs", () => {
     });
 
     it("generates different ids for consecutive saves", () => {
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "",
         agent: "claude",
         cloud: "gcp",
         timestamp: "2026-01-01T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: "",
         agent: "claude",
         cloud: "gcp",
@@ -117,8 +117,8 @@ describe("history jelma IDs", () => {
     });
 
     it("saves connection data atomically with the record", () => {
-      const id = generateSpawnId();
-      saveSpawnRecord({
+      const id = generateJelmaId();
+      saveJelmaRecord({
         id,
         agent: "claude",
         cloud: "gcp",
@@ -143,10 +143,10 @@ describe("history jelma IDs", () => {
 
   describe("saveLaunchCmd with spawnId", () => {
     it("updates the correct record by spawnId", () => {
-      const id1 = generateSpawnId();
-      const id2 = generateSpawnId();
+      const id1 = generateJelmaId();
+      const id2 = generateJelmaId();
 
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id1,
         agent: "claude",
         cloud: "gcp",
@@ -158,7 +158,7 @@ describe("history jelma IDs", () => {
           cloud: "gcp",
         },
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id2,
         agent: "codex",
         cloud: "gcp",
@@ -184,16 +184,16 @@ describe("history jelma IDs", () => {
 
   describe("removeRecord with id", () => {
     it("removes the correct record by id", () => {
-      const id1 = generateSpawnId();
-      const id2 = generateSpawnId();
+      const id1 = generateJelmaId();
+      const id2 = generateJelmaId();
 
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id1,
         agent: "claude",
         cloud: "gcp",
         timestamp: "2026-01-01T00:00:00.000Z",
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id2,
         agent: "codex",
         cloud: "gcp",
@@ -214,18 +214,18 @@ describe("history jelma IDs", () => {
     });
 
     it("does not remove wrong record with same agent/cloud/timestamp", () => {
-      const id1 = generateSpawnId();
-      const id2 = generateSpawnId();
+      const id1 = generateJelmaId();
+      const id2 = generateJelmaId();
       const ts = "2026-01-01T00:00:00.000Z";
 
       // Two records with same agent/cloud/timestamp but different ids
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id1,
         agent: "claude",
         cloud: "gcp",
         timestamp: ts,
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id2,
         agent: "claude",
         cloud: "gcp",
@@ -247,7 +247,7 @@ describe("history jelma IDs", () => {
 
     it("falls back to timestamp+agent+cloud for records without id", () => {
       // Write a legacy record without id directly
-      const legacy: SpawnRecord[] = [
+      const legacy: JelmaRecord[] = [
         {
           id: "",
           agent: "claude",
@@ -281,10 +281,10 @@ describe("history jelma IDs", () => {
 
   describe("markRecordDeleted with id", () => {
     it("marks the correct record as deleted by id", () => {
-      const id1 = generateSpawnId();
-      const id2 = generateSpawnId();
+      const id1 = generateJelmaId();
+      const id2 = generateJelmaId();
 
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id1,
         agent: "claude",
         cloud: "gcp",
@@ -297,7 +297,7 @@ describe("history jelma IDs", () => {
           cloud: "gcp",
         },
       });
-      saveSpawnRecord({
+      saveJelmaRecord({
         id: id2,
         agent: "codex",
         cloud: "gcp",
@@ -327,8 +327,8 @@ describe("history jelma IDs", () => {
     });
 
     it("returns false when record has no connection", () => {
-      const id = generateSpawnId();
-      saveSpawnRecord({
+      const id = generateJelmaId();
+      saveJelmaRecord({
         id,
         agent: "claude",
         cloud: "gcp",

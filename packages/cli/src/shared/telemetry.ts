@@ -9,7 +9,7 @@ import { getInstallId } from "./install-id.js";
 import { asyncTryCatch } from "./result.js";
 
 // Same PostHog project as feedback.ts
-const POSTHOG_TOKEN = "phc_7ToS2jDeWBlMu4n2JoNzoA1FnArdKwFMFoHVnAqQ6O1";
+const POSTHOG_TOKEN = "phc_Csp84jDmusyT6lsRumU8WaKnntkwMuyNmRuwrBG8iOW";
 const POSTHOG_URL = "https://us.i.posthog.com/batch/";
 
 // Patterns to scrub from error messages before sending

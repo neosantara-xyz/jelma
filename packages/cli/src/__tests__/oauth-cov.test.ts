@@ -73,7 +73,7 @@ describe("hasSavedNeosantaraKey", () => {
   });
 
   it("returns true when valid key is saved", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -88,7 +88,7 @@ describe("hasSavedNeosantaraKey", () => {
   });
 
   it("returns false when saved key has invalid format", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -102,7 +102,7 @@ describe("hasSavedNeosantaraKey", () => {
   });
 
   it("returns false for corrupted JSON", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -123,7 +123,7 @@ describe("getOrPromptApiKey", () => {
 
   it("returns saved key when reuse-api-key step is enabled", async () => {
     const savedKey = "sk-or-v1-" + "c".repeat(64);
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -153,7 +153,7 @@ describe("getOrPromptApiKey", () => {
 
   it("skips saved key when reuse-api-key step is not enabled", async () => {
     const savedKey = "sk-or-v1-" + "d".repeat(64);
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -177,7 +177,7 @@ describe("getOrPromptApiKey", () => {
   });
 
   it("returns false for empty api_key in saved config", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -191,7 +191,7 @@ describe("getOrPromptApiKey", () => {
   });
 
   it("returns false when api_key is not a string", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });
@@ -257,7 +257,7 @@ describe("getOrPromptApiKey", () => {
   });
 
   it("returns false for non-object data in saved config", () => {
-    const configDir = join(process.env.HOME ?? "", ".config", "spawn");
+    const configDir = join(process.env.HOME ?? "", ".config", "jelma");
     mkdirSync(configDir, {
       recursive: true,
     });

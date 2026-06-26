@@ -20,9 +20,9 @@ import {
   getConnectionInfo,
   getServerName,
   interactiveSession,
+  promptJelmaName,
   promptLocation,
   promptServerType,
-  promptSpawnName,
   runServer,
   uploadFile,
   waitForCloudInit,
@@ -65,7 +65,7 @@ async function main() {
           downloadFile,
         },
     async authenticate() {
-      await promptSpawnName();
+      await promptJelmaName();
       await ensureHcloudToken();
       await ensureSshKey();
     },
