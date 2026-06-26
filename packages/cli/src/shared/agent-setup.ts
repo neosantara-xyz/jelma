@@ -1361,7 +1361,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         name: "OpenClaw",
         cloudInitTier: "full" satisfies AgentConfig["cloudInitTier"],
         preProvision: detectGithubAuth,
-        modelDefault: "neosantara/auto",
+        modelDefault: "garda-core",
         install: async () => {
           await installAgent(
             runner,
@@ -1375,7 +1375,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
           "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
         ],
         configure: (apiKey: string, modelId?: string, enabledSteps?: Set<string>) =>
-          setupOpenclawConfig(runner, apiKey, modelId || "neosantara/auto", dashboardToken, enabledSteps),
+          setupOpenclawConfig(runner, apiKey, modelId || "garda-core", dashboardToken, enabledSteps),
         preLaunch: () => startGateway(runner),
         preLaunchMsg: "Your web dashboard will open automatically — use it for WhatsApp QR scanning and channel setup.",
         launchCmd: () =>
