@@ -127,6 +127,14 @@ function log(msg){try{appendFileSync(LOG,new Date().toISOString()+" "+msg+"\\n")
 ${PROTO_HELPERS}
 
 const OPENROUTER_KEY = process.env.NEOSANTARA_API_KEY || "";
+// Auto-detect the coding-plan vs PAYG endpoint from the key's own prefix —
+// Jelma is first-party, so no separate base-URL env var is needed. Still
+// honors NEOSANTARA_OPENAI_BASE_URL as an escape hatch for local dev.
+const NEOSANTARA_OPENAI_BASE_URL =
+  process.env.NEOSANTARA_OPENAI_BASE_URL ||
+  (OPENROUTER_KEY.startsWith("nsk_code_")
+    ? "https://api.neosantara.xyz/coding/v1"
+    : "https://api.neosantara.xyz/v1");
 
 const server = http2.createServer();
 server.on("stream", (stream, headers) => {
@@ -167,7 +175,7 @@ server.on("stream", (stream, headers) => {
 
 async function callNeosantara(msg, stream) {
   try {
-    const r = await fetch("https://api.neosantara.xyz/v1/chat/completions", {
+    const r = await fetch(NEOSANTARA_OPENAI_BASE_URL + "/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": "Bearer " + OPENROUTER_KEY,

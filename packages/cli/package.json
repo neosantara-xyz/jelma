@@ -1,6 +1,6 @@
 {
   "name": "@neosantara/jelma",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "type": "module",
   "bin": {
     "jelma": "cli.js"

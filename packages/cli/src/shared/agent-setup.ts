@@ -13,6 +13,36 @@ import { asyncTryCatch, asyncTryCatchIf, isOperationalError, tryCatchIf } from "
 import { validateRemotePath } from "./ssh.js";
 import { Err, jsonEscape, logError, logInfo, logStep, logWarn, Ok, prompt, shellQuote, withRetry } from "./ui.js";
 
+// ─── Base URLs (auto-detected from key prefix) ──────────────────────────────
+// Jelma is a first-party Neosantara tool, so it can pick the right base URL
+// itself instead of relying on the caller to set env vars: Coding Plan keys
+// (nsk_code_*) only work on the dedicated /coding/* paths, while regular PAYG
+// keys only work on the plain paths (see middleware/rateLimit.js
+// coding_key_requires_coding_endpoint). NEOSANTARA_*_BASE_URL env vars are
+// still honored as an escape hatch (e.g. local dev against a different
+// gateway), but normal usage needs zero configuration.
+const CODING_TOKEN_PREFIX = "nsk_code_";
+
+export function isCodingPlanKey(apiKey: string): boolean {
+  return apiKey.startsWith(CODING_TOKEN_PREFIX);
+}
+
+export function anthropicBaseUrl(apiKey: string): string {
+  if (process.env.NEOSANTARA_ANTHROPIC_BASE_URL) {
+    return process.env.NEOSANTARA_ANTHROPIC_BASE_URL;
+  }
+  return isCodingPlanKey(apiKey)
+    ? "https://api.neosantara.xyz/coding/anthropic"
+    : "https://api.neosantara.xyz/anthropic";
+}
+
+export function openaiBaseUrl(apiKey: string): string {
+  if (process.env.NEOSANTARA_OPENAI_BASE_URL) {
+    return process.env.NEOSANTARA_OPENAI_BASE_URL;
+  }
+  return isCodingPlanKey(apiKey) ? "https://api.neosantara.xyz/coding/v1" : "https://api.neosantara.xyz/v1";
+}
+
 /**
  * Wrap an SSH-based async operation into a Result for use with withRetry.
  * - Transient SSH/connection errors → Err (retryable)
@@ -159,7 +189,7 @@ async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string): Promi
   "editor": "vim",
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
-    "ANTHROPIC_BASE_URL": "https://api.neosantara.xyz/anthropic",
+    "ANTHROPIC_BASE_URL": "${anthropicBaseUrl(apiKey)}",
     "ANTHROPIC_AUTH_TOKEN": ${escapedKey}
   },
   "permissions": {
@@ -318,7 +348,7 @@ export async function offerGithubAuth(runner: CloudRunner, explicitlyRequested?:
 
 // ─── Codex CLI Config ────────────────────────────────────────────────────────
 
-async function setupCodexConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+async function setupCodexConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Codex CLI for Neosantara...");
   const model = modelId || "garda-core";
   const config = `model = "${model}"
@@ -327,7 +357,7 @@ sandbox_mode = "danger-full-access"
 
 [model_providers.neosantara]
 name = "Neosantara"
-base_url = "https://api.neosantara.xyz/v1"
+base_url = "${openaiBaseUrl(apiKey)}"
 env_key = "NEOSANTARA_API_KEY"
 wire_api = "responses"
 `;
@@ -336,7 +366,7 @@ wire_api = "responses"
 
 // ─── OpenCode Config ─────────────────────────────────────────────────────────
 
-async function setupOpenCodeConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+async function setupOpenCodeConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring OpenCode for Neosantara...");
   const model = modelId || "garda-core";
   const config = JSON.stringify(
@@ -346,7 +376,7 @@ async function setupOpenCodeConfig(runner: CloudRunner, modelId?: string): Promi
           npm: "@ai-sdk/openai-compatible",
           name: "Neosantara",
           options: {
-            baseURL: "https://api.neosantara.xyz/v1",
+            baseURL: openaiBaseUrl(apiKey),
             apiKey: "{env:NEOSANTARA_API_KEY}",
           },
           models: {
@@ -366,7 +396,7 @@ async function setupOpenCodeConfig(runner: CloudRunner, modelId?: string): Promi
 
 // ─── Kilo Code Config ─────────────────────────────────────────────────────────
 
-async function setupKiloCodeConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+async function setupKiloCodeConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Kilo Code for Neosantara...");
   const model = modelId || "garda-core";
   const config = JSON.stringify(
@@ -376,7 +406,7 @@ async function setupKiloCodeConfig(runner: CloudRunner, modelId?: string): Promi
           npm: "@ai-sdk/openai-compatible",
           name: "Neosantara",
           options: {
-            baseURL: "https://api.neosantara.xyz/v1",
+            baseURL: openaiBaseUrl(apiKey),
             apiKey: "{env:NEOSANTARA_API_KEY}",
           },
           models: {
@@ -1348,7 +1378,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      configure: (_apiKey, modelId) => setupCodexConfig(runner, modelId),
+      configure: (apiKey, modelId) => setupCodexConfig(runner, apiKey, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex",
       promptCmd: (prompt) =>
         `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox ${shellQuote(prompt)}`,
@@ -1398,7 +1428,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      configure: (_apiKey, modelId) => setupOpenCodeConfig(runner, modelId),
+      configure: (apiKey, modelId) => setupOpenCodeConfig(runner, apiKey, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode",
       promptCmd: (prompt) =>
         `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode run ${shellQuote(prompt)}`,
@@ -1420,7 +1450,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         `NEOSANTARA_API_KEY=${apiKey}`,
         "KILO_PROVIDER=neosantara",
       ],
-      configure: (_apiKey, modelId) => setupKiloCodeConfig(runner, modelId),
+      configure: (apiKey, modelId) => setupKiloCodeConfig(runner, apiKey, modelId),
       launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
       promptCmd: (prompt) =>
         `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode --prompt ${shellQuote(prompt)}`,
