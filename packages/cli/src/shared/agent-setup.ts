@@ -158,14 +158,21 @@ async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string): Promi
 
   const escapedKey = jsonEscape(apiKey);
   const model = isCodingPlanKey(apiKey) ? "garda-core" : "";
-  const modelLine = model ? `\n    "ANTHROPIC_MODEL": "${model}",` : "";
+  const modelLines = model
+    ? `
+    "ANTHROPIC_MODEL": "${model}",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "${model}",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "${model}",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "${model}",
+    "ANTHROPIC_SMALL_FAST_MODEL": "${model}",`
+    : "";
   const settingsJson = `{
   "theme": "dark",
   "editor": "vim",
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
     "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
-    "ANTHROPIC_BASE_URL": "${anthropicBaseUrl(apiKey)}",${modelLine}
+    "ANTHROPIC_BASE_URL": "${anthropicBaseUrl(apiKey)}",${modelLines}
     "ANTHROPIC_AUTH_TOKEN": ${escapedKey}
   },
   "permissions": {
