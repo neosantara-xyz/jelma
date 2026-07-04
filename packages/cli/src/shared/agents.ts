@@ -30,7 +30,7 @@ export interface AgentConfig {
   preProvision?: () => Promise<void>;
   /** Install the agent on the remote machine. */
   install: () => Promise<void>;
-  /** Return env var pairs for .spawnrc. */
+  /** Return env var pairs for .jelmaanrc. */
   envVars: (apiKey: string) => string[];
   /** Agent-specific configuration (settings files, etc.). */
   configure?: (apiKey: string, modelId?: string, enabledSteps?: Set<string>) => Promise<void>;
@@ -207,7 +207,7 @@ export function validateStepNames(
 // ─── Shared Helpers ──────────────────────────────────────────────────────────
 
 /**
- * Generate env config content (shell export lines) for .spawnrc.
+ * Generate env config content (shell export lines) for .jelmaanrc.
  * Values are single-quoted to prevent injection.
  */
 export function generateEnvConfig(pairs: string[]): string {

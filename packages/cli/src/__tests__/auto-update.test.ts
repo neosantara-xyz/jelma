@@ -171,7 +171,7 @@ describe("auto-update service", () => {
       const decoded = Buffer.from(wrapperMatch![1], "base64").toString("utf-8");
       expect(decoded).toContain("npm install -g @openai/codex@latest");
       expect(decoded).toContain("source");
-      expect(decoded).toContain(".spawnrc");
+      expect(decoded).toContain(".jelmaanrc");
       expect(decoded).toContain("flock -n 9");
       expect(decoded).toContain("LOCKFILE");
     });

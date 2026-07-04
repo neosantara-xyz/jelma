@@ -224,10 +224,10 @@ describe("Commands Display Output", () => {
       expect(output).toContain("--prompt-file");
     });
 
-    it("should mention SPAWN_NO_UNICODE env var", () => {
+    it("should mention JELMA_NO_UNICODE env var", () => {
       cmdHelp();
       const output = consoleMocks.log.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(output).toContain("SPAWN_NO_UNICODE");
+      expect(output).toContain("JELMA_NO_UNICODE");
     });
 
     it("should show install section with curl command", () => {

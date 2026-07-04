@@ -134,7 +134,7 @@ async function suggestFilterCorrection(
 
 async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string): Promise<void> {
   if (!agentFilter && !cloudFilter) {
-    p.log.info("No spawns recorded yet.");
+    p.log.info("No jelma instances recorded yet.");
     p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to launch your first agent.`);
     return;
   }
@@ -146,7 +146,7 @@ async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string):
   if (cloudFilter) {
     parts.push(`cloud=${pc.bold(cloudFilter)}`);
   }
-  p.log.info(`No spawns found matching ${parts.join(", ")}.`);
+  p.log.info(`No jelma instances found matching ${parts.join(", ")}.`);
 
   const manifestResult = await asyncTryCatch(() => loadManifest());
   if (manifestResult.ok) {
@@ -176,7 +176,7 @@ async function showEmptyListMessage(agentFilter?: string, cloudFilter?: string):
   const totalRecords = filterHistory();
   if (totalRecords.length > 0) {
     p.log.info(
-      `Run ${pc.cyan("jelma list")} to see all ${totalRecords.length} recorded spawn${totalRecords.length !== 1 ? "s" : ""}.`,
+      `Run ${pc.cyan("jelma list")} to see all ${totalRecords.length} recorded instance${totalRecords.length !== 1 ? "s" : ""}.`,
     );
   }
 }
@@ -191,11 +191,11 @@ function buildListFooterLines(records: JelmaRecord[], agentFilter?: string, clou
   if (agentFilter || cloudFilter) {
     const totalRecords = filterHistory();
     lines.push(
-      pc.dim(`Showing ${records.length} of ${totalRecords.length} spawn${totalRecords.length !== 1 ? "s" : ""}`),
+      pc.dim(`Showing ${records.length} of ${totalRecords.length} instance${totalRecords.length !== 1 ? "s" : ""}`),
     );
     lines.push(pc.dim(`Clear filter: ${pc.cyan("jelma list")}`));
   } else {
-    lines.push(pc.dim(`${records.length} spawn${records.length !== 1 ? "s" : ""} recorded`));
+    lines.push(pc.dim(`${records.length} instance${records.length !== 1 ? "s" : ""} recorded`));
     lines.push(
       pc.dim(
         `Filter: ${pc.cyan("jelma list -a <agent>")}  or  ${pc.cyan("jelma list -c <cloud>")}  |  Clear: ${pc.cyan("jelma list --clear")}`,
@@ -587,7 +587,7 @@ export async function handleRecordAction(
     if (selected.name) {
       process.env.SPAWN_NAME = selected.name;
     }
-    p.log.step(`Spawning ${pc.bold(buildRecordLabel(selected))}`);
+    p.log.step(`Launching ${pc.bold(buildRecordLabel(selected))}`);
     await cmdRun(selected.agent, selected.cloud, selected.prompt);
     return RecordActionOutcome.Exit;
   }
@@ -638,7 +638,7 @@ export async function handleRecordAction(
 
   options.push({
     value: "rerun",
-    label: "Spawn a new VM",
+    label: "Create a new VM",
     hint: "Create a fresh instance",
   });
 
@@ -748,7 +748,7 @@ export async function handleRecordAction(
   // routing them back here in an infinite loop.
   delete process.env.SPAWN_NAME;
   p.log.step(
-    `Spawning ${pc.bold(buildRecordLabel(selected))} ${pc.dim(`(${buildRecordSubtitle(selected, manifest)})`)}`,
+    `Launching ${pc.bold(buildRecordLabel(selected))} ${pc.dim(`(${buildRecordSubtitle(selected, manifest)})`)}`,
   );
   await cmdRun(selected.agent, selected.cloud, selected.prompt);
   return RecordActionOutcome.Exit;
@@ -952,7 +952,7 @@ export async function cmdLast(): Promise<void> {
 
   if (records.length === 0) {
     p.log.info("No jelma history found.");
-    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create your first spawn.`);
+    p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create your first instance.`);
     return;
   }
 
@@ -966,7 +966,7 @@ export async function cmdLast(): Promise<void> {
 
   const label = buildRecordLabel(latest);
   const subtitle = buildRecordSubtitle(latest, manifest);
-  p.log.step(`Last spawn: ${pc.bold(label)} ${pc.dim(`(${subtitle})`)}`);
+  p.log.step(`Last jelma: ${pc.bold(label)} ${pc.dim(`(${subtitle})`)}`);
 
   // If the latest record has connection info (IP/server), let the user
   // reconnect to the existing VM instead of blindly provisioning a new one.

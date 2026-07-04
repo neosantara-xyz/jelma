@@ -144,9 +144,9 @@ async function promptJelmaName(): Promise<string | undefined> {
   }
 
   const suffix = Math.random().toString(36).slice(2, 6);
-  const defaultName = `spawn-${suffix}`;
+  const defaultName = `jelma-${suffix}`;
   const spawnName = await p.text({
-    message: "Name your spawn",
+    message: "Name your jelma instance",
     placeholder: defaultName,
     defaultValue: defaultName,
     validate: (value) => {

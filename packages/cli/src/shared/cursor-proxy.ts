@@ -377,7 +377,7 @@ export async function startCursorProxy(runner: CloudRunner): Promise<void> {
     `ss -tln 2>/dev/null | grep -q ":${port} " || nc -z 127.0.0.1 ${port} 2>/dev/null`;
 
   const script = [
-    "source ~/.spawnrc 2>/dev/null",
+    "source ~/.jelmaanrc 2>/dev/null",
     nodeFind,
 
     // Start unary backend
@@ -422,7 +422,7 @@ export async function startCursorProxy(runner: CloudRunner): Promise<void> {
     "RestartSec=3",
     "User=$(whoami)",
     "Environment=HOME=$HOME",
-    'Environment=NEOSANTARA_API_KEY=$(grep NEOSANTARA_API_KEY ~/.spawnrc 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\'")',
+    'Environment=NEOSANTARA_API_KEY=$(grep NEOSANTARA_API_KEY ~/.jelmaanrc 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\'")',
     "Environment=PATH=$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin",
     "[Install]",
     "WantedBy=multi-user.target",

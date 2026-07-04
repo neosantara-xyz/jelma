@@ -115,7 +115,7 @@ describe("getSkillContent", () => {
       const content = getSkillContent(agent);
       expect(content).toBeDefined();
       expect(content!).toStartWith("---\n");
-      expect(content!).toContain("name: spawn");
+      expect(content!).toContain("name: jelma");
     });
   }
 

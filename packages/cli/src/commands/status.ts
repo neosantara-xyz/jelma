@@ -202,7 +202,7 @@ async function probeAgentAlive(record: JelmaRecord, manifest: Manifest | null): 
     return false;
   }
 
-  const versionCmd = `source ~/.spawnrc 2>/dev/null; export PATH="$HOME/.local/bin:$HOME/.claude/local/bin:$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.n/bin:$PATH"; ${binary} --version`;
+  const versionCmd = `source ~/.jelmaanrc 2>/dev/null; export PATH="$HOME/.local/bin:$HOME/.claude/local/bin:$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.n/bin:$PATH"; ${binary} --version`;
 
   const result = await asyncTryCatch(async () => {
     let proc: {

@@ -23,6 +23,7 @@ import {
   cmdList,
   cmdListClear,
   cmdMatrix,
+  cmdModels,
   cmdPick,
   cmdPullHistory,
   cmdRun,
@@ -533,6 +534,8 @@ const SUBCOMMANDS: Record<string, () => Promise<void>> = {
   m: cmdMatrix,
   agents: cmdAgents,
   clouds: cmdClouds,
+  models: () => cmdModels(),
+  model: () => cmdModels(),
   uninstall: cmdUninstall,
   update: cmdUpdate,
   last: cmdLast,
@@ -700,6 +703,17 @@ async function dispatchStatusCommand(filteredArgs: string[]): Promise<void> {
 async function dispatchSubcommand(cmd: string, filteredArgs: string[]): Promise<void> {
   if (hasTrailingHelpFlag(filteredArgs)) {
     cmdHelp();
+    return;
+  }
+
+  // "jelma models [filter] [all]" -> list models
+  if (cmd === "models" || cmd === "model") {
+    const rest = filteredArgs.slice(1).filter((a) => a !== cmd);
+    const showAll = rest.includes("all");
+    const positional = rest.filter((a) => a !== "all");
+    const filter = positional[0];
+    warnExtraArgs(filteredArgs, showAll || filter ? Math.max(rest.length, 1) + 1 : 1);
+    await cmdModels(filter, showAll);
     return;
   }
 

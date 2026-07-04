@@ -112,24 +112,24 @@ function getHelpTroubleshootingSection(): string {
   ${pc.dim("*")} Script not found: Run ${pc.cyan("jelma matrix")} to verify the combination exists
   ${pc.dim("*")} Missing credentials: Run ${pc.cyan("jelma <cloud>")} to see setup instructions
   ${pc.dim("*")} Update issues: Try ${pc.cyan("jelma update")} or reinstall manually
-  ${pc.dim("*")} Garbled unicode: Set ${pc.cyan("SPAWN_NO_UNICODE=1")} for ASCII-only output
-  ${pc.dim("*")} Missing unicode over SSH: Set ${pc.cyan("SPAWN_UNICODE=1")} to force unicode on
-  ${pc.dim("*")} Slow startup: Set ${pc.cyan("SPAWN_NO_UPDATE_CHECK=1")} to skip auto-update`;
+  ${pc.dim("*")} Garbled unicode: Set ${pc.cyan("JELMA_NO_UNICODE=1")} for ASCII-only output
+  ${pc.dim("*")} Missing unicode over SSH: Set ${pc.cyan("JELMA_UNICODE=1")} to force unicode on
+  ${pc.dim("*")} Slow startup: Set ${pc.cyan("JELMA_NO_UPDATE_CHECK=1")} to skip auto-update`;
 }
 
 function getHelpEnvVarsSection(): string {
   return `${pc.bold("ENVIRONMENT VARIABLES")}
   ${pc.cyan("NEOSANTARA_API_KEY")}        Neosantara API key (all agents require this)
   ${pc.cyan("MODEL_ID")}                  Override agent's default LLM model (or use --model flag)
-  ${pc.cyan("SPAWN_NO_UPDATE_CHECK=1")}   Skip auto-update check on startup
-  ${pc.cyan("SPAWN_NO_UNICODE=1")}        Force ASCII output (no unicode symbols)
-  ${pc.cyan("SPAWN_UNICODE=1")}           Force Unicode output (override auto-detection)
-  ${pc.cyan("SPAWN_HOME")}                Override jelma data directory (default: ~/.jelma)
-  ${pc.cyan("SPAWN_DEBUG=1")}             Show debug output (unicode detection, etc.)
-  ${pc.cyan("SPAWN_ENABLED_STEPS")}       Comma-separated setup steps (set by --steps/--config)
+  ${pc.cyan("JELMA_NO_UPDATE_CHECK=1")}   Skip auto-update check on startup
+  ${pc.cyan("JELMA_NO_UNICODE=1")}        Force ASCII output (no unicode symbols)
+  ${pc.cyan("JELMA_UNICODE=1")}           Force Unicode output (override auto-detection)
+  ${pc.cyan("JELMA_HOME")}                Override jelma data directory (default: ~/.jelma)
+  ${pc.cyan("JELMA_DEBUG=1")}             Show debug output (unicode detection, etc.)
+  ${pc.cyan("JELMA_ENABLED_STEPS")}       Comma-separated setup steps (set by --steps/--config)
   ${pc.cyan("TELEGRAM_BOT_TOKEN")}       Telegram bot token for non-interactive setup
-  ${pc.cyan("SPAWN_HEADLESS=1")}          Set automatically in --headless mode (for scripts)
-  ${pc.cyan("SPAWN_CUSTOM=1")}           Set automatically in --custom mode (show size/region pickers)`;
+  ${pc.cyan("JELMA_HEADLESS=1")}          Set automatically in --headless mode (for scripts)
+  ${pc.cyan("JELMA_CUSTOM=1")}           Set automatically in --custom mode (show size/region pickers)`;
 }
 
 function getHelpFooterSection(): string {

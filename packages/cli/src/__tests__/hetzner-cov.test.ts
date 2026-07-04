@@ -12,6 +12,7 @@ import {
 } from "../hetzner/hetzner";
 
 let origFetch: typeof global.fetch;
+const REAL_FETCH = global.fetch; // Capture at module load, before any test contaminates it
 let origEnv: NodeJS.ProcessEnv;
 let stderrSpy: ReturnType<typeof spyOn>;
 
@@ -24,7 +25,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  global.fetch = origFetch;
+  global.fetch = REAL_FETCH;
   process.env = origEnv;
   stderrSpy.mockRestore();
   mock.restore();
@@ -585,21 +586,13 @@ describe("hetzner/createServer", () => {
         },
       },
     };
-    let callCount = 0;
-    global.fetch = mock(() => {
-      callCount++;
-      if (callCount <= 1) {
-        // Token validation
-        return Promise.resolve(
-          new Response(
-            JSON.stringify({
-              servers: [],
-            }),
-          ),
-        );
-      }
-      if (callCount <= 2) {
-        // SSH keys
+    let createAttempts = 0;
+    global.fetch = mock((url: string | URL | Request, init?: RequestInit) => {
+      const urlStr = String(url);
+      const method = init?.method ?? "GET";
+
+      // SSH keys: GET /ssh_keys
+      if (urlStr.includes("/ssh_keys")) {
         return Promise.resolve(
           new Response(
             JSON.stringify({
@@ -608,24 +601,8 @@ describe("hetzner/createServer", () => {
           ),
         );
       }
-      if (callCount <= 3) {
-        // First create attempt — resource_limit_exceeded (HTTP 403)
-        return Promise.resolve(
-          new Response(
-            JSON.stringify({
-              error: {
-                code: "resource_limit_exceeded",
-                message: "primary_ip_limit",
-              },
-            }),
-            {
-              status: 403,
-            },
-          ),
-        );
-      }
-      if (callCount <= 4) {
-        // List primary IPs for cleanup
+      // Primary IPs listing: GET /primary_ips (not a DELETE to /primary_ips/N)
+      if (urlStr.includes("/primary_ips") && method === "GET") {
         return Promise.resolve(
           new Response(
             JSON.stringify({
@@ -645,23 +622,54 @@ describe("hetzner/createServer", () => {
           ),
         );
       }
-      if (callCount <= 5) {
-        // Delete orphaned IP 100
+      // Delete orphaned IP: DELETE /primary_ips/N
+      if (urlStr.includes("/primary_ips/") && method === "DELETE") {
         return Promise.resolve(
           new Response("", {
             status: 204,
           }),
         );
       }
-      // Retry create — success
-      return Promise.resolve(new Response(JSON.stringify(serverResp)));
+      // Server creation: POST /servers
+      if (urlStr.includes("/servers") && method === "POST") {
+        createAttempts++;
+        if (createAttempts === 1) {
+          // First attempt — resource_limit_exceeded (HTTP 403)
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                error: {
+                  code: "resource_limit_exceeded",
+                  message: "primary_ip_limit",
+                },
+              }),
+              {
+                status: 403,
+              },
+            ),
+          );
+        }
+        // Retry — success
+        return Promise.resolve(new Response(JSON.stringify(serverResp)));
+      }
+      // Token validation and other GETs: GET /servers
+      if (urlStr.includes("/servers") && method === "GET") {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              servers: [],
+            }),
+          ),
+        );
+      }
+      // Fallback for any unexpected calls (leaked from other tests)
+      return Promise.resolve(new Response(JSON.stringify({})));
     });
     const { ensureHcloudToken, createServer } = await import("../hetzner/hetzner");
     await ensureHcloudToken();
     const conn = await createServer("test-retry", "cx23", "fsn1");
     expect(conn.ip).toBe("10.0.0.5");
-    // Should have called: token(1), ssh_keys(2), create-fail(3), list-ips(4), delete-ip(5), create-ok(6)
-    expect(callCount).toBeGreaterThanOrEqual(6);
+    expect(createAttempts).toBe(2);
   });
 
   it("throws with guidance when resource limit hit and no orphaned IPs to clean", async () => {

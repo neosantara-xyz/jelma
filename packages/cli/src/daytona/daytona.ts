@@ -565,14 +565,14 @@ function buildAutoUpdateScript(agentName: string, updateCmd: string): string {
     "",
     'log() { printf "[%s] %s\\n" "$(date -u +\'%Y-%m-%dT%H:%M:%SZ\')" "$*" >> "$LOGFILE"; }',
     "",
-    '[ -f "$HOME/.spawnrc" ] && source "$HOME/.spawnrc" 2>/dev/null',
+    '[ -f "$HOME/.jelmaanrc" ] && source "$HOME/.jelmaanrc" 2>/dev/null',
     'export PATH="$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.claude/local/bin:$PATH"',
     "",
     'log "Auto-update session started; first run in 15 minutes"',
     "sleep 900",
     "",
     "while true; do",
-    '  [ -f "$HOME/.spawnrc" ] && source "$HOME/.spawnrc" 2>/dev/null',
+    '  [ -f "$HOME/.jelmaanrc" ] && source "$HOME/.jelmaanrc" 2>/dev/null',
     '  export PATH="$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.claude/local/bin:$PATH"',
     "",
     '  log "Updating system packages"',
@@ -1028,7 +1028,7 @@ export async function probeDaytonaAgentBinary(sandboxId: string, binary: string)
     }
 
     const versionCmd =
-      "source ~/.spawnrc 2>/dev/null; " +
+      "source ~/.jelmaanrc 2>/dev/null; " +
       `export PATH="$HOME/.local/bin:$HOME/.claude/local/bin:$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.n/bin:$PATH"; ` +
       `${binary} --version`;
     const response = await sandbox.process.executeCommand(formatProcessCommand(versionCmd), undefined, undefined, 10);

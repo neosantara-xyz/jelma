@@ -173,8 +173,11 @@ describe("createCloudAgents", () => {
         "yolo-mode",
       ]),
     );
-    // Should NOT call runServer to remove YOLO mode (no sed)
-    expect(runner.runServer).not.toHaveBeenCalled();
+    // runServer is called by setupHermesConfig (config upload), but should NOT
+    // contain the sed command to remove YOLO mode
+    const calls = runner.runServer.mock.calls;
+    const allCmds = calls.map((c: unknown[]) => String(c[0])).join(" ");
+    expect(allCmds).not.toContain("HERMES_YOLO_MODE");
   });
 
   it("agent envVars include provider-specific env vars", () => {
@@ -201,7 +204,7 @@ describe("createCloudAgents", () => {
       [
         "kilocode",
         [
-          "KILO_PROVIDER_TYPE=neosantara",
+          "KILO_PROVIDER=neosantara",
         ],
       ],
       [

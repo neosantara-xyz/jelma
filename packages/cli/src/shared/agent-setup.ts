@@ -6,42 +6,15 @@ import type { Result } from "./ui.js";
 
 import { unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { getErrorMessage } from "@neosantara/jelma-shared";
+import { getErrorMessage, isPlainObject, isString } from "@neosantara/jelma-shared";
+import { anthropicBaseUrl, isCodingPlanKey, openaiBaseUrl } from "./api.js";
 import { setupCursorProxy, startCursorProxy } from "./cursor-proxy.js";
 import { getTmpDir } from "./paths.js";
 import { asyncTryCatch, asyncTryCatchIf, isOperationalError, tryCatchIf } from "./result.js";
 import { validateRemotePath } from "./ssh.js";
 import { Err, jsonEscape, logError, logInfo, logStep, logWarn, Ok, prompt, shellQuote, withRetry } from "./ui.js";
 
-// ─── Base URLs (auto-detected from key prefix) ──────────────────────────────
-// Jelma is a first-party Neosantara tool, so it can pick the right base URL
-// itself instead of relying on the caller to set env vars: Coding Plan keys
-// (nsk_code_*) only work on the dedicated /coding/* paths, while regular PAYG
-// keys only work on the plain paths (see middleware/rateLimit.js
-// coding_key_requires_coding_endpoint). NEOSANTARA_*_BASE_URL env vars are
-// still honored as an escape hatch (e.g. local dev against a different
-// gateway), but normal usage needs zero configuration.
-const CODING_TOKEN_PREFIX = "nsk_code_";
-
-export function isCodingPlanKey(apiKey: string): boolean {
-  return apiKey.startsWith(CODING_TOKEN_PREFIX);
-}
-
-export function anthropicBaseUrl(apiKey: string): string {
-  if (process.env.NEOSANTARA_ANTHROPIC_BASE_URL) {
-    return process.env.NEOSANTARA_ANTHROPIC_BASE_URL;
-  }
-  return isCodingPlanKey(apiKey)
-    ? "https://api.neosantara.xyz/coding/anthropic"
-    : "https://api.neosantara.xyz/anthropic";
-}
-
-export function openaiBaseUrl(apiKey: string): string {
-  if (process.env.NEOSANTARA_OPENAI_BASE_URL) {
-    return process.env.NEOSANTARA_OPENAI_BASE_URL;
-  }
-  return isCodingPlanKey(apiKey) ? "https://api.neosantara.xyz/coding/v1" : "https://api.neosantara.xyz/v1";
-}
+// Base URL helpers imported from ./api.ts
 
 /**
  * Wrap an SSH-based async operation into a Result for use with withRetry.
@@ -184,12 +157,15 @@ async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string): Promi
   logStep("Configuring Claude Code...");
 
   const escapedKey = jsonEscape(apiKey);
+  const model = isCodingPlanKey(apiKey) ? "garda-core" : "";
+  const modelLine = model ? `\n    "ANTHROPIC_MODEL": "${model}",` : "";
   const settingsJson = `{
   "theme": "dark",
   "editor": "vim",
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
-    "ANTHROPIC_BASE_URL": "${anthropicBaseUrl(apiKey)}",
+    "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+    "ANTHROPIC_BASE_URL": "${anthropicBaseUrl(apiKey)}",${modelLine}
     "ANTHROPIC_AUTH_TOKEN": ${escapedKey}
   },
   "permissions": {
@@ -364,11 +340,69 @@ wire_api = "responses"
   await uploadConfigFile(runner, config, "$HOME/.codex/config.toml");
 }
 
+// ─── OpenCode / Kilo Code shared model list ─────────────────────────────────
+
+async function fetchCodingModels(apiKey: string): Promise<Record<
+  string,
+  {
+    name: string;
+  }
+> | null> {
+  const baseUrl = openaiBaseUrl(apiKey);
+  const fetchResult = await asyncTryCatch(async () => {
+    const res = await fetch(`${baseUrl}/models`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) {
+      throw new Error(`API error ${res.status}`);
+    }
+    return res.json();
+  });
+  if (!fetchResult.ok) {
+    return null;
+  }
+  const body = fetchResult.data;
+  if (!isPlainObject(body)) {
+    return null;
+  }
+  const rawData = body.data;
+  if (!Array.isArray(rawData)) {
+    return null;
+  }
+  const models: Record<
+    string,
+    {
+      name: string;
+    }
+  > = {};
+  for (const item of rawData) {
+    if (!isPlainObject(item)) {
+      continue;
+    }
+    const id = item.id;
+    if (!isString(id)) {
+      continue;
+    }
+    const caps = item.capabilities;
+    if (Array.isArray(caps) && caps.includes("function_calling")) {
+      models[id] = {
+        name: id,
+      };
+    }
+  }
+  return Object.keys(models).length > 0 ? models : null;
+}
+
 // ─── OpenCode Config ─────────────────────────────────────────────────────────
 
 async function setupOpenCodeConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring OpenCode for Neosantara...");
   const model = modelId || "garda-core";
+  const qualifiedModel = model.includes("/") ? model : `neosantara/${model}`;
+  const neosantaraModels = await fetchCodingModels(apiKey);
   const config = JSON.stringify(
     {
       provider: {
@@ -379,14 +413,14 @@ async function setupOpenCodeConfig(runner: CloudRunner, apiKey: string, modelId?
             baseURL: openaiBaseUrl(apiKey),
             apiKey: "{env:NEOSANTARA_API_KEY}",
           },
-          models: {
+          models: neosantaraModels ?? {
             [model]: {
               name: model,
             },
           },
         },
       },
-      model: `neosantara/${model}`,
+      model: qualifiedModel,
     },
     null,
     2,
@@ -399,6 +433,8 @@ async function setupOpenCodeConfig(runner: CloudRunner, apiKey: string, modelId?
 async function setupKiloCodeConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Kilo Code for Neosantara...");
   const model = modelId || "garda-core";
+  const qualifiedModel = model.includes("/") ? model : `neosantara/${model}`;
+  const neosantaraModels = await fetchCodingModels(apiKey);
   const config = JSON.stringify(
     {
       provider: {
@@ -409,14 +445,14 @@ async function setupKiloCodeConfig(runner: CloudRunner, apiKey: string, modelId?
             baseURL: openaiBaseUrl(apiKey),
             apiKey: "{env:NEOSANTARA_API_KEY}",
           },
-          models: {
+          models: neosantaraModels ?? {
             [model]: {
               name: model,
             },
           },
         },
       },
-      model: `neosantara/${model}`,
+      model: qualifiedModel,
       permission: "allow",
     },
     null,
@@ -427,15 +463,24 @@ async function setupKiloCodeConfig(runner: CloudRunner, apiKey: string, modelId?
 
 // ─── Junie Config ────────────────────────────────────────────────────────────
 
-async function setupJunieConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+async function setupJunieConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Junie for Neosantara...");
   const model = modelId || "garda-core";
+  const neosantaraModels = await fetchCodingModels(apiKey);
   const profile = JSON.stringify(
     {
-      baseUrl: "https://api.neosantara.xyz/v1/chat/completions",
+      baseUrl: `${openaiBaseUrl(apiKey)}/chat/completions`,
       id: model,
       apiType: "OpenAICompletion",
       apiKey: "{env:NEOSANTARA_API_KEY}",
+      ...(neosantaraModels
+        ? {
+            models: Object.keys(neosantaraModels).map((id) => ({
+              id,
+              name: id,
+            })),
+          }
+        : {}),
     },
     null,
     2,
@@ -446,25 +491,38 @@ async function setupJunieConfig(runner: CloudRunner, modelId?: string): Promise<
 
 // ─── Pi Config ───────────────────────────────────────────────────────────────
 
-async function setupPiConfig(runner: CloudRunner, modelId?: string): Promise<void> {
+async function setupPiConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Pi for Neosantara...");
   const model = modelId || "garda-core";
+  const neosantaraModels = await fetchCodingModels(apiKey);
+  const modelIds = neosantaraModels
+    ? Object.keys(neosantaraModels)
+    : [
+        model,
+      ];
+  const modelEntries = modelIds
+    .map((id) =>
+      [
+        "      {",
+        `        id: "${id}",`,
+        `        name: "${id}",`,
+        "        reasoning: false,",
+        '        input: ["text"],',
+        "        cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },",
+        "        contextWindow: 128000,",
+        "        maxTokens: 16384",
+        "      }",
+      ].join("\n"),
+    )
+    .join(",\n");
   const ext = [
     "export default function (pi) {",
     '  pi.registerProvider("neosantara", {',
-    '    name: "Neosantara",',
-    '    baseUrl: "https://api.neosantara.xyz/v1",',
-    '    apiKey: "$NEOSANTARA_API_KEY",',
-    '    api: "openai-completions",',
-    "    models: [{",
-    `      id: "${model}",`,
-    `      name: "${model}",`,
-    "      reasoning: false,",
-    '      input: ["text"],',
-    "      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },",
-    "      contextWindow: 128000,",
-    "      maxTokens: 16384",
-    "    }]",
+    `    name: "Neosantara",`,
+    `    baseUrl: "${openaiBaseUrl(apiKey)}",`,
+    `    apiKey: "$NEOSANTARA_API_KEY",`,
+    `    api: "openai-completions",`,
+    `    models: [${modelEntries}]`,
     "  });",
     "};",
   ].join("\n");
@@ -504,7 +562,7 @@ async function waitForOpenclawBootstrap(runner: CloudRunner): Promise<void> {
   logStep("Waiting for OpenClaw bootstrap to complete...");
 
   const pollScript = [
-    "source ~/.spawnrc 2>/dev/null",
+    "source ~/.jelmaanrc 2>/dev/null",
     "export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH",
     "_elapsed=0",
     "while [ $_elapsed -lt 60 ]; do",
@@ -577,11 +635,12 @@ async function setupOpenclawConfig(
   // This replaces our previous manual JSON construction + deep-merge approach
   // that bypassed OpenClaw's credential/auth profile system.
   const onboardCmd =
-    "source ~/.spawnrc 2>/dev/null; " +
+    "source ~/.jelmaanrc 2>/dev/null; " +
     "export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; " +
     "openclaw onboard --non-interactive" +
     " --auth-choice custom-api-key" +
-    " --custom-base-url https://api.neosantara.xyz/v1" +
+    " --custom-base-url " +
+    openaiBaseUrl(apiKey) +
     ` --custom-api-key ${shellQuote(apiKey)}` +
     ` --custom-model-id ${shellQuote(modelId)}` +
     " --custom-provider-id neosantara" +
@@ -631,14 +690,10 @@ async function setupOpenclawConfig(
   // Each individual config set is chained with `;` (not `&&`) so a failure
   // in one doesn't skip the rest — these are all non-fatal preferences.
   const configCmds = [
-    // Model — openclaw onboard writes arcee/trinity-large-thinking to the
-    // agent-specific config (agents.main.model.primary) which overrides
-    // the defaults path. Set BOTH so our model always wins.
+    // Model — set the default model for all agents
     `openclaw config set agents.defaults.model.primary neosantara/${shellQuote(modelId)} >/dev/null`,
-    `openclaw config set agents.main.model.primary neosantara/${shellQuote(modelId)} >/dev/null`,
     // Disable Docker sandboxing — auto-detected Docker hangs the session
     "openclaw config set agents.defaults.sandbox.mode off >/dev/null",
-    "openclaw config set agents.main.sandbox.mode off >/dev/null",
     // Browser (requires Chrome installed above)
     "openclaw config set browser.executablePath /usr/bin/google-chrome-stable >/dev/null",
     "openclaw config set browser.noSandbox true >/dev/null",
@@ -764,7 +819,7 @@ export async function startGateway(runner: CloudRunner): Promise<void> {
 
   const wrapperScript = [
     "#!/bin/bash",
-    'source "$HOME/.spawnrc" 2>/dev/null',
+    'source "$HOME/.jelmaanrc" 2>/dev/null',
     'export PATH="$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH"',
     "while true; do",
     "  openclaw gateway",
@@ -806,7 +861,7 @@ export async function startGateway(runner: CloudRunner): Promise<void> {
   }
 
   const script = [
-    "source ~/.spawnrc 2>/dev/null",
+    "source ~/.jelmaanrc 2>/dev/null",
     "export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH",
     "printf '%s' '" + wrapperB64 + "' | base64 -d > /tmp/openclaw-gateway-wrapper.tmp",
     "chmod +x /tmp/openclaw-gateway-wrapper.tmp",
@@ -839,6 +894,40 @@ export async function startGateway(runner: CloudRunner): Promise<void> {
   logInfo("OpenClaw gateway started");
 }
 
+// ─── Hermes Config ───────────────────────────────────────────────────────────
+
+async function setupHermesConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
+  logStep("Configuring Hermes for Neosantara...");
+  const model = modelId || "garda-core";
+  const baseUrl = openaiBaseUrl(apiKey);
+  const configYaml = [
+    "# Neosantara AI — configured by jelma",
+    "model:",
+    `  default: "${model}"`,
+    '  provider: "custom"',
+    `  base_url: "${baseUrl}"`,
+    "  # api_key read from OPENAI_API_KEY env var",
+    "",
+    "# Auxiliary models inherit from main provider",
+    "auxiliary:",
+    "  vision:",
+    '    provider: "main"',
+    '    model: ""',
+    "  web_extract:",
+    '    provider: "main"',
+    '    model: ""',
+    "  compression:",
+    '    provider: "main"',
+    '    model: ""',
+    "  approval:",
+    '    provider: "main"',
+    '    model: ""',
+    "",
+  ].join("\n");
+  await uploadConfigFile(runner, configYaml, "$HOME/.hermes/config.yaml");
+  logInfo("Hermes configured for Neosantara");
+}
+
 // ─── Hermes Web Dashboard ────────────────────────────────────────────────────
 
 /**
@@ -868,7 +957,7 @@ export async function startHermesDashboard(runner: CloudRunner): Promise<void> {
   const hermesPath = 'export PATH="$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH"';
 
   const script = [
-    "source ~/.spawnrc 2>/dev/null",
+    "source ~/.jelmaanrc 2>/dev/null",
     hermesPath,
     `if ${portCheck}; then echo "Hermes dashboard already running on :9119"; exit 0; fi`,
     "_hermes_bin=$(command -v hermes) || { echo 'hermes not found in PATH' >&2; exit 1; }",
@@ -1066,7 +1155,7 @@ export async function setupAutoUpdate(runner: CloudRunner, agentName: string, up
     "  exit 0",
     "fi",
     "",
-    '[ -f "$HOME/.spawnrc" ] && source "$HOME/.spawnrc" 2>/dev/null',
+    '[ -f "$HOME/.jelmaanrc" ] && source "$HOME/.jelmaanrc" 2>/dev/null',
     'export PATH="$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.claude/local/bin:$PATH"',
     "",
     "# ── Phase 1: System package updates ──",
@@ -1344,11 +1433,13 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
     claude: {
       name: "Claude Code",
       cloudInitTier: "minimal",
+      modelEnvVar: "SPAWN_MODEL",
+      modelDefault: "garda-core",
       preProvision: detectGithubAuth,
       install: () => installClaudeCode(runner),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
-        "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
+        `ANTHROPIC_BASE_URL=${anthropicBaseUrl(apiKey)}`,
         `ANTHROPIC_AUTH_TOKEN=${apiKey}`,
         "ANTHROPIC_API_KEY=",
         "CLAUDE_CODE_SKIP_ONBOARDING=1",
@@ -1356,9 +1447,10 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       ],
       configure: (apiKey) => setupClaudeCodeConfig(runner, apiKey),
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.claude/local/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH; claude",
+        "source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.claude/local/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH; claude${SPAWN_MODEL:+ --model $SPAWN_MODEL}",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.claude/local/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH; claude -p --dangerously-skip-permissions ${shellQuote(prompt)}`,
+        "source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.claude/local/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH; claude -p ${SPAWN_MODEL:+ --model $SPAWN_MODEL} --dangerously-skip-permissions " +
+        shellQuote(prompt),
       updateCmd:
         'export PATH="$HOME/.claude/local/bin:$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.bun/bin:$HOME/.n/bin:$PATH"; ' +
         "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null || " +
@@ -1377,11 +1469,13 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
+        `OPENAI_API_KEY=${apiKey}`,
+        `OPENAI_BASE_URL=${openaiBaseUrl(apiKey)}`,
       ],
       configure: (apiKey, modelId) => setupCodexConfig(runner, apiKey, modelId),
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex",
+      launchCmd: () => "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @openai/codex@latest",
     },
 
@@ -1402,16 +1496,16 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         envVars: (apiKey: string) => [
           `NEOSANTARA_API_KEY=${apiKey}`,
           `ANTHROPIC_API_KEY=${apiKey}`,
-          "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
+          `ANTHROPIC_BASE_URL=${anthropicBaseUrl(apiKey)}`,
         ],
         configure: (apiKey: string, modelId?: string, enabledSteps?: Set<string>) =>
           setupOpenclawConfig(runner, apiKey, modelId || "garda-core", dashboardToken, enabledSteps),
         preLaunch: () => startGateway(runner),
         preLaunchMsg: "Your web dashboard will open automatically — use it for WhatsApp QR scanning and channel setup.",
         launchCmd: () =>
-          "source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; openclaw tui",
+          "source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; openclaw tui",
         promptCmd: (prompt: string) =>
-          `source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; openclaw agent --local --agent main -m ${shellQuote(prompt)}`,
+          `source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.npm-global/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH; openclaw agent --local --agent main -m ${shellQuote(prompt)}`,
         tunnel: {
           remotePort: 18789,
           browserUrl: (localPort: number) => `http://localhost:${localPort}/#token=${dashboardToken}`,
@@ -1429,9 +1523,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
       configure: (apiKey, modelId) => setupOpenCodeConfig(runner, apiKey, modelId),
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode",
+      launchCmd: () => "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode run ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; opencode run ${shellQuote(prompt)}`,
       updateCmd: openCodeInstallCmd(),
     },
 
@@ -1451,9 +1545,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         "KILO_PROVIDER=neosantara",
       ],
       configure: (apiKey, modelId) => setupKiloCodeConfig(runner, apiKey, modelId),
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
+      launchCmd: () => "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode --prompt ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; kilocode --prompt ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @kilocode/cli@latest",
     },
 
@@ -1475,15 +1569,16 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
-        "OPENAI_BASE_URL=https://api.neosantara.xyz/v1",
+        `OPENAI_BASE_URL=${openaiBaseUrl(apiKey)}`,
         `OPENAI_API_KEY=${apiKey}`,
         "HERMES_YOLO_MODE=1",
       ],
-      configure: async (_apiKey, _modelId, enabledSteps) => {
+      configure: async (apiKey, modelId, enabledSteps) => {
+        await setupHermesConfig(runner, apiKey, modelId);
         // YOLO mode is on by default (in envVars above). If the user explicitly
-        // unchecked it in setup options, remove it from .spawnrc.
+        // unchecked it in setup options, remove it from .jelmaanrc.
         if (enabledSteps && !enabledSteps.has("yolo-mode")) {
-          await runner.runServer("sed -i '/HERMES_YOLO_MODE/d' ~/.spawnrc");
+          await runner.runServer("sed -i '/HERMES_YOLO_MODE/d' ~/.jelmaanrc");
           logInfo("YOLO mode disabled — Hermes will prompt before installing tools");
         }
       },
@@ -1491,9 +1586,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       preLaunchMsg:
         "Your Hermes web dashboard will open automatically — use it to configure settings, monitor sessions, and manage gateways.",
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes",
+        "source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes --yolo -z ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.local/bin:$HOME/.hermes/hermes-agent/venv/bin:$PATH; hermes --yolo -z ${shellQuote(prompt)}`,
       tunnel: {
         remotePort: 9119,
         browserUrl: (localPort: number) => `http://localhost:${localPort}/`,
@@ -1517,11 +1612,13 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         ),
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
+        `OPENAI_API_KEY=${apiKey}`,
+        `OPENAI_BASE_URL=${openaiBaseUrl(apiKey)}`,
       ],
-      configure: (_apiKey, modelId) => setupJunieConfig(runner, modelId),
-      launchCmd: () => "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara",
+      configure: (apiKey, modelId) => setupJunieConfig(runner, apiKey, modelId),
+      launchCmd: () => "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara --task ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; junie --model custom:neosantara --task ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @jetbrains/junie-cli@latest",
     },
 
@@ -1538,11 +1635,11 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
       ],
-      configure: (_apiKey, modelId) => setupPiConfig(runner, modelId),
+      configure: (apiKey, modelId) => setupPiConfig(runner, apiKey, modelId),
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara",
+        "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara",
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara -p ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; pi -e ~/.pi/agent/extensions/neosantara.mjs --provider neosantara -p ${shellQuote(prompt)}`,
       updateCmd: `${NPM_AUTO_UPDATE_SETUP} && ` + "npm install -g $_NPM_G_FLAGS @earendil-works/pi-coding-agent@latest",
     },
 
@@ -1559,13 +1656,13 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       envVars: (apiKey) => [
         `NEOSANTARA_API_KEY=${apiKey}`,
         `ANTHROPIC_API_KEY=${apiKey}`,
-        "ANTHROPIC_BASE_URL=https://api.neosantara.xyz/anthropic",
+        `ANTHROPIC_BASE_URL=${anthropicBaseUrl(apiKey)}`,
         `OPENAI_API_KEY=${apiKey}`,
-        "OPENAI_BASE_URL=https://api.neosantara.xyz/v1",
+        `OPENAI_BASE_URL=${openaiBaseUrl(apiKey)}`,
       ],
       preLaunchMsg: "T3 Code web GUI will open automatically — use it to interact with Claude Code and Codex agents.",
       launchCmd: () =>
-        "source ~/.spawnrc 2>/dev/null; source ~/.zshrc 2>/dev/null; t3 --port 3773 --host 0.0.0.0 --no-browser",
+        "source ~/.jelmaanrc 2>/dev/null; source ~/.zshrc 2>/dev/null; t3 --port 3773 --host 0.0.0.0 --no-browser",
       tunnel: {
         remotePort: 3773,
         browserUrl: (localPort: number) => `http://localhost:${localPort}`,
@@ -1593,9 +1690,9 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
       configure: () => setupCursorProxy(runner),
       preLaunch: () => startCursorProxy(runner),
       launchCmd: () =>
-        'source ~/.spawnrc 2>/dev/null; export PATH="$HOME/.local/bin:$PATH"; agent --endpoint https://api2.cursor.sh',
+        'source ~/.jelmaanrc 2>/dev/null; export PATH="$HOME/.local/bin:$PATH"; agent --endpoint https://api2.cursor.sh',
       promptCmd: (prompt) =>
-        `source ~/.spawnrc 2>/dev/null; export PATH="$HOME/.local/bin:$PATH"; agent --endpoint https://api2.cursor.sh --prompt ${shellQuote(prompt)}`,
+        `source ~/.jelmaanrc 2>/dev/null; export PATH="$HOME/.local/bin:$PATH"; agent --endpoint https://api2.cursor.sh --prompt ${shellQuote(prompt)}`,
       updateCmd: 'export PATH="$HOME/.local/bin:$PATH"; agent update',
     },
   };

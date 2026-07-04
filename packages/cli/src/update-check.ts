@@ -183,7 +183,7 @@ function printUpdateNotice(latestVersion: string): void {
       pc.green(pc.bold(`v${latestVersion}`)),
   );
   console.error(
-    pc.dim(`  Run ${pc.cyan("jelma update")} to install, or set SPAWN_AUTO_UPDATE=1 for automatic updates`),
+    pc.dim(`  Run ${pc.cyan("jelma update")} to install, or set JELMA_AUTO_UPDATE=1 for automatic updates`),
   );
   console.error();
 }

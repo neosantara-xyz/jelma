@@ -74,7 +74,7 @@ function cleanRcFile(rcPath: string): boolean {
   // Safety: if insideBlock is still true, the end marker is missing.
   // Abort to avoid truncating the user's shell config.
   if (insideBlock) {
-    p.log.warn(`Spawn block in ${rcPath} is missing end marker — skipping to avoid data loss.`);
+    p.log.warn(`Jelma block in ${rcPath} is missing end marker — skipping to avoid data loss.`);
     p.log.warn(`Manually remove the line "${RC_MARKER_START}" and the jelma PATH export from ${rcPath}.`);
     return false;
   }

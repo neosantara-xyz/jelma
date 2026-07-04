@@ -280,7 +280,7 @@ describe("cmdInteractive", () => {
       await cmdInteractive();
 
       const introArg = mockIntro.mock.calls[0]?.[0] ?? "";
-      expect(introArg).toContain("spawn");
+      expect(introArg).toContain("jelma");
     });
 
     it("should show launch step with agent and cloud names", async () => {

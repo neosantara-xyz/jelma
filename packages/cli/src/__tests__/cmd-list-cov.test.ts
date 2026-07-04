@@ -15,6 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, mock } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { _resetCacheForTesting, loadManifest } from "../manifest";
+import { getCacheFile } from "../shared/paths";
 import { createConsoleMocks, createMockManifest, mockClackPrompts, restoreMocks } from "./test-helpers";
 
 const clack = mockClackPrompts();
@@ -67,18 +68,12 @@ describe("commands/list.ts coverage", () => {
             status: 500,
           }),
       );
-      // Clear ALL disk cache locations to force a network fetch
-      for (const base of [
-        process.env.XDG_CACHE_HOME || "",
-        join(process.env.HOME || "", ".cache"),
-      ]) {
-        const cacheDir = join(base, "spawn");
-        if (existsSync(cacheDir)) {
-          rmSync(cacheDir, {
-            recursive: true,
-            force: true,
-          });
-        }
+      // Clear disk cache to force a network fetch
+      const cacheFile = getCacheFile();
+      if (existsSync(cacheFile)) {
+        rmSync(cacheFile, {
+          force: true,
+        });
       }
       const result = await resolveListFilters("claude");
       expect(result.manifest).toBeNull();
@@ -384,7 +379,7 @@ describe("commands/list.ts coverage", () => {
       await loadManifest(true);
       await cmdList();
       const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-      expect(infoCalls.some((msg: string) => msg.includes("No spawns recorded"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("No jelma instances recorded"))).toBe(true);
     });
 
     it("shows filter mismatch message with agent filter", async () => {
@@ -393,7 +388,7 @@ describe("commands/list.ts coverage", () => {
       await loadManifest(true);
       await cmdList("nonexistent");
       const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-      expect(infoCalls.some((msg: string) => msg.includes("No spawns found matching"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("No jelma instances found matching"))).toBe(true);
     });
 
     it("shows total count when records exist but filter matches nothing", async () => {
@@ -417,7 +412,9 @@ describe("commands/list.ts coverage", () => {
       await loadManifest(true);
       await cmdList("nonexistent-agent");
       const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-      expect(infoCalls.some((msg: string) => msg.includes("jelma list") || msg.includes("No spawns"))).toBe(true);
+      expect(infoCalls.some((msg: string) => msg.includes("jelma list") || msg.includes("No jelma instances"))).toBe(
+        true,
+      );
     });
   });
 

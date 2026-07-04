@@ -41,7 +41,7 @@ export interface FixOptions {
 
 /**
  * Run the full fix pipeline on a remote VM:
- * 1. Re-inject env vars + ensure shell rc files source ~/.spawnrc
+ * 1. Re-inject env vars + ensure shell rc files source ~/.jelmaanrc
  * 2. Reinstall agent (same install() as provisioning)
  * 3. Configure agent (settings files, etc.)
  * 4. Set up auto-update timer
@@ -138,7 +138,7 @@ export async function fixSpawn(record: JelmaRecord, manifest: Manifest | null, o
       "#!/bin/bash",
       "set -eo pipefail",
       "",
-      `printf '%s' '${Buffer.from(envContent).toString("base64")}' | base64 -d > ~/.spawnrc && chmod 600 ~/.spawnrc`,
+      `printf '%s' '${Buffer.from(envContent).toString("base64")}' | base64 -d > ~/.jelmaanrc && chmod 600 ~/.jelmaanrc`,
     ];
     if (agentManifest.install) {
       scriptLines.push(agentManifest.install);
@@ -184,7 +184,7 @@ export async function fixSpawn(record: JelmaRecord, manifest: Manifest | null, o
   }
   const agent = agentResult.data;
 
-  // --- Phase 1: Re-inject env vars + ensure rc files source ~/.spawnrc ---
+  // --- Phase 1: Re-inject env vars + ensure rc files source ~/.jelmaanrc ---
   const envPairs = buildEnvPairs(agentManifest.env ?? {});
   const envContent = generateEnvConfig(envPairs);
   const envResult = await asyncTryCatch(() => injectEnvVarsToRunner(runner, envContent));
@@ -245,7 +245,7 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
   const servers = getActiveServers();
 
   if (servers.length === 0) {
-    p.log.info("No active spawns to fix.");
+    p.log.info("No active jelma instances to fix.");
     p.log.info(`Run ${pc.cyan("jelma <agent> <cloud>")} to create a jelma first.`);
     return;
   }
@@ -257,8 +257,8 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
   if (spawnId) {
     const record = servers.find((r) => r.id === spawnId || r.name === spawnId || r.connection?.server_name === spawnId);
     if (!record) {
-      p.log.error(`Spawn not found: ${pc.bold(spawnId)}`);
-      p.log.info(`Run ${pc.cyan("jelma list")} to see your active spawns.`);
+      p.log.error(`Jelma instance not found: ${pc.bold(spawnId)}`);
+      p.log.info(`Run ${pc.cyan("jelma list")} to see your active instances.`);
       process.exit(1);
     }
     await fixSpawn(record, manifest, options);
@@ -296,7 +296,7 @@ export async function cmdFix(spawnId?: string, options?: FixOptions): Promise<vo
 
   const record = servers.find((r) => (r.id || r.timestamp) === selected);
   if (!record) {
-    p.log.error("Spawn not found.");
+    p.log.error("Jelma instance not found.");
     process.exit(1);
   }
 

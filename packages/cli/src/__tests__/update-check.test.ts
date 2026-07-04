@@ -75,12 +75,13 @@ describe("update-check", () => {
       process.env.NODE_ENV = "test";
 
       const fetchSpy = spyOn(global, "fetch");
+      const callsBefore = fetchSpy.mock.calls.length;
 
       // Dynamic import to get fresh module with test env
       const { checkForUpdates } = await import("../update-check.js");
       await checkForUpdates();
 
-      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(fetchSpy.mock.calls.length).toBe(callsBefore);
       fetchSpy.mockRestore();
     });
 
@@ -88,11 +89,12 @@ describe("update-check", () => {
       process.env.SPAWN_NO_UPDATE_CHECK = "1";
 
       const fetchSpy = spyOn(global, "fetch");
+      const callsBefore = fetchSpy.mock.calls.length;
 
       const { checkForUpdates } = await import("../update-check.js");
       await checkForUpdates();
 
-      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(fetchSpy.mock.calls.length).toBe(callsBefore);
       fetchSpy.mockRestore();
     });
 
@@ -468,7 +470,7 @@ describe("update-check", () => {
 
       // Should show restarting message
       const output = consoleErrorSpy.mock.calls.map((call: unknown[]) => call[0]).join("\n");
-      expect(output).toContain("Restarting spawn");
+      expect(output).toContain("Restarting jelma");
 
       expect(processExitSpy).toHaveBeenCalledWith(0);
 

@@ -166,8 +166,8 @@ describe("fixSpawn", () => {
       makeRunner: () => mockState.runner,
     });
 
-    // First runServer call should be the env injection (base64-encoded .spawnrc + rc sourcing)
-    const envCmd = mockState.commands.find((c) => c.includes("spawnrc"));
+    // First runServer call should be the env injection (base64-encoded .jelmaanrc + rc sourcing)
+    const envCmd = mockState.commands.find((c) => c.includes("jelmaanrc"));
     expect(envCmd).toBeTruthy();
   });
 
@@ -278,7 +278,7 @@ describe("cmdFix", () => {
   it("shows message when no active spawns", async () => {
     // No history file written — empty history
     await cmdFix();
-    expect(clack.logInfo).toHaveBeenCalledWith(expect.stringContaining("No active spawns"));
+    expect(clack.logInfo).toHaveBeenCalledWith(expect.stringContaining("No active jelma instances"));
   });
 
   it("fixes by jelma ID when passed as argument", async () => {

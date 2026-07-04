@@ -344,10 +344,10 @@ export function toKebabCase(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-/** Generate a default jelma name with random suffix (e.g. "spawn-a1b2"). */
+/** Generate a default jelma name with random suffix (e.g. "jelma-a1b2"). */
 export function defaultJelmaName(): string {
   const suffix = Math.random().toString(36).slice(2, 6);
-  return `spawn-${suffix}`;
+  return `jelma-${suffix}`;
 }
 
 /**

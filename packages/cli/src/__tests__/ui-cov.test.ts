@@ -256,9 +256,9 @@ describe("loadApiToken", () => {
 // ── defaultJelmaName ───────────────────────────────────────────────
 
 describe("defaultJelmaName", () => {
-  it("generates a name with spawn- prefix", () => {
+  it("generates a name with jelma- prefix", () => {
     const name = defaultJelmaName();
-    expect(name).toMatch(/^spawn-[a-z0-9]+$/);
+    expect(name).toMatch(/^jelma-[a-z0-9]+$/);
   });
 });
 
@@ -306,7 +306,7 @@ describe("promptJelmaNameShared", () => {
     delete process.env.SPAWN_NAME_KEBAB;
     process.env.SPAWN_NON_INTERACTIVE = "1";
     await promptJelmaNameShared("Test Cloud");
-    expect(process.env.SPAWN_NAME_KEBAB).toMatch(/^spawn-/);
+    expect(process.env.SPAWN_NAME_KEBAB).toMatch(/^jelma-/);
   });
 });
 

@@ -201,7 +201,7 @@ describe("cmdEnterAgent", () => {
 
   it("enters agent via SSH with stored launch_cmd", async () => {
     const conn = makeConn({
-      launch_cmd: "source ~/.spawnrc; claude",
+      launch_cmd: "source ~/.jelmaanrc; claude",
     });
     await cmdEnterAgent(conn, "claude", mockManifest);
 

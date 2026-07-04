@@ -109,7 +109,7 @@ describe("cmdLast", () => {
       await cmdLast();
 
       const info = logInfoOutput();
-      expect(info).toContain("spawn");
+      expect(info).toContain("jelma");
       expect(info).toMatch(/<agent>/);
       expect(info).toMatch(/<cloud>/);
     });
@@ -169,7 +169,7 @@ describe("cmdLast", () => {
       await asyncTryCatch(() => cmdLast());
 
       const step = logStepOutput();
-      expect(step).toContain("Last spawn");
+      expect(step).toContain("Last jelma");
     });
 
     it("should select the most recent record (newest first)", async () => {
@@ -374,7 +374,7 @@ describe("cmdLast", () => {
 
       const step = logStepOutput();
       // Should handle old dates gracefully
-      expect(step).toContain("Last spawn");
+      expect(step).toContain("Last jelma");
     });
 
     it("should handle records with all metadata fields", async () => {
@@ -392,7 +392,7 @@ describe("cmdLast", () => {
       await asyncTryCatch(() => cmdLast());
 
       const step = logStepOutput();
-      expect(step).toContain("Last spawn");
+      expect(step).toContain("Last jelma");
       expect(step).toContain("Claude Code");
     });
 

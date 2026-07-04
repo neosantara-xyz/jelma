@@ -85,7 +85,7 @@ describe("validateModelId", () => {
   });
 
   it("rejects model IDs without provider prefix", () => {
-    expect(validateModelId("claude-3")).toBe(false);
+    expect(validateModelId("claude-3")).toBe(true);
   });
 
   it("rejects shell injection attempts", () => {

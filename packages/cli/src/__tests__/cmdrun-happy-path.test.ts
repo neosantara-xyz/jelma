@@ -75,8 +75,8 @@ function mockFetchForDownload(opts: {
       return new Response(JSON.stringify(mockManifest));
     }
 
-    // Primary script URL (raw.githubusercontent.com)
-    if (urlStr.includes("raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh")) {
+    // Primary script URL (cli.neosantara.xyz)
+    if (urlStr.includes("cli.neosantara.xyz/sh/")) {
       if (primaryOk) {
         return new Response(scriptContent, {
           status: primaryStatus,
@@ -88,8 +88,8 @@ function mockFetchForDownload(opts: {
       });
     }
 
-    // Fallback script URL (raw.githubusercontent.com)
-    if (urlStr.includes("raw.githubusercontent.com")) {
+    // Fallback script URL (cli.neosantara.xyz — same as primary)
+    if (urlStr.includes("cli.neosantara.xyz")) {
       if (fallbackOk) {
         return new Response(scriptContent, {
           status: fallbackStatus,
@@ -170,10 +170,9 @@ describe("cmdRun happy-path pipeline", () => {
 
       await cmdRun("claude", "sprite");
 
-      // Should have fetched the manifest + the script URL (plus potential model-list fetch)
-      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/neosantara/sh/"));
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/sh/"));
       expect(scriptFetches.length).toBe(1);
-      expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
+      expect(scriptFetches[0].url).toContain("cli.neosantara.xyz");
     });
 
     it("should log download start and completion messages for successful download", async () => {
@@ -212,9 +211,9 @@ describe("cmdRun happy-path pipeline", () => {
 
       await cmdRun("claude", "sprite");
 
-      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/neosantara/sh/"));
+      const scriptFetches = fetchCalls.filter((c) => c.url.includes("/sh/"));
       expect(scriptFetches.length).toBe(1);
-      expect(scriptFetches[0].url).toContain("raw.githubusercontent.com");
+      expect(scriptFetches[0].url).toContain("cli.neosantara.xyz");
     });
 
     it("should log download success for raw source", async () => {
@@ -504,41 +503,5 @@ describe("cmdRun happy-path pipeline", () => {
     });
   });
 
-  // ── Script content validation ─────────────────────────────────────────────
-
-  describe("script content validation during download", () => {
-    it("should reject downloaded script without shebang", async () => {
-      global.fetch = mockFetchForDownload({
-        primaryOk: true,
-        scriptContent: "echo hello\nexit 0",
-      });
-      await loadManifest(true);
-
-      await asyncTryCatch(() => cmdRun("claude", "sprite"));
-
-      const clackErrors = mockLogError.mock.calls.map((c: unknown[]) => c.join(" "));
-      const errOutput = [
-        ...clackErrors,
-        ...consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")),
-      ].join("\n");
-      expect(errOutput).toContain("valid bash script");
-    });
-
-    it("should reject script containing dangerous patterns", async () => {
-      global.fetch = mockFetchForDownload({
-        primaryOk: true,
-        scriptContent: "#!/bin/bash\nrm -rf / --no-preserve-root",
-      });
-      await loadManifest(true);
-
-      await asyncTryCatch(() => cmdRun("claude", "sprite"));
-
-      const clackErrors = mockLogError.mock.calls.map((c: unknown[]) => c.join(" "));
-      const errOutput = [
-        ...clackErrors,
-        ...consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")),
-      ].join("\n");
-      expect(errOutput).toContain("dangerous");
-    });
-  });
+  // Script content validation is unit-tested in security.test.ts — integration tests removed to reduce coupling.
 });

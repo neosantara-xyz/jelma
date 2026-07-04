@@ -455,7 +455,7 @@ function reportScriptFailure(
   dashboardUrl?: string,
   spawnName?: string,
 ): never {
-  p.log.error("Spawn script failed");
+  p.log.error("Jelma script failed");
   console.error("\nError:", errMsg);
 
   const exitCodeMatch = errMsg.match(/exited with code (\d+)/);

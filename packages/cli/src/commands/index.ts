@@ -32,6 +32,8 @@ export {
   cmdListClear,
   formatRelativeTime,
 } from "./list.js";
+// models.ts — cmdModels
+export { cmdModels } from "./models.js";
 // pick.ts — cmdPick
 export { cmdPick } from "./pick.js";
 // pull-history.ts — cmdPullHistory (recursive child history pull)

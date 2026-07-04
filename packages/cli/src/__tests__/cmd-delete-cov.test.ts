@@ -274,9 +274,7 @@ describe("cmdDelete", () => {
   it("shows create hint when no servers at all", async () => {
     await cmdDelete();
     const infoCalls = clack.logInfo.mock.calls.map((c: unknown[]) => String(c[0]));
-    expect(
-      infoCalls.some((msg: string) => msg.includes("spawn") && (msg.includes("create") || msg.includes("No active"))),
-    ).toBe(true);
+    expect(infoCalls.some((msg: string) => msg.includes("create") || msg.includes("No active servers"))).toBe(true);
   });
 });
 

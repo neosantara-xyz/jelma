@@ -112,11 +112,11 @@ describe("cmdList integration", () => {
   // ── Empty history ───────────────────────────────────────────────────────────
 
   describe("empty history (no records)", () => {
-    it("should show 'No spawns recorded yet' when no history file exists", async () => {
+    it("should show 'No jelma instances recorded yet' when no history file exists", async () => {
       await cmdList();
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawns recorded yet");
+      expect(info).toContain("No jelma instances recorded yet");
     });
 
     it("should suggest 'jelma <agent> <cloud>' for first spawn", async () => {
@@ -126,7 +126,7 @@ describe("cmdList integration", () => {
       expect(info).toContain("jelma <agent> <cloud>");
     });
 
-    it("should show 'No spawns found matching' when filter matches nothing", async () => {
+    it("should show 'No jelma instances found matching' when filter matches nothing", async () => {
       writeHistory([
         {
           agent: "claude",
@@ -138,7 +138,7 @@ describe("cmdList integration", () => {
       await cmdList("nonexistent");
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawns found matching");
+      expect(info).toContain("No jelma instances found matching");
       expect(info).toContain("nonexistent");
     });
 
@@ -168,7 +168,7 @@ describe("cmdList integration", () => {
       await cmdList("claude", "sprite");
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawns");
+      expect(info).toContain("No jelma instances");
     });
   });
 
@@ -275,7 +275,7 @@ describe("cmdList integration", () => {
       await cmdList();
 
       const output = consoleOutput();
-      expect(output).toContain("3 spawns recorded");
+      expect(output).toContain("3 instances recorded");
     });
 
     it("should use singular 'spawn' for single record", async () => {
@@ -292,8 +292,8 @@ describe("cmdList integration", () => {
       await cmdList();
 
       const output = consoleOutput();
-      // Should say "1 jelma recorded" not "1 spawns recorded"
-      expect(output).toMatch(/1 spawn[^s]/);
+      // Should say "1 instance recorded" not "1 instances recorded"
+      expect(output).toMatch(/1 instance[^s]/);
     });
   });
 
@@ -449,7 +449,7 @@ describe("cmdList integration", () => {
 
       const info = logInfoOutput();
       // loadHistory returns [] for corrupted files
-      expect(info).toContain("No spawns recorded yet");
+      expect(info).toContain("No jelma instances recorded yet");
     });
 
     it("should handle history file with non-array JSON", async () => {
@@ -463,7 +463,7 @@ describe("cmdList integration", () => {
       await cmdList();
 
       const info = logInfoOutput();
-      expect(info).toContain("No spawns recorded yet");
+      expect(info).toContain("No jelma instances recorded yet");
     });
 
     it("should handle many records without issue", async () => {
@@ -482,7 +482,7 @@ describe("cmdList integration", () => {
       await cmdList();
 
       const output = consoleOutput();
-      expect(output).toContain("100 spawns recorded");
+      expect(output).toContain("100 instances recorded");
     });
 
     it("should handle records with missing optional prompt field", async () => {

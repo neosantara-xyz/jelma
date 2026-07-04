@@ -225,7 +225,7 @@ export async function cmdEnterAgent(
   const storedCmd = connection.launch_cmd;
   let remoteCmd: string;
   if (storedCmd) {
-    // Stored command already includes source ~/.spawnrc, PATH setup, etc.
+    // Stored command already includes source ~/.jelmaanrc, PATH setup, etc.
     remoteCmd = storedCmd;
   } else {
     const launchCmd = agentDef?.launch ?? agentKey;
@@ -236,9 +236,9 @@ export async function cmdEnterAgent(
     if (preLaunch) {
       validatePreLaunchCmd(preLaunch);
     }
-    validateLaunchCmd(`source ~/.spawnrc 2>/dev/null; ${launchCmd}`);
+    validateLaunchCmd(`source ~/.jelmaanrc 2>/dev/null; ${launchCmd}`);
     const parts = [
-      "source ~/.spawnrc 2>/dev/null",
+      "source ~/.jelmaanrc 2>/dev/null",
     ];
     if (preLaunch) {
       parts.push(preLaunch);

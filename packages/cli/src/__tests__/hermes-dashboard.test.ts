@@ -79,8 +79,8 @@ describe("startHermesDashboard", () => {
     expect(capturedScript).toContain("Hermes dashboard already running");
   });
 
-  it("sources ~/.spawnrc and exports the hermes venv PATH before launching", () => {
-    expect(capturedScript).toContain("source ~/.spawnrc");
+  it("sources ~/.jelmaanrc and exports the hermes venv PATH before launching", () => {
+    expect(capturedScript).toContain("source ~/.jelmaanrc");
     expect(capturedScript).toContain("$HOME/.hermes/hermes-agent/venv/bin");
     expect(capturedScript).toContain("$HOME/.local/bin");
   });

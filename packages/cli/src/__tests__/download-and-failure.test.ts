@@ -76,7 +76,7 @@ describe("Download and Failure Pipeline", () => {
       expect(processExitSpy).toHaveBeenCalledWith(1);
 
       const errorOutput = consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(errorOutput).toContain("doesn't exist");
+      expect(errorOutput).toContain("jelma script doesn't exist");
       expect(errorOutput).toContain("jelma matrix");
       expect(errorOutput).toContain("Report it");
     });
@@ -101,7 +101,7 @@ describe("Download and Failure Pipeline", () => {
 
     it("should show not-found guidance when script URL returns 404", async () => {
       await setupFetch(async (url) => {
-        if (url.includes("raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh")) {
+        if (url.includes("cli.neosantara.xyz/sh/")) {
           return new Response("Not Found", {
             status: 404,
           });
@@ -117,7 +117,7 @@ describe("Download and Failure Pipeline", () => {
       }
 
       const errorOutput = consoleMocks.error.mock.calls.map((c: unknown[]) => c.join(" ")).join("\n");
-      expect(errorOutput).toContain("doesn't exist");
+      expect(errorOutput).toContain("jelma script doesn't exist");
       expect(errorOutput).toContain("jelma matrix");
     });
   });
@@ -155,7 +155,7 @@ describe("Download and Failure Pipeline", () => {
       expect(errorOutput).toContain("Next steps");
       expect(errorOutput).toContain("internet connection");
       expect(errorOutput).toContain("Firewall");
-      expect(errorOutput).toContain("raw.githubusercontent.com");
+      expect(errorOutput).toContain("Test URL directly");
     });
   });
 

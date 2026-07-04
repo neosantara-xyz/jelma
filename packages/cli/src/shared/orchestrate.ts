@@ -619,7 +619,7 @@ export async function runOrchestration(
   }
 }
 
-/** Write env content to ~/.spawnrc and ensure all shell rc files source it. */
+/** Write env content to ~/.jelmaanrc and ensure all shell rc files source it. */
 export async function injectEnvVarsToRunner(runner: CloudRunner, envContent: string): Promise<void> {
   logStep("Setting up environment variables...");
   const envB64 = Buffer.from(envContent).toString("base64");
@@ -628,9 +628,9 @@ export async function injectEnvVarsToRunner(runner: CloudRunner, envContent: str
   }
 
   const envSetupCmd =
-    `printf '%s' '${envB64}' | base64 -d > ~/.spawnrc && chmod 600 ~/.spawnrc; ` +
+    `printf '%s' '${envB64}' | base64 -d > ~/.jelmaanrc && chmod 600 ~/.jelmaanrc; ` +
     "for _rc in ~/.bashrc ~/.profile ~/.bash_profile ~/.zshrc; do " +
-    `grep -q 'source ~/.spawnrc' "$_rc" 2>/dev/null || echo '[ -f ~/.spawnrc ] && source ~/.spawnrc' >> "$_rc"; ` +
+    `grep -q 'source ~/.jelmaanrc' "$_rc" 2>/dev/null || echo '[ -f ~/.jelmaanrc ] && source ~/.jelmaanrc' >> "$_rc"; ` +
     "done";
 
   const envResult = await asyncTryCatch(() =>
@@ -650,7 +650,7 @@ async function injectEnvVars(cloud: CloudOrchestrator, envContent: string): Prom
       throw new Error("Unexpected characters in base64 output");
     }
     const envSetupCmd =
-      `$bytes = [Convert]::FromBase64String('${envB64}'); ` + `[IO.File]::WriteAllBytes("$HOME/.spawnrc", $bytes)`;
+      `$bytes = [Convert]::FromBase64String('${envB64}'); ` + `[IO.File]::WriteAllBytes("$HOME/.jelmaanrc", $bytes)`;
     const envResult = await asyncTryCatch(() =>
       withRetry("env setup", () => wrapSshCall(cloud.runner.runServer(envSetupCmd)), 2, 5),
     );
@@ -801,7 +801,7 @@ async function postInstall(
         const { installSkills } = await import("./skills.js");
         await installSkills(cloud.runner, manifestForSkills, agentName, skillIds);
 
-        // Append skill env vars to .spawnrc so MCP servers can resolve ${VAR} at runtime
+        // Append skill env vars to .jelmaanrc so MCP servers can resolve ${VAR} at runtime
         const skillEnvPairs = (process.env.SPAWN_SKILL_ENV_PAIRS ?? "").split(",").filter(Boolean);
         if (skillEnvPairs.length > 0) {
           const validKeyRe = /^[A-Z_][A-Z0-9_]*$/;
@@ -833,7 +833,7 @@ async function postInstall(
               logWarn("Unexpected characters in skill env payload base64");
             } else {
               await asyncTryCatch(() =>
-                cloud.runner.runServer(`printf '%s' '${payloadB64}' | base64 -d >> ~/.spawnrc`),
+                cloud.runner.runServer(`printf '%s' '${payloadB64}' | base64 -d >> ~/.jelmaanrc`),
               );
             }
           }
@@ -932,7 +932,7 @@ async function postInstall(
       const escaped = shellQuote(pairingCode);
       const result = await asyncTryCatchIf(isOperationalError, () =>
         cloud.runner.runServer(
-          `source ~/.spawnrc 2>/dev/null; ${ocPath}; openclaw pairing approve telegram ${escaped}`,
+          `source ~/.jelmaanrc 2>/dev/null; ${ocPath}; openclaw pairing approve telegram ${escaped}`,
         ),
       );
       if (result.ok) {
