@@ -8,12 +8,12 @@ Launch any AI agent on any cloud with a single command. Coding agents, research 
 
 **macOS / Linux — and Windows users inside a WSL2 terminal (Ubuntu, Debian, etc.):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.sh | bash
+curl -fsSL https://cli.neosantara.xyz/install.sh | bash
 ```
 
 **Windows PowerShell (outside WSL):**
 ```powershell
-irm https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.ps1 | iex
+irm https://cli.neosantara.xyz/install.ps1 | iex
 ```
 
 ## Usage
@@ -171,7 +171,7 @@ jelma claude hetzner --beta recursive
 What this does:
 - **Installs jelma CLI** on the remote VM
 - **Delegates credentials** (cloud + Neosantara) so child VMs can authenticate
-- **Injects parent tracking** (`SPAWN_PARENT_ID`, `SPAWN_DEPTH`) into the VM environment
+- **Injects parent tracking** (`JELMA_PARENT_ID`, `JELMA_DEPTH`) into the VM environment
 - **Passes `--beta recursive`** to children so they can also jelma recursively
 
 View the jelma tree:
@@ -214,7 +214,7 @@ jelma openclaw local --beta sandbox   # Direct launch, sandboxed
 Every combination works as a one-liner — no install required:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/{cloud}/{agent}.sh)
+bash <(curl -fsSL https://cli.neosantara.xyz/sh/{cloud}/{agent}.sh)
 ```
 
 ### Non-Interactive Mode
@@ -260,7 +260,7 @@ If jelma fails to install, try these steps:
    ```bash
    curl -fsSL https://bun.sh/install | bash
    source ~/.bashrc  # or ~/.zshrc for zsh
-   curl -fsSL https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.sh | bash
+   curl -fsSL https://cli.neosantara.xyz/install.sh | bash
    ```
 
 3. **PATH issues**: If `jelma` command not found after install
@@ -273,7 +273,7 @@ If jelma fails to install, try these steps:
 
 1. **Use the PowerShell installer** — not the bash one:
    ```powershell
-   irm https://raw.githubusercontent.com/neosantara-xyz/jelma/neosantara/sh/cli/install.ps1 | iex
+   irm https://cli.neosantara.xyz/install.ps1 | iex
    ```
    The `.ps1` extension is required. The default `install.sh` is bash and won't work in PowerShell.
 
@@ -369,7 +369,8 @@ Scripts work standalone (`bash <(curl ...)`) or through the CLI.
 
 ```bash
 git clone https://github.com/neosantara-xyz/jelma.git
-cd jelma git config core.hooksPath .githooks
+cd jelma
+git config core.hooksPath .githooks
 ```
 
 ### Structure
