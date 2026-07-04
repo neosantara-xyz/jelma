@@ -153,11 +153,11 @@ async function installClaudeCode(runner: CloudRunner): Promise<void> {
   logInfo("Claude Code agent installed successfully");
 }
 
-async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string): Promise<void> {
+async function setupClaudeCodeConfig(runner: CloudRunner, apiKey: string, modelId?: string): Promise<void> {
   logStep("Configuring Claude Code...");
 
   const escapedKey = jsonEscape(apiKey);
-  const model = isCodingPlanKey(apiKey) ? "garda-core" : "";
+  const model = isCodingPlanKey(apiKey) ? modelId || "garda-core" : "";
   const modelLines = model
     ? `
     "ANTHROPIC_MODEL": "${model}",
@@ -1452,7 +1452,7 @@ function createAgents(runner: CloudRunner): Record<string, AgentConfig> {
         "CLAUDE_CODE_SKIP_ONBOARDING=1",
         "CLAUDE_CODE_ENABLE_TELEMETRY=0",
       ],
-      configure: (apiKey) => setupClaudeCodeConfig(runner, apiKey),
+      configure: (apiKey, modelId) => setupClaudeCodeConfig(runner, apiKey, modelId),
       launchCmd: () =>
         "source ~/.jelmaanrc 2>/dev/null; export PATH=$HOME/.claude/local/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH; claude${SPAWN_MODEL:+ --model $SPAWN_MODEL}",
       promptCmd: (prompt) =>
